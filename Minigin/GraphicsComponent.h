@@ -17,7 +17,7 @@ namespace dae
 	class GraphicsComponent : public BaseComponent
 	{
 	public:
-		GraphicsComponent();				// Constructor
+		GraphicsComponent(GameObject* pGameObject, const std::string& name);				// Constructor
 		virtual ~GraphicsComponent();		// Destructor
 
 		// -------------------------
@@ -31,8 +31,8 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		void Render() const;
-		virtual void Update(GameObject* pGameObject) override;
+		virtual void Render() const override;
+		virtual void Update(float deltaTime) override;
 		void SetTexture(const std::string& filename);
 
 	private:

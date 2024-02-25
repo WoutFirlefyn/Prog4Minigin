@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <stdexcept>
 #include "Transform.h"
 #include "BaseComponent.h"
 
@@ -24,12 +25,51 @@ namespace dae
 		virtual void Update(float deltaTime);
 		virtual void Render() const;
 		
-		void SetTexture(const std::string& filename);
 		Transform GetPosition() const;
 		void SetPosition(float x, float y);
-		void AddComponent(std::shared_ptr<BaseComponent> pComponent);
-		void RemoveComponent(std::shared_ptr<BaseComponent> pComponent);
-		void GetComponent() const;
+		template <typename T, typename... Args>
+		void AddComponent(Args&&... args)
+		{
+			m_vComponents.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
+		}
+
+		template<typename T>
+		void RemoveComponent() 
+		{
+			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
+			auto it = std::remove_if(m_vComponents.begin(), m_vComponents.end(), [](std::shared_ptr<BaseComponent> pComponent) 
+			    {
+			        return dynamic_cast<T*>(pComponent.get()) != nullptr;
+				});
+			assert(it != m_vComponents.end() && "Component to remove not found");
+			m_vComponents.erase(it, m_vComponents.end());
+		}
+
+		template<typename T>
+		std::shared_ptr<BaseComponent> GetComponent() const 
+		{
+			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
+			auto it = std::find_if(m_vComponents.begin(), m_vComponents.end(), [](std::shared_ptr<BaseComponent> pComponent) 
+				{
+					return dynamic_cast<T*>(pComponent.get()) != nullptr;
+				});
+
+			assert(it != m_vComponents.end() && "Component to get not found");
+
+			return *it;
+		}
+
+		template<typename T>
+		bool CheckComponent() const 
+		{
+			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
+			auto it = std::find_if(m_vComponents.begin(), m_vComponents.end(), [](std::shared_ptr<BaseComponent> pComponent) 
+				{
+					return dynamic_cast<T*>(pComponent.get()) != nullptr;
+				});
+
+			return it != m_vComponents.end();
+		}
 
 	private:
 		Transform m_transform{};

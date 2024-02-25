@@ -3,31 +3,38 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
+#include <memory>
+#include <string>
 #include "BaseComponent.h"
 
 //-----------------------------------------------------
-// PhysicsComponent Class									
+// TextComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
-	class PhysicsComponent : public BaseComponent
+	class Font;
+	class Texture2D;
+
+	class TextComponent : public BaseComponent
 	{
 	public:
-		PhysicsComponent();					// Constructor
-		virtual ~PhysicsComponent();		// Destructor
+		TextComponent(GameObject* pGameObject, const std::string& text, std::shared_ptr<Font> pFont);				// Constructor
+		~TextComponent();				// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		PhysicsComponent(const PhysicsComponent& other) = delete;
-		PhysicsComponent(PhysicsComponent&& other) noexcept = delete;
-		PhysicsComponent& operator=(const PhysicsComponent& other) = delete;
-		PhysicsComponent& operator=(PhysicsComponent&& other) noexcept = delete;
+		TextComponent(const TextComponent& other) = delete;
+		TextComponent(TextComponent&& other) noexcept = delete;
+		TextComponent& operator=(const TextComponent& other) = delete;
+		TextComponent& operator=(TextComponent&& other)	noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		virtual void Update(float deltaTime) = 0;
+		virtual void Render() const override;
+		virtual void Update(float deltaTime) override;
+		void SetText(const std::string& text);
 
 	private:
 		//-------------------------------------------------
@@ -38,7 +45,10 @@ namespace dae
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-
+		bool m_NeedsUpdate;
+		std::string m_Text;
+		std::shared_ptr<Font> m_pFont;
+		std::shared_ptr<Texture2D> m_pTextTexture;
 
 	};
 }
