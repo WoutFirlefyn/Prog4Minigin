@@ -11,7 +11,7 @@ namespace dae
 	class Texture2D;
 
 	// todo: this should become final.
-	class GameObject
+	class GameObject final
 	{
 	public:
 		GameObject() = default;
@@ -46,7 +46,7 @@ namespace dae
 		}
 
 		template<typename T>
-		std::shared_ptr<BaseComponent> GetComponent() const 
+		T* GetComponent() const 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
 			auto it = std::find_if(m_vComponents.begin(), m_vComponents.end(), [](std::shared_ptr<BaseComponent> pComponent) 
@@ -56,7 +56,7 @@ namespace dae
 
 			assert(it != m_vComponents.end() && "Component to get not found");
 
-			return *it;
+			return static_cast<T*>((*it).get());
 		}
 
 		template<typename T>

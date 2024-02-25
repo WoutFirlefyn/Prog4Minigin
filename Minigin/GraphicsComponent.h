@@ -14,7 +14,7 @@ namespace dae
 	//-----------------------------------------------------
 	// GraphicsComponent Class									
 	//-----------------------------------------------------
-	class GraphicsComponent : public BaseComponent
+	class GraphicsComponent final : public BaseComponent
 	{
 	public:
 		GraphicsComponent(GameObject* pGameObject, const std::string& name);				// Constructor
