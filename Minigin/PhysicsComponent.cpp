@@ -6,12 +6,12 @@
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-PhysicsComponent::PhysicsComponent()
+dae::PhysicsComponent::PhysicsComponent()
 {
 	// nothing to create
 }
 
-PhysicsComponent::~PhysicsComponent()
+dae::PhysicsComponent::~PhysicsComponent()
 {
 	// nothing to destroy
 }

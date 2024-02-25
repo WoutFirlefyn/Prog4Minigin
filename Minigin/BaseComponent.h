@@ -3,37 +3,37 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
-#include "BaseComponent.h"
 
 //-----------------------------------------------------
-// PhysicsComponent Class									
+// BaseComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
-	class PhysicsComponent : public BaseComponent
+	class GameObject;
+
+	class BaseComponent
 	{
 	public:
-		PhysicsComponent();					// Constructor
-		virtual ~PhysicsComponent();		// Destructor
+		BaseComponent() = default;				// Constructor
+		virtual ~BaseComponent() = default;				// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		PhysicsComponent(const PhysicsComponent& other) = delete;
-		PhysicsComponent(PhysicsComponent&& other) noexcept = delete;
-		PhysicsComponent& operator=(const PhysicsComponent& other) = delete;
-		PhysicsComponent& operator=(PhysicsComponent&& other) noexcept = delete;
+		BaseComponent(const BaseComponent& other) = delete;
+		BaseComponent(BaseComponent&& other) noexcept = delete;
+		BaseComponent& operator=(const BaseComponent& other) = delete;
+		BaseComponent& operator=(BaseComponent&& other)	noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		virtual void Update(float deltaTime) = 0;
+		virtual void Update(GameObject* pGameObject) = 0;
 
 	private:
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
-
 
 		//-------------------------------------------------
 		// Datamembers								
@@ -41,6 +41,6 @@ namespace dae
 
 
 	};
-}
+};
 
  
