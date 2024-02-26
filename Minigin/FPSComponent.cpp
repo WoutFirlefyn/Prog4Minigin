@@ -1,6 +1,8 @@
 //---------------------------
 // Includes
 //---------------------------
+#include <sstream>
+#include <iomanip>
 #include "FPSComponent.h"
 #include "TextComponent.h"
 #include "GameObject.h"
@@ -10,7 +12,7 @@
 //---------------------------
 dae::FPSComponent::FPSComponent(GameObject* pGameObject) : BaseComponent(pGameObject)
 {
-	// nothing to create
+	m_pTextComponent = GetParent()->GetComponent<TextComponent>();
 }
 
 dae::FPSComponent::~FPSComponent()
@@ -29,10 +31,12 @@ void dae::FPSComponent::Render() const
 
 void dae::FPSComponent::Update(float deltaTime)
 {
-	auto textComponent = m_pGameObject->GetComponent<TextComponent>();
+	std::stringstream fps;
+
+	fps << std::fixed << std::setprecision(1) << (1.f / deltaTime);
 	
-	if (textComponent != nullptr)
-		textComponent->SetText(std::to_string(1.f / deltaTime) + " FPS");
+	if (m_pTextComponent != nullptr)
+		m_pTextComponent->SetText(fps.str() + " FPS");
 }
 
 

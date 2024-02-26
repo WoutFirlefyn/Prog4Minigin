@@ -11,6 +11,7 @@
 namespace dae
 {
 	class GameObject;
+	class TextComponent;
 
 	class FPSComponent final : public BaseComponent
 	{
@@ -39,11 +40,12 @@ namespace dae
 		// Private member functions								
 		//-------------------------------------------------
 
-
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-
+		TextComponent* m_pTextComponent{};
+		float m_UpdateDelay{ 0.1f };
+		float m_AccumTime{};
 
 	};
 }

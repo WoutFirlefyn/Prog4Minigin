@@ -32,8 +32,7 @@ namespace dae
 		virtual void Update(float deltaTime) = 0;
 		virtual void Render() const = 0;
 	protected:
-		GameObject* m_pGameObject;
-
+		GameObject* GetParent()const;
 	private:
 		//-------------------------------------------------
 		// Private member functions								
@@ -42,6 +41,7 @@ namespace dae
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
+		GameObject* m_pGameObject;
 
 	};
 };

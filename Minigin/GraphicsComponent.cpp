@@ -21,8 +21,11 @@ dae::GraphicsComponent::~GraphicsComponent()
 
 void dae::GraphicsComponent::Render() const
 {
-	const auto& pos = m_pGameObject->GetPosition().GetPosition();
-	Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
+	if (m_pTexture != nullptr)
+	{
+		const auto& pos = GetParent()->GetTransform().GetPosition();
+		Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
+	}
 }
 
 void dae::GraphicsComponent::Update(float deltaTime)

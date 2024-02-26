@@ -10,7 +10,6 @@ namespace dae
 {
 	class Texture2D;
 
-	// todo: this should become final.
 	class GameObject final
 	{
 	public:
@@ -22,10 +21,10 @@ namespace dae
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
-		virtual void Update(float deltaTime);
-		virtual void Render() const;
+		void Update(float deltaTime);
+		void Render() const;
 		
-		Transform GetPosition() const;
+		Transform GetTransform() const;
 		void SetPosition(float x, float y);
 		template <typename T, typename... Args>
 		void AddComponent(Args&&... args)
@@ -49,7 +48,7 @@ namespace dae
 		T* GetComponent() const 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
-			auto it = std::find_if(m_vComponents.begin(), m_vComponents.end(), [](std::shared_ptr<BaseComponent> pComponent) 
+			auto it = std::ranges::find_if(m_vComponents, [](std::shared_ptr<BaseComponent> pComponent) 
 				{
 					return dynamic_cast<T*>(pComponent.get()) != nullptr;
 				});
@@ -63,7 +62,7 @@ namespace dae
 		bool CheckComponent() const 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
-			auto it = std::find_if(m_vComponents.begin(), m_vComponents.end(), [](std::shared_ptr<BaseComponent> pComponent) 
+			auto it = std::ranges::find_if(m_vComponents, [](std::shared_ptr<BaseComponent> pComponent) 
 				{
 					return dynamic_cast<T*>(pComponent.get()) != nullptr;
 				});
@@ -72,9 +71,7 @@ namespace dae
 		}
 
 	private:
-		Transform m_transform{};
-		// todo: mmm, every gameobject has a texture? Is that correct?
-		std::shared_ptr<Texture2D> m_texture{};
+		Transform m_Transform{};
 		std::vector<std::shared_ptr<BaseComponent>> m_vComponents;
 	};
 }

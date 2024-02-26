@@ -22,12 +22,12 @@ void dae::GameObject::Render() const
 	}
 }
 
-dae::Transform dae::GameObject::GetPosition() const
+dae::Transform dae::GameObject::GetTransform() const
 {
-	return m_transform;
+	return m_Transform;
 }
 
 void dae::GameObject::SetPosition(float x, float y)
 {
-	m_transform.SetPosition(x, y, 0.0f);
+	m_Transform.SetPosition(x, y, 0.0f);
 }

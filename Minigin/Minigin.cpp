@@ -11,6 +11,7 @@
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include "Time.h"
 
 using namespace std::chrono;
 
@@ -79,43 +80,6 @@ dae::Minigin::~Minigin()
 	SDL_Quit();
 }
 
-//void dae::Minigin::Run(const std::function<void()>& load)
-//{
-//	load();
-//
-//	auto& renderer = Renderer::GetInstance();
-//	auto& sceneManager = SceneManager::GetInstance();
-//	auto& input = InputManager::GetInstance();
-
-	// todo: this update loop could use some work.
-	//bool do_continue = true;
-	//auto last_time = high_resolution_clock::now();
-	//float lag = 0.f;
-
-	//const float fixed_time_step = 0.03333f;
-	//duration<float> ms_per_frame(1 / 60.f);
-
-	//while (do_continue)
-	//{
-	//	const auto current_time = high_resolution_clock::now();
-	//	const float delta_time = duration<float>(current_time - last_time).count();
-	//	last_time = current_time;
-	//	lag += delta_time;
-
-	//	do_continue = input.ProcessInput();
-	//	while (lag >= fixed_time_step)
-	//	{
-	//		sceneManager.Update(fixed_time_step);
-	//		lag -= fixed_time_step;
-	//	}
-	//	sceneManager.Update(delta_time);
-	//	renderer.Render();
-
-	//	const auto sleep_time = current_time + ms_per_frame - high_resolution_clock::now();
-
-	//	std::this_thread::sleep_for(sleep_time);
-	//}
-//}
 void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
@@ -123,9 +87,14 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
+	auto& time = Time::GetInstance();
 
-	constexpr LONGLONG MS_PER_FRAME = static_cast<LONGLONG>(1000.0f / 60.0f);
-	constexpr float FIXED_TIME_STEP = 20.f;
+	time.SetFPSCap(60.f);
+
+	//constexpr LONGLONG MS_PER_FRAME = static_cast<LONGLONG>(1000.0f / 60.0f);
+	LONGLONG MS_PER_FRAME = static_cast<LONGLONG>(time.GetMsPerFrame());
+	//constexpr float FIXED_TIME_STEP = 20.f;
+	//float FIXED_TIME_STEP = time.GetFixedTimeStep();
 
 	auto lastTime = high_resolution_clock::now();
 	float lag = 0.f;
@@ -138,11 +107,11 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		lag += deltaTime;
 
 		doContinue = input.ProcessInput();
-		while (lag >= FIXED_TIME_STEP)
-		{
-			sceneManager.Update(FIXED_TIME_STEP);
-			lag -= FIXED_TIME_STEP;
-		}
+		//while (lag >= FIXED_TIME_STEP)
+		//{
+		//	sceneManager.FixedUpdate(FIXED_TIME_STEP);
+		//	lag -= FIXED_TIME_STEP;
+		//}
 		sceneManager.Update(deltaTime);
 		renderer.Render();
 
