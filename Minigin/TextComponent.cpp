@@ -38,9 +38,8 @@ void dae::TextComponent::Render() const
 	}
 }
 
-void dae::TextComponent::Update(float deltaTime)
+void dae::TextComponent::Update()
 {
-	(void)deltaTime;
 	if (m_NeedsUpdate)
 	{
 		const SDL_Color color = { 255,255,255,255 }; // only white text is supported now
@@ -58,6 +57,10 @@ void dae::TextComponent::Update(float deltaTime)
 		m_pTextTexture = std::make_shared<Texture2D>(texture);
 		m_NeedsUpdate = false;
 	}
+}
+
+void dae::TextComponent::FixedUpdate()
+{
 }
 
 void dae::TextComponent::SetText(const std::string& text)

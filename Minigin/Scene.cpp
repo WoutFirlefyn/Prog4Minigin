@@ -26,11 +26,27 @@ void Scene::RemoveAll()
 	m_objects.clear();
 }
 
-void Scene::Update(float deltaTime)
+void Scene::Update()
 {
 	for(auto& object : m_objects)
 	{
-		object->Update(deltaTime);
+		if (!object->IsDestroyed())
+			object->Update();
+	}
+
+	m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(),
+		[&](std::shared_ptr<GameObject>& object)
+		{
+			return object->IsDestroyed();
+		}
+	), m_objects.end());
+}
+
+void Scene::FixedUpdate()
+{
+	for(auto& object : m_objects)
+	{
+		object->FixedUpdate();
 	}
 }
 

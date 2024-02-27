@@ -6,12 +6,16 @@
 
 dae::GameObject::~GameObject() = default;
 
-void dae::GameObject::Update(float deltaTime) 
+void dae::GameObject::Update() 
 {
 	for (std::shared_ptr<BaseComponent> pComponents : m_vComponents)
 	{
-		pComponents->Update(deltaTime);
+		pComponents->Update();
 	}
+}
+void dae::GameObject::FixedUpdate() 
+{
+
 }
 
 void dae::GameObject::Render() const
@@ -25,6 +29,16 @@ void dae::GameObject::Render() const
 dae::Transform dae::GameObject::GetTransform() const
 {
 	return m_Transform;
+}
+
+void dae::GameObject::MarkAsDestroyed()
+{
+	m_IsDestroyed = true;
+}
+
+bool dae::GameObject::IsDestroyed() const
+{
+	return m_IsDestroyed;
 }
 
 void dae::GameObject::SetPosition(float x, float y)

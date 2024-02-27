@@ -91,10 +91,8 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	time.SetFPSCap(60.f);
 
-	//constexpr LONGLONG MS_PER_FRAME = static_cast<LONGLONG>(1000.0f / 60.0f);
 	LONGLONG MS_PER_FRAME = static_cast<LONGLONG>(time.GetMsPerFrame());
-	//constexpr float FIXED_TIME_STEP = 20.f;
-	//float FIXED_TIME_STEP = time.GetFixedTimeStep();
+	float FIXED_TIME_STEP = time.GetFixedTimeStep();
 
 	auto lastTime = high_resolution_clock::now();
 	float lag = 0.f;
@@ -106,13 +104,15 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		lastTime = currentTime;
 		lag += deltaTime;
 
+		time.SetDeltaTime(deltaTime);
+
 		doContinue = input.ProcessInput();
-		//while (lag >= FIXED_TIME_STEP)
-		//{
-		//	sceneManager.FixedUpdate(FIXED_TIME_STEP);
-		//	lag -= FIXED_TIME_STEP;
-		//}
-		sceneManager.Update(deltaTime);
+		while (lag >= FIXED_TIME_STEP)
+		{
+			sceneManager.FixedUpdate();
+			lag -= FIXED_TIME_STEP;
+		}
+		sceneManager.Update();
 		renderer.Render();
 
 		const auto sleepTime = currentTime + milliseconds(MS_PER_FRAME) - high_resolution_clock::now();

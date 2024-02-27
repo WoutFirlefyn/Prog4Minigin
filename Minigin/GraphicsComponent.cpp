@@ -28,9 +28,14 @@ void dae::GraphicsComponent::Render() const
 	}
 }
 
-void dae::GraphicsComponent::Update(float deltaTime)
+void dae::GraphicsComponent::Update()
 {
-	(void)deltaTime;
+
+}
+
+void dae::GraphicsComponent::FixedUpdate()
+{
+
 }
 
 void dae::GraphicsComponent::SetTexture(const std::string& filename)

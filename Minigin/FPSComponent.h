@@ -31,9 +31,8 @@ namespace dae
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Render() const override;
-		virtual void Update(float deltaTime) override;
-
-
+		virtual void Update() override;
+		virtual void FixedUpdate() override;
 
 	private:
 		//-------------------------------------------------
@@ -44,8 +43,9 @@ namespace dae
 		// Datamembers								
 		//-------------------------------------------------
 		TextComponent* m_pTextComponent{};
-		float m_UpdateDelay{ 0.1f };
-		float m_AccumTime{};
+		int m_Count{};
+		float m_MaxDelay{ 0.1f };
+		float m_Delay{};
 
 	};
 }

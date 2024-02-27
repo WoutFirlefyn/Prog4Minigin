@@ -21,11 +21,15 @@ namespace dae
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
-		void Update(float deltaTime);
+		void Update();
+		void FixedUpdate();
 		void Render() const;
 		
 		Transform GetTransform() const;
+		void MarkAsDestroyed();
+		bool IsDestroyed() const;
 		void SetPosition(float x, float y);
+
 		template <typename T, typename... Args>
 		void AddComponent(Args&&... args)
 		{
@@ -73,5 +77,6 @@ namespace dae
 	private:
 		Transform m_Transform{};
 		std::vector<std::shared_ptr<BaseComponent>> m_vComponents;
+		bool m_IsDestroyed{ false };
 	};
 }

@@ -33,7 +33,8 @@ namespace dae
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Render() const override;
-		virtual void Update(float deltaTime) override;
+		virtual void Update() override;
+		virtual void FixedUpdate() override;
 		void SetText(const std::string& text);
 
 	private:

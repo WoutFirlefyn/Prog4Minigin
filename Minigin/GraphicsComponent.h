@@ -32,7 +32,8 @@ namespace dae
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Render() const override;
-		virtual void Update(float deltaTime) override;
+		virtual void Update() override;
+		virtual void FixedUpdate() override;
 		void SetTexture(const std::string& filename);
 
 	private:
