@@ -26,22 +26,15 @@ void dae::GameObject::Render() const
 	}
 }
 
-dae::Transform dae::GameObject::GetTransform() const
-{
-	return m_Transform;
-}
-
-void dae::GameObject::MarkAsDestroyed()
-{
-	m_IsDestroyed = true;
-}
-
-bool dae::GameObject::IsDestroyed() const
-{
-	return m_IsDestroyed;
-}
-
 void dae::GameObject::SetPosition(float x, float y)
 {
 	m_Transform.SetPosition(x, y, 0.0f);
+}
+
+void dae::GameObject::SetParent(GameObject* pParent)
+{
+	if (pParent == nullptr)
+		return;
+
+	m_pParent = pParent;
 }

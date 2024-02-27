@@ -25,11 +25,18 @@ namespace dae
 		void FixedUpdate();
 		void Render() const;
 		
-		Transform GetTransform() const;
-		void MarkAsDestroyed();
-		bool IsDestroyed() const;
 		void SetPosition(float x, float y);
+		Transform GetTransform() const { return m_Transform; }
 
+		void MarkAsDestroyed() { m_IsDestroyed = true; }
+		bool IsDestroyed() const { return m_IsDestroyed; }
+
+		GameObject* GetParent() const { return m_pParent; }
+		void SetParent(GameObject* pParent);
+		size_t GetChildCount() const { return m_vChildren.size(); }
+		GameObject* GetChildAtIdx(int idx) const { return m_vChildren[idx]; }
+
+#pragma region Components
 		template <typename T, typename... Args>
 		void AddComponent(Args&&... args)
 		{
@@ -73,8 +80,15 @@ namespace dae
 
 			return it != m_vComponents.end();
 		}
+#pragma endregion
 
 	private:
+		//void AddChild(GameObject* pChild);
+		//void RemoveChild(GameObject* pChild);
+
+		GameObject* m_pParent{};
+		std::vector<GameObject*> m_vChildren{};
+
 		Transform m_Transform{};
 		std::vector<std::shared_ptr<BaseComponent>> m_vComponents;
 		bool m_IsDestroyed{ false };
