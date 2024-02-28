@@ -26,13 +26,16 @@ namespace dae
 		void Render() const;
 		
 		void SetPosition(float x, float y);
-		Transform GetTransform() const { return m_Transform; }
+		void SetLocalTransform(const dae::Transform& transform);
+		const Transform& GetWorldTransform();
+		void UpdateWorldTransform();
+		Transform GetTransform() const { return m_WorldTransform; }
 
 		void MarkAsDestroyed() { m_IsDestroyed = true; }
 		bool IsDestroyed() const { return m_IsDestroyed; }
 
 		GameObject* GetParent() const { return m_pParent; }
-		void SetParent(GameObject* pParent);
+		void SetParent(GameObject* pParent, bool keepWorldPosition = true);
 		size_t GetChildCount() const { return m_vChildren.size(); }
 		GameObject* GetChildAtIdx(int idx) const { return m_vChildren[idx]; }
 
@@ -83,14 +86,20 @@ namespace dae
 #pragma endregion
 
 	private:
-		//void AddChild(GameObject* pChild);
-		//void RemoveChild(GameObject* pChild);
+		void AddChild(GameObject* pChild);
+		void RemoveChild(GameObject* pChild);
+		bool IsChild(GameObject* pGameObject) const;
+		void SetPositionDirty();
 
 		GameObject* m_pParent{};
 		std::vector<GameObject*> m_vChildren{};
+		std::vector<std::shared_ptr<BaseComponent>> m_vComponents{};
 
-		Transform m_Transform{};
-		std::vector<std::shared_ptr<BaseComponent>> m_vComponents;
+		Transform m_WorldTransform{};
+		Transform m_LocalTransform{};
+		bool m_PositionIsDirty{};
+
 		bool m_IsDestroyed{ false };
+
 	};
 }

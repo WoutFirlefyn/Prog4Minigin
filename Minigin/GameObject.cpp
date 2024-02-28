@@ -15,7 +15,10 @@ void dae::GameObject::Update()
 }
 void dae::GameObject::FixedUpdate() 
 {
-
+	for (std::shared_ptr<BaseComponent> pComponents : m_vComponents)
+	{
+		pComponents->FixedUpdate();
+	}
 }
 
 void dae::GameObject::Render() const
@@ -28,13 +31,81 @@ void dae::GameObject::Render() const
 
 void dae::GameObject::SetPosition(float x, float y)
 {
-	m_Transform.SetPosition(x, y, 0.0f);
+	m_WorldTransform.SetPosition(x, y, 0.0f);
 }
 
-void dae::GameObject::SetParent(GameObject* pParent)
+void dae::GameObject::SetLocalTransform(const dae::Transform& transform)
 {
-	if (pParent == nullptr)
+	m_LocalTransform = transform;
+	SetPositionDirty();
+}
+
+const dae::Transform& dae::GameObject::GetWorldTransform()
+{
+	if (m_PositionIsDirty)
+		UpdateWorldTransform();
+	return m_WorldTransform;
+}
+
+void dae::GameObject::UpdateWorldTransform()
+{
+	if (m_PositionIsDirty)
+	{
+		if (m_pParent == nullptr)
+			m_WorldTransform = m_LocalTransform;
+		else
+			m_WorldTransform = m_pParent->GetWorldTransform() + m_LocalTransform;
+	}
+	m_PositionIsDirty = false;
+}
+
+void dae::GameObject::SetParent(GameObject* pParent, bool keepWorldPosition)
+{
+	if (pParent == this || IsChild(pParent) || pParent == m_pParent)
 		return;
 
+	if (pParent)
+	{
+		if(keepWorldPosition)
+			SetLocalTransform(GetWorldTransform() - pParent->GetWorldTransform());
+		SetPositionDirty();
+	}
+	else
+		SetLocalTransform(GetWorldTransform());
+
+	if (m_pParent)
+		m_pParent->RemoveChild(this);
+
 	m_pParent = pParent;
+
+	if (m_pParent)
+		m_pParent->AddChild(this);
 }
+
+void dae::GameObject::AddChild(GameObject* pChild)
+{
+	if (pChild == nullptr || pChild->IsChild(this))
+		return;
+
+	m_vChildren.emplace_back(pChild);
+}
+
+void dae::GameObject::RemoveChild(GameObject* pChild)
+{
+	if (pChild == nullptr || !pChild->IsChild(this))
+		return;
+
+	m_vChildren.erase(std::remove(m_vChildren.begin(), m_vChildren.end(), pChild), m_vChildren.end());
+}
+
+bool dae::GameObject::IsChild(GameObject* pGameObject) const
+{
+	return std::ranges::find(m_vChildren, pGameObject) != m_vChildren.end();
+}
+
+void dae::GameObject::SetPositionDirty()
+{
+	m_PositionIsDirty = true;
+}
+
+
