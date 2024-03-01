@@ -29,7 +29,6 @@ namespace dae
 		void SetLocalTransform(const dae::Transform& transform);
 		const Transform& GetWorldTransform();
 		void UpdateWorldTransform();
-		Transform GetTransform() const { return m_WorldTransform; }
 
 		void MarkAsDestroyed() { m_IsDestroyed = true; }
 		bool IsDestroyed() const { return m_IsDestroyed; }
@@ -97,7 +96,7 @@ namespace dae
 
 		Transform m_WorldTransform{};
 		Transform m_LocalTransform{};
-		bool m_PositionIsDirty{};
+		bool m_PositionIsDirty{ false };
 
 		bool m_IsDestroyed{ false };
 

@@ -31,7 +31,8 @@ void dae::GameObject::Render() const
 
 void dae::GameObject::SetPosition(float x, float y)
 {
-	m_WorldTransform.SetPosition(x, y, 0.0f);
+	m_LocalTransform.SetPosition(x, y, 0.0f);
+	SetPositionDirty();
 }
 
 void dae::GameObject::SetLocalTransform(const dae::Transform& transform)

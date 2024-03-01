@@ -23,7 +23,7 @@ void dae::GraphicsComponent::Render() const
 {
 	if (m_pTexture != nullptr)
 	{
-		const auto& pos = GetParent()->GetTransform().GetPosition();
+		const auto& pos = GetParent()->GetWorldTransform().GetPosition();
 		Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
 	}
 }

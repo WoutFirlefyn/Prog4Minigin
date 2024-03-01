@@ -12,7 +12,7 @@ namespace dae
 		const glm::vec3& GetPosition() const { return m_Position; }
 		void SetPosition(float x, float y, float z);
 		void SetPosition(const glm::vec3& pos);
-
+	
 		Transform operator+(const Transform& rhs) const
 		{
 			return Transform(m_Position + rhs.GetPosition());
