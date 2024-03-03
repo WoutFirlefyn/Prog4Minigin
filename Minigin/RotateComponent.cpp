@@ -33,7 +33,8 @@ void dae::RotateComponent::Update()
 	m_CurrentAngle += m_Speed * Time::GetInstance().GetDeltaTime();
 
 	glm::vec3 newPosition{ cosf(m_CurrentAngle) * m_Distance, sinf(m_CurrentAngle) * m_Distance, 0 };
-	newPosition += m_Center;
+	if (GetGameObject()->GetParent() == nullptr)
+		newPosition += m_Center;
 	GetGameObject()->SetPosition(newPosition);
 }
 
