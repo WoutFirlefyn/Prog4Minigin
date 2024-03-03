@@ -3,29 +3,28 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
+#include <glm/glm.hpp>
 #include "BaseComponent.h"
 
-//-----------------------------------------------------
-// FPSComponent Class									
-//-----------------------------------------------------
 namespace dae
 {
-	class GameObject;
-	class TextComponent;
-
-	class FPSComponent final : public BaseComponent
+	//-----------------------------------------------------
+	// RotateComponent Class									
+	//-----------------------------------------------------
+	class RotateComponent final : public BaseComponent
 	{
 	public:
-		FPSComponent(GameObject* pGameObject);				// Constructor
-		virtual ~FPSComponent() override = default;				// Destructor
+		RotateComponent(GameObject* pGameObject);		// Constructor
+		RotateComponent(GameObject* pGameObject, float speed, float distance);		// Constructor
+		virtual ~RotateComponent() = default;			// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		FPSComponent(const FPSComponent& other) = delete;
-		FPSComponent(FPSComponent&& other) noexcept = delete;
-		FPSComponent& operator=(const FPSComponent& other) = delete;
-		FPSComponent& operator=(FPSComponent&& other)	noexcept = delete;
+		RotateComponent(const RotateComponent& other)					= delete;
+		RotateComponent(RotateComponent&& other) noexcept				= delete;
+		RotateComponent& operator=(const RotateComponent& other)		= delete;
+		RotateComponent& operator=(RotateComponent&& other)	noexcept	= delete;
 
 		//-------------------------------------------------
 		// Member functions						
@@ -39,14 +38,16 @@ namespace dae
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
+		glm::vec3 m_Center{};
+		float m_StartAngle{};
+		float m_CurrentAngle{};
+		float m_Speed{ 5.f };
+		float m_Distance{ 50.f };
 
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		TextComponent* m_pTextComponent{};
-		int m_Count{};
-		float m_MaxDelay{ 0.1f };
-		float m_Delay{};
+
 
 	};
 }

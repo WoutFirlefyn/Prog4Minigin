@@ -29,11 +29,12 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
+		virtual void Init() = 0;
 		virtual void Update() = 0;
 		virtual void FixedUpdate() = 0;
 		virtual void Render() const = 0;
 	protected:
-		GameObject* GetParent()const;
+		GameObject* GetGameObject() const;
 	private:
 		//-------------------------------------------------
 		// Private member functions								

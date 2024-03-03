@@ -13,18 +13,18 @@
 //---------------------------
 dae::FPSComponent::FPSComponent(GameObject* pGameObject) : BaseComponent(pGameObject)
 {
-	m_pTextComponent = GetParent()->GetComponent<TextComponent>();
-}
-
-dae::FPSComponent::~FPSComponent()
-{
-	// nothing to destroy
+	m_pTextComponent = GetGameObject()->GetComponent<TextComponent>();
 }
 
 //---------------------------
 // Member functions
 //---------------------------
 
+
+void dae::FPSComponent::Init()
+{
+
+}
 
 void dae::FPSComponent::Render() const
 {

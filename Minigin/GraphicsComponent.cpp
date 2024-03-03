@@ -14,16 +14,16 @@ dae::GraphicsComponent::GraphicsComponent(GameObject* pGameObject, const std::st
 	SetTexture(filename);
 }
 
-dae::GraphicsComponent::~GraphicsComponent()
+void dae::GraphicsComponent::Init()
 {
-	// nothing to destroy
+
 }
 
 void dae::GraphicsComponent::Render() const
 {
 	if (m_pTexture != nullptr)
 	{
-		const auto& pos = GetParent()->GetWorldTransform().GetPosition();
+		const auto& pos = GetGameObject()->GetWorldTransform().GetPosition();
 		Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
 	}
 }

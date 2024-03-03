@@ -21,12 +21,15 @@ namespace dae
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
+		void Init();
 		void Update();
 		void FixedUpdate();
 		void Render() const;
 		
 		void SetPosition(float x, float y);
+		void SetPosition(const glm::vec3& pos);
 		void SetLocalTransform(const dae::Transform& transform);
+		const Transform& GetLocalTransform() { return m_LocalTransform; }
 		const Transform& GetWorldTransform();
 		void UpdateWorldTransform();
 

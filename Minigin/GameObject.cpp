@@ -6,7 +6,15 @@
 
 dae::GameObject::~GameObject() = default;
 
-void dae::GameObject::Update() 
+void dae::GameObject::Init()
+{
+	for (std::shared_ptr<BaseComponent> pComponents : m_vComponents)
+	{
+		pComponents->Init();
+	}
+}
+
+void dae::GameObject::Update()
 {
 	for (std::shared_ptr<BaseComponent> pComponents : m_vComponents)
 	{
@@ -33,6 +41,11 @@ void dae::GameObject::SetPosition(float x, float y)
 {
 	m_LocalTransform.SetPosition(x, y, 0.0f);
 	SetPositionDirty();
+}
+
+void dae::GameObject::SetPosition(const glm::vec3& pos)
+{
+	SetPosition(pos.x, pos.y);
 }
 
 void dae::GameObject::SetLocalTransform(const dae::Transform& transform)

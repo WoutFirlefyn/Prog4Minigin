@@ -18,7 +18,7 @@ namespace dae
 	{
 	public:
 		GraphicsComponent(GameObject* pGameObject, const std::string& name);				// Constructor
-		virtual ~GraphicsComponent();		// Destructor
+		virtual ~GraphicsComponent() override = default;		// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
@@ -31,6 +31,7 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
+		virtual void Init() override;
 		virtual void Render() const override;
 		virtual void Update() override;
 		virtual void FixedUpdate() override;

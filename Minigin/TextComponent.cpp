@@ -17,23 +17,22 @@ dae::TextComponent::TextComponent(GameObject* pGameObject, const std::string& te
 	, m_pFont{ pFont }
 	, m_pTextTexture{ nullptr }
 {
-	// nothing to create
-}
-
-dae::TextComponent::~TextComponent()
-{
-	// nothing to destroy
 }
 
 //---------------------------
 // Member functions
 //---------------------------
 
+void dae::TextComponent::Init()
+{
+
+}
+
 void dae::TextComponent::Render() const
 {
 	if (m_pTextTexture != nullptr)
 	{
-		const auto& pos = GetParent()->GetWorldTransform().GetPosition();
+		const auto& pos = GetGameObject()->GetWorldTransform().GetPosition();
 		Renderer::GetInstance().RenderTexture(*m_pTextTexture, pos.x, pos.y);
 	}
 }
