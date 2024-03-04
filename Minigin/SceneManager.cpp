@@ -17,7 +17,6 @@ void dae::SceneManager::Update()
 	}
 }
 
-
 void dae::SceneManager::FixedUpdate()
 {
 	for(auto& scene : m_scenes)

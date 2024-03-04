@@ -45,14 +45,14 @@ namespace dae
 		template <typename T, typename... Args>
 		void AddComponent(Args&&... args)
 		{
-			m_vComponents.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
+			m_vComponents.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
 		}
 
 		template<typename T>
 		void RemoveComponent() 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
-			auto it = std::remove_if(m_vComponents.begin(), m_vComponents.end(), [](std::shared_ptr<BaseComponent> pComponent) 
+			auto it = std::remove_if(m_vComponents.begin(), m_vComponents.end(), [](const auto& pComponent)
 			    {
 			        return dynamic_cast<T*>(pComponent.get()) != nullptr;
 				});
@@ -64,7 +64,7 @@ namespace dae
 		T* GetComponent() const 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
-			auto it = std::ranges::find_if(m_vComponents, [](std::shared_ptr<BaseComponent> pComponent) 
+			auto it = std::ranges::find_if(m_vComponents, [](const auto& pComponent)
 				{
 					return dynamic_cast<T*>(pComponent.get()) != nullptr;
 				});
@@ -78,7 +78,7 @@ namespace dae
 		bool CheckComponent() const 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
-			auto it = std::ranges::find_if(m_vComponents, [](std::shared_ptr<BaseComponent> pComponent) 
+			auto it = std::ranges::find_if(m_vComponents, [](const auto& pComponent)
 				{
 					return dynamic_cast<T*>(pComponent.get()) != nullptr;
 				});
@@ -95,7 +95,7 @@ namespace dae
 
 		GameObject* m_pParent{};
 		std::vector<GameObject*> m_vChildren{};
-		std::vector<std::shared_ptr<BaseComponent>> m_vComponents{};
+		std::vector<std::unique_ptr<BaseComponent>> m_vComponents{};
 
 		Transform m_WorldTransform{};
 		Transform m_LocalTransform{};

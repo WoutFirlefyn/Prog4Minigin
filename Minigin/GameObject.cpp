@@ -8,7 +8,7 @@ dae::GameObject::~GameObject() = default;
 
 void dae::GameObject::Init()
 {
-	for (std::shared_ptr<BaseComponent> pComponents : m_vComponents)
+	for (auto& pComponents : m_vComponents)
 	{
 		pComponents->Init();
 	}
@@ -16,14 +16,14 @@ void dae::GameObject::Init()
 
 void dae::GameObject::Update()
 {
-	for (std::shared_ptr<BaseComponent> pComponents : m_vComponents)
+	for (auto& pComponents : m_vComponents)
 	{
 		pComponents->Update();
 	}
 }
 void dae::GameObject::FixedUpdate() 
 {
-	for (std::shared_ptr<BaseComponent> pComponents : m_vComponents)
+	for (auto& pComponents : m_vComponents)
 	{
 		pComponents->FixedUpdate();
 	}
@@ -82,10 +82,11 @@ void dae::GameObject::SetParent(GameObject* pParent, bool keepWorldPosition)
 	{
 		if(keepWorldPosition)
 			SetLocalTransform(GetWorldTransform() - pParent->GetWorldTransform());
-		SetPositionDirty();
 	}
 	else
 		SetLocalTransform(GetWorldTransform());
+	
+	SetPositionDirty();
 
 	if (m_pParent)
 		m_pParent->RemoveChild(this);
@@ -98,7 +99,7 @@ void dae::GameObject::SetParent(GameObject* pParent, bool keepWorldPosition)
 
 void dae::GameObject::AddChild(GameObject* pChild)
 {
-	if (pChild == nullptr || pChild->IsChild(this))
+	if (pChild == nullptr || pChild->IsChild(this) || pChild == m_pParent)
 		return;
 
 	m_vChildren.emplace_back(pChild);
