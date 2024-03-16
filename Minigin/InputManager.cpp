@@ -2,13 +2,12 @@
 #include <imgui.h>
 #include <backends/imgui_impl_sdl2.h>
 #include "InputManager.h"
+#include "Controller.h"
+#include "Command.h"
 
 bool dae::InputManager::ProcessInput()
 {
-	//ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
-	//XInputGetState(0, &m_CurrentState);
 	const Uint8* pKeyboardState = SDL_GetKeyboardState(nullptr);
-	//SDL_Scancode
 	
 	SDL_Event e;
 	
@@ -18,7 +17,7 @@ bool dae::InputManager::ProcessInput()
 			return false;
 		if (e.type == SDL_KEYDOWN) 
 		{
-			for (const auto& inputAction : m_vInputActionKeyboard)
+			for (const auto& inputAction : m_vKeyboardInputAction)
 			{
 				if (inputAction.InputType == InputType::Pressed && pKeyboardState[inputAction.Button])
 					inputAction.pCommand->Execute();
@@ -26,7 +25,7 @@ bool dae::InputManager::ProcessInput()
 		}
 		if (e.type == SDL_KEYUP)
 		{
-			for (const auto& inputAction : m_vInputActionKeyboard)
+			for (const auto& inputAction : m_vKeyboardInputAction)
 			{
 				if (inputAction.InputType == InputType::Released && pKeyboardState[inputAction.Button])
 					inputAction.pCommand->Execute();
@@ -35,17 +34,55 @@ bool dae::InputManager::ProcessInput()
 		ImGui_ImplSDL2_ProcessEvent(&e);
 	}
 
-	for (const auto& inputAction : m_vInputActionKeyboard)
+	for (const auto& inputAction : m_vKeyboardInputAction)
 	{
 		if (inputAction.InputType == InputType::Down && pKeyboardState[inputAction.Button])
 			inputAction.pCommand->Execute();
 	}
 
+	auto& controller = Controller::GetInstance();
+	controller.ProcessInput();
+
+	for (const InputAction& inputAction : m_vControllerInputAction)
+	{
+		switch (inputAction.InputType)
+		{
+		case InputType::Down:
+			if (controller.IsDown(inputAction.Button))
+			{
+				inputAction.pCommand->Execute();
+			}
+			break;
+		case InputType::Released:
+			if (controller.IsUpThisFrame(inputAction.Button))
+			{
+				inputAction.pCommand->Execute();
+			}
+			break;
+		case InputType::Pressed:
+			if (controller.IsPressedThisFrame(inputAction.Button))
+			{
+				inputAction.pCommand->Execute();
+			}
+			break;
+		case InputType::Joystick:
+			if (controller.IsThumbsNotInDeadZone())
+			{
+				inputAction.pCommand->Execute(); // needs modification later on
+			}
+			break;
+		}
+	}
+
 	return true;
 }
 
-void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, SDL_Scancode button, InputType triggerType)
+void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType, bool isKeyboardInput)
 {
 	assert(pCommand);
-	m_vInputActionKeyboard.push_back(dae::KeyboardInputAction(std::move(pCommand), button, triggerType));
+	if (isKeyboardInput)
+		m_vKeyboardInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType));
+	else
+		m_vControllerInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType));
+
 }

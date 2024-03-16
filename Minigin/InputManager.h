@@ -1,4 +1,5 @@
 #pragma once
+#include "Windows.h"
 #include <SDL_scancode.h>
 #include <memory>
 #include <vector>
@@ -9,14 +10,15 @@ enum class InputType
 {
 	Pressed,
 	Released,
-	Down
+	Down,
+	Joystick
 };
 
 namespace dae
 {
-	struct KeyboardInputAction
+	struct InputAction
 	{
-		KeyboardInputAction(std::unique_ptr<Command>&& pCommand, SDL_Scancode button, InputType inputType)
+		InputAction(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType inputType)
 			: pCommand{ std::move(pCommand) }
 			, Button{ button }
 			, InputType{ inputType }
@@ -24,7 +26,7 @@ namespace dae
 		}
 
 		std::unique_ptr<Command> pCommand;
-		SDL_Scancode Button;
+		unsigned int Button;
 		InputType InputType;
 	};
 
@@ -32,9 +34,10 @@ namespace dae
 	{
 	public:
 		bool ProcessInput();
-		void BindCommand(std::unique_ptr<Command>&& pCommand, SDL_Scancode button, InputType triggerType);
+		void BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType, bool isKeyboardInput = true);
 	private:
-		std::vector<KeyboardInputAction> m_vInputActionKeyboard{};
+		std::vector<InputAction> m_vKeyboardInputAction{};
+		std::vector<InputAction> m_vControllerInputAction{};
 	};
 
 }
