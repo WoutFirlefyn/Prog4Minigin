@@ -29,6 +29,7 @@ namespace dae
 		void SetPosition(float x, float y);
 		void SetPosition(const glm::vec3& pos);
 		void SetLocalTransform(const dae::Transform& transform);
+		glm::vec3 GetLocalPosition() { return m_LocalTransform.GetPosition(); }
 		const Transform& GetLocalTransform() { return m_LocalTransform; }
 		const Transform& GetWorldTransform();
 		void UpdateWorldTransform();
@@ -37,7 +38,7 @@ namespace dae
 		bool IsDestroyed() const { return m_IsDestroyed; }
 
 		GameObject* GetParent() const { return m_pParent; }
-		void SetParent(GameObject* pParent, bool keepWorldPosition = true);
+		void SetParent(GameObject* pParent, bool keepWorldPosition = false);
 		size_t GetChildCount() const { return m_vChildren.size(); }
 		GameObject* GetChildAtIdx(int idx) const { return m_vChildren[idx]; }
 

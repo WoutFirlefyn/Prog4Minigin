@@ -14,6 +14,7 @@
 dae::FPSComponent::FPSComponent(GameObject* pGameObject) : BaseComponent(pGameObject)
 {
 	m_pTextComponent = GetGameObject()->GetComponent<TextComponent>();
+	assert(m_pTextComponent);
 }
 
 //---------------------------
@@ -38,7 +39,7 @@ void dae::FPSComponent::Update()
 	if (m_Delay >= m_MaxDelay)
 	{
 		std::stringstream fps;
-		fps << std::fixed << std::setprecision(1) << (float(m_Count) / m_Delay);
+		fps << std::fixed << std::setprecision(1) << (static_cast<float>(m_Count) / m_Delay);
 
 		if (m_pTextComponent != nullptr)
 			m_pTextComponent->SetText(fps.str() + " FPS");

@@ -56,12 +56,14 @@ void dae::Graph::ShowExercise2()
 	if (ImGui::Button("Trash the cache with Gameobjects"))
 		TrashTheCache<GameObject3D>(numOfSamples);
 
+	ImU32 colors[2] = { ImColor(255, 0, 0), ImColor(0, 0, 255) };
 	ImGui::PlotConfig conf{};
 	if (m_GO3DTimings.size() > 0)
 	{
 		conf.values.xs = m_XAxis.data();
 		conf.values.ys = m_GO3DTimings.data();
 		conf.values.count = static_cast<int>(m_GO3DTimings.size());
+		conf.values.color = colors[0];
 		conf.scale.min = 0;
 		conf.scale.max = static_cast<float>(m_GO3DTimings[0]);
 		conf.tooltip.show = true;
@@ -82,6 +84,7 @@ void dae::Graph::ShowExercise2()
 		conf.values.xs = m_XAxis.data();
 		conf.values.ys = m_GO3DAltTimings.data();
 		conf.values.count = static_cast<int>(m_GO3DAltTimings.size());
+		conf.values.color = colors[1];
 		conf.scale.min = 0;
 		conf.scale.max = static_cast<float>(m_GO3DAltTimings[0]);
 		conf.tooltip.show = true;
@@ -98,7 +101,6 @@ void dae::Graph::ShowExercise2()
 	{
 		ImGui::SeparatorText("Combined");
 		const float* YDataList[] = { m_GO3DTimings.data(), m_GO3DAltTimings.data() };
-		ImU32 colors[2] = { ImColor(255, 0, 0), ImColor(0, 0, 255) };
 
 		conf.values.ys = nullptr; 
 		conf.values.ys_list = YDataList;

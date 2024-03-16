@@ -86,7 +86,7 @@ namespace dae
 						arr[i] *= 2;
 					const auto end = std::chrono::high_resolution_clock::now();
 					const auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-					timings.push_back(static_cast<float>(elapsedTime));
+					timings.emplace_back(static_cast<float>(elapsedTime));
 				}
 
 				timings.erase(std::ranges::min_element(timings));
@@ -100,9 +100,9 @@ namespace dae
 				timings.clear();
 			}
 
-			if (std::is_same<T, int>::value)
+			if (std::is_same_v<T, int>)
 				m_IntTimings = newValues;
-			else if (std::is_same<T, GameObject3D>::value)
+			else if (std::is_same_v<T, GameObject3D>)
 				m_GO3DTimings = newValues;
 			else
 				m_GO3DAltTimings = newValues;

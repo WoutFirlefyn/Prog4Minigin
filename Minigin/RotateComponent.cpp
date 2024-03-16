@@ -22,7 +22,7 @@ dae::RotateComponent::RotateComponent(GameObject* pGameObject, float speed, floa
 
 void dae::RotateComponent::Init()
 {
-	m_Center = GetGameObject()->GetWorldTransform().GetPosition();
+	m_Center = GetGameObject()->GetLocalPosition();
 }
 
 void dae::RotateComponent::Render() const
@@ -37,8 +37,8 @@ void dae::RotateComponent::Update()
 	m_CurrentAngle = std::fmod(m_CurrentAngle, 2 * static_cast<float>(M_PI));
 
 	glm::vec3 newPosition{ cosf(m_CurrentAngle) * m_Distance, sinf(m_CurrentAngle) * m_Distance, 0 };
-	if (GetGameObject()->GetParent() == nullptr)
-		newPosition += m_Center;
+	newPosition += m_Center;
+
 	GetGameObject()->SetPosition(newPosition);
 }
 

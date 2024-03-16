@@ -121,6 +121,9 @@ bool dae::GameObject::IsChild(GameObject* pGameObject) const
 void dae::GameObject::SetPositionDirty()
 {
 	m_PositionIsDirty = true;
+
+	for (auto child : m_vChildren)
+		child->SetPositionDirty();
 }
 
 

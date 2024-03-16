@@ -37,7 +37,6 @@ void dae::Renderer::Init(SDL_Window* window)
 	ImGui::CreateContext();
 	ImGui_ImplSDL2_InitForOpenGL(window, SDL_GL_GetCurrentContext());
 	ImGui_ImplOpenGL3_Init();
-	//m_Graph.TrashTheCache<int>(10);
 }
 
 void dae::Renderer::Render()
@@ -53,7 +52,6 @@ void dae::Renderer::Render()
 	ImGui::NewFrame();
 	m_Graph.ShowExercise1();
 	m_Graph.ShowExercise2();
-	//ImGui::ShowDemoWindow();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	
