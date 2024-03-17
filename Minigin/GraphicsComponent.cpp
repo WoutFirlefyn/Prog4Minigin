@@ -38,14 +38,14 @@ void dae::GraphicsComponent::FixedUpdate()
 
 }
 
+void dae::GraphicsComponent::RenderGUI()
+{
+}
+
 void dae::GraphicsComponent::SetTexture(const std::string& filename)
 {
 	m_pTexture = ResourceManager::GetInstance().LoadTexture(filename);
 }
-
-//---------------------------
-// Member functions
-//---------------------------
 
 
 

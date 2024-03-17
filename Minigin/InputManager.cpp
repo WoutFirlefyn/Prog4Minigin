@@ -68,7 +68,7 @@ bool dae::InputManager::ProcessInput()
 		case InputType::Joystick:
 			if (controller.IsThumbsNotInDeadZone())
 			{
-				inputAction.pCommand->Execute(); // needs modification later on
+				inputAction.pCommand->Execute();
 			}
 			break;
 		}

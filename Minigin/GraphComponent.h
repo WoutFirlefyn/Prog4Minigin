@@ -1,16 +1,16 @@
 #pragma once
-#include <memory>
-#include <chrono>
-#include <vector>
-#include <numeric>
 
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
-
+#include <memory>
+#include <chrono>
+#include <vector>
+#include <numeric>
+#include "BaseComponent.h"
 
 //-----------------------------------------------------
-// Graph Class									
+// GraphComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
@@ -43,33 +43,41 @@ namespace dae
 		transform* local{};
 		int id{ 1 };
 
-		GameObject3DAlt& operator*=(int rhs) 
+		GameObject3DAlt& operator*=(int rhs)
 		{
 			id *= rhs;
 			return *this;
 		}
 	};
 
-	class Graph final
+	class GameObject;
+	class GraphComponent final : public BaseComponent
 	{
 	public:
-		Graph();				// Constructor
-		~Graph();				// Destructor
+		GraphComponent(GameObject* pGameObject);				// Constructor
+		virtual ~GraphComponent() override = default;				// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		Graph(const Graph& other) = delete;
-		Graph(Graph&& other) noexcept = delete;
-		Graph& operator=(const Graph& other) = delete;
-		Graph& operator=(Graph&& other)	noexcept = delete;
+		GraphComponent(const GraphComponent& other) = delete;
+		GraphComponent(GraphComponent&& other) noexcept = delete;
+		GraphComponent& operator=(const GraphComponent& other) = delete;
+		GraphComponent& operator=(GraphComponent&& other) noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		void ShowExercise1();
-		void ShowExercise2();
+		virtual void Init() override;
+		virtual void Render() const override;
+		virtual void Update() override;
+		virtual void FixedUpdate() override;
+		virtual void RenderGUI() override;
 
+	private:
+		//-------------------------------------------------
+		// Private member functions								
+		//-------------------------------------------------
 		template <typename T>
 		void TrashTheCache(int sampleSize)
 		{
@@ -108,11 +116,6 @@ namespace dae
 				m_GO3DAltTimings = newValues;
 		}
 
-	private:
-		//-------------------------------------------------
-		// Private member functions								
-		//-------------------------------------------------
-
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
@@ -121,6 +124,7 @@ namespace dae
 		std::vector<float> m_GO3DAltTimings{};
 		const std::vector<float> m_XAxis{ 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
 		static const int m_Size{ 11 };
+
 	};
 }
 

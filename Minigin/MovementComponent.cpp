@@ -43,6 +43,10 @@ void dae::MovementComponent::FixedUpdate()
 
 }
 
+void dae::MovementComponent::RenderGUI()
+{
+}
+
 void dae::MovementComponent::Move(MovementDir dir)
 {
 	glm::vec3 velocity{};

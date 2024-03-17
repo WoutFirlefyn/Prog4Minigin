@@ -102,9 +102,6 @@
     <ClInclude Include="..\3rdParty\imgui-1.90.4\backends\imgui_impl_sdl2.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="Graph.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\3rdParty\imgui-1.90.4\imgui_plot.h">
       <Filter>imgui</Filter>
     </ClInclude>
@@ -116,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="Controller.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphComponent.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -194,9 +194,6 @@
     <ClCompile Include="..\3rdParty\imgui-1.90.4\backends\imgui_impl_sdl2.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Graph.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\3rdParty\imgui-1.90.4\imgui_plot.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -208,6 +205,9 @@
     </ClCompile>
     <ClCompile Include="Controller.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphComponent.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,30 +1,49 @@
 //---------------------------
 // Includes
 //---------------------------
-#include "Graph.h"
+#include "GraphComponent.h"
+#include "imgui.h"
+#include "backends/imgui_impl_sdl2.h"
+#include "backends/imgui_impl_opengl3.h"
 #include "imgui_plot.h"
 
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::Graph::Graph()
+dae::GraphComponent::GraphComponent(GameObject* pGameObject) : BaseComponent(pGameObject)
 {
 }
 
-dae::Graph::~Graph()
+void dae::GraphComponent::Init()
 {
-	// nothing to destroy
+
 }
 
-void dae::Graph::ShowExercise1()
+void dae::GraphComponent::Render() const
 {
+
+}
+
+void dae::GraphComponent::Update()
+{
+
+}
+
+void dae::GraphComponent::FixedUpdate()
+{
+
+}
+
+void dae::GraphComponent::RenderGUI()
+{
+	ImGui::NewFrame();
 	ImGui::Begin("Exercise 1", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
-	static int numOfSamples{ 15 };
-	ImGui::InputInt("# samples", &numOfSamples);
+	static int numOfSamplesEx1{ 15 };
+	ImGui::InputInt("# samples", &numOfSamplesEx1);
 
 	if (ImGui::Button("Trash the cache with ints"))
-		TrashTheCache<int>(numOfSamples);
+		TrashTheCache<int>(numOfSamplesEx1);
 
 	if (m_IntTimings.size() > 0)
 	{
@@ -44,17 +63,14 @@ void dae::Graph::ShowExercise1()
 		ImGui::Plot("Int", conf);
 	}
 	ImGui::End();
-}
 
-void dae::Graph::ShowExercise2()
-{
 	ImGui::Begin("Exercise 2", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
-	static int numOfSamples{ 15 };
-	ImGui::InputInt("# samples", &numOfSamples);
+	static int numOfSamplesEx2{ 15 };
+	ImGui::InputInt("# samples", &numOfSamplesEx2);
 
 	if (ImGui::Button("Trash the cache with Gameobjects"))
-		TrashTheCache<GameObject3D>(numOfSamples);
+		TrashTheCache<GameObject3D>(numOfSamplesEx2);
 
 	ImU32 colors[2] = { ImColor(255, 0, 0), ImColor(0, 0, 255) };
 	ImGui::PlotConfig conf{};
@@ -77,7 +93,7 @@ void dae::Graph::ShowExercise2()
 	}
 
 	if (ImGui::Button("Trash the cache with GameobjectsAlt"))
-		TrashTheCache<GameObject3DAlt>(numOfSamples);
+		TrashTheCache<GameObject3DAlt>(numOfSamplesEx2);
 
 	if (m_GO3DAltTimings.size() > 0)
 	{
@@ -102,7 +118,7 @@ void dae::Graph::ShowExercise2()
 		ImGui::SeparatorText("Combined");
 		const float* YDataList[] = { m_GO3DTimings.data(), m_GO3DAltTimings.data() };
 
-		conf.values.ys = nullptr; 
+		conf.values.ys = nullptr;
 		conf.values.ys_list = YDataList;
 		conf.values.ys_count = 2;
 		conf.values.colors = colors;
@@ -112,14 +128,8 @@ void dae::Graph::ShowExercise2()
 	}
 
 	ImGui::End();
+
+	ImGui::Render();
 }
-
-//---------------------------
-// Member functions
-//---------------------------
-
-// write member functions here
-
-
 
 

@@ -37,6 +37,14 @@ void dae::GameObject::Render() const
 	}
 }
 
+void dae::GameObject::RenderGUI()
+{
+	for (auto& pComponents : m_vComponents)
+	{
+		pComponents->RenderGUI();
+	}
+}
+
 void dae::GameObject::SetPosition(float x, float y)
 {
 	m_LocalTransform.SetPosition(x, y, 0.0f);

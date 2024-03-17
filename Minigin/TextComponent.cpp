@@ -62,6 +62,10 @@ void dae::TextComponent::FixedUpdate()
 {
 }
 
+void dae::TextComponent::RenderGUI()
+{
+}
+
 void dae::TextComponent::SetText(const std::string& text)
 {
 	if (m_Text == text)

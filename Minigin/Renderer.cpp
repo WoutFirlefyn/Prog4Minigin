@@ -6,7 +6,6 @@
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "imgui_plot.h"
-#include "Graph.h"
 
 int GetOpenGLDriverIndex()
 {
@@ -39,20 +38,18 @@ void dae::Renderer::Init(SDL_Window* window)
 	ImGui_ImplOpenGL3_Init();
 }
 
-void dae::Renderer::Render()
+void dae::Renderer::Render() const
 {
 	const auto& color = GetBackgroundColor();
 	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
 	SDL_RenderClear(m_renderer);
 
-	SceneManager::GetInstance().Render();
+	auto& sceneManager = SceneManager::GetInstance();
+	sceneManager.Render();
 
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
-	ImGui::NewFrame();
-	m_Graph.ShowExercise1();
-	m_Graph.ShowExercise2();
-	ImGui::Render();
+	sceneManager.RenderGUI();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	
 	SDL_RenderPresent(m_renderer);
@@ -63,7 +60,6 @@ void dae::Renderer::Destroy()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
-
 
 	if (m_renderer != nullptr)
 	{

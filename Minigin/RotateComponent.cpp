@@ -46,6 +46,10 @@ void dae::RotateComponent::FixedUpdate()
 {
 }
 
+void dae::RotateComponent::RenderGUI()
+{
+}
+
 //---------------------------
 // Member functions
 //---------------------------

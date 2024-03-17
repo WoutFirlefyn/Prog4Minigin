@@ -192,7 +192,7 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="FPSComponent.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Graph.h" />
+    <ClInclude Include="GraphComponent.h" />
     <ClInclude Include="GraphicsComponent.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Minigin.h" />
@@ -224,7 +224,7 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FPSComponent.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Graph.cpp" />
+    <ClCompile Include="GraphComponent.cpp" />
     <ClCompile Include="GraphicsComponent.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Main.cpp" />

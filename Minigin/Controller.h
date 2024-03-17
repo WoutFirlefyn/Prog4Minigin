@@ -3,7 +3,7 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
-#include <Xinput.h>
+#include <memory>
 #include "Singleton.h"
 
 //-----------------------------------------------------
@@ -14,13 +14,14 @@ namespace dae
 	class Controller final : public Singleton<Controller>
 	{
 	public:
-		Controller() = default;
-		~Controller() = default;
+		Controller();
+
+		~Controller();
 
 		Controller(const Controller& other) = delete;
 		Controller(Controller&& other) noexcept = delete;
 		Controller& operator=(const Controller& other) = delete;
-		Controller& operator=(Controller&& other)	noexcept = delete;
+		Controller& operator=(Controller&& other) noexcept = delete;
 
 		void ProcessInput();
 		
@@ -33,13 +34,8 @@ namespace dae
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		DWORD m_ControllerIndex{};
-		int m_ButtonsPressedThisFrame{};
-		int m_ButtonsReleasedThisFrame{};
-
-		XINPUT_STATE m_PreviousState;
-		XINPUT_STATE m_CurrentState;
-		float m_DeadzonePercentage{ 20.f };
+		class ControllerImpl;
+		std::unique_ptr<ControllerImpl> m_pPimpl;
 	};
 }
 
