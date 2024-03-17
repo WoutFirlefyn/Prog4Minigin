@@ -36,6 +36,8 @@ void dae::GraphComponent::FixedUpdate()
 
 void dae::GraphComponent::RenderGUI()
 {
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 	ImGui::Begin("Exercise 1", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
@@ -130,6 +132,7 @@ void dae::GraphComponent::RenderGUI()
 	ImGui::End();
 
 	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 

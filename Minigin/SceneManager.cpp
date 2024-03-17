@@ -35,7 +35,7 @@ void dae::SceneManager::Render() const
 
 void dae::SceneManager::RenderGUI()
 {
-	for (const auto& scene : m_scenes)
+	for (auto& scene : m_scenes)
 	{
 		scene->RenderGUI();
 	}

@@ -47,10 +47,7 @@ void dae::Renderer::Render() const
 	auto& sceneManager = SceneManager::GetInstance();
 	sceneManager.Render();
 
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame();
 	sceneManager.RenderGUI();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	
 	SDL_RenderPresent(m_renderer);
 }
