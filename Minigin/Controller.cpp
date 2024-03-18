@@ -69,7 +69,7 @@ bool dae::Controller::ControllerImpl::IsThumbsNotInDeadZone() const
 	return (percentageThumbL > m_DeadzonePercentage) || (percentageThumbR > m_DeadzonePercentage);
 }
 
-dae::Controller::Controller() : m_pPimpl{ std::make_unique<ControllerImpl>() }
+dae::Controller::Controller() : m_pControllerImpl{ std::make_unique<ControllerImpl>() }
 {
 }
 
@@ -77,25 +77,25 @@ dae::Controller::~Controller() = default;
 
 void dae::Controller::ProcessInput()
 {
-	m_pPimpl->ProcessInput();
+	m_pControllerImpl->ProcessInput();
 }
 
 bool dae::Controller::IsPressedThisFrame(unsigned int button) const
 {
-	return m_pPimpl->IsPressedThisFrame(button);
+	return m_pControllerImpl->IsPressedThisFrame(button);
 }
 
 bool dae::Controller::IsUpThisFrame(unsigned int button) const
 {
-	return m_pPimpl->IsUpThisFrame(button);
+	return m_pControllerImpl->IsUpThisFrame(button);
 }
 
 bool dae::Controller::IsDown(unsigned int button) const
 {
-	return m_pPimpl->IsDown(button);
+	return m_pControllerImpl->IsDown(button);
 }
 
 bool dae::Controller::IsThumbsNotInDeadZone() const
 {
-	return m_pPimpl->IsThumbsNotInDeadZone();
+	return m_pControllerImpl->IsThumbsNotInDeadZone();
 }

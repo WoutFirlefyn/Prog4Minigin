@@ -30,6 +30,7 @@ namespace dae
 		GameObject* m_pGameObject;
 	};	 
 
+#pragma region MovementDirectionCommands
 	class MovementComponent;
 	class MoveCommand : public GameObjectCommand
 	{
@@ -41,7 +42,6 @@ namespace dae
 		MovementComponent* m_pMovementComponent;
 	};
 
-#pragma region MovementDirectionCommands
 	class MoveUpCommand : public MoveCommand
 	{
 	public:
@@ -71,6 +71,4 @@ namespace dae
 	};
 #pragma endregion
 }
-
-
 

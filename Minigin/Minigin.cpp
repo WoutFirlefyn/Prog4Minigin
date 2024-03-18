@@ -91,7 +91,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	time.SetFPSCap(60.f);
 
 	LONGLONG MS_PER_FRAME = static_cast<LONGLONG>(time.GetMsPerFrame());
-	float FIXED_TIME_STEP = time.GetFixedTimeStep();
+	LONGLONG FIXED_TIME_STEP = static_cast<LONGLONG>(time.GetFixedTimeStep());
 
 	sceneManager.Init();
 

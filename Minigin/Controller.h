@@ -35,7 +35,7 @@ namespace dae
 		// Datamembers								
 		//-------------------------------------------------
 		class ControllerImpl;
-		std::unique_ptr<ControllerImpl> m_pPimpl;
+		std::unique_ptr<ControllerImpl> m_pControllerImpl;
 	};
 }
 

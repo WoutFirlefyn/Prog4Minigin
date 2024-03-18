@@ -23,7 +23,7 @@ bool dae::InputManager::ProcessInput()
 					inputAction.pCommand->Execute();
 			}
 		}
-		if (e.type == SDL_KEYUP)
+		if (e.type == SDL_KEYUP) // FIX THIS
 		{
 			for (const auto& inputAction : m_vKeyboardInputAction)
 			{
@@ -49,27 +49,19 @@ bool dae::InputManager::ProcessInput()
 		{
 		case InputType::Down:
 			if (controller.IsDown(inputAction.Button))
-			{
 				inputAction.pCommand->Execute();
-			}
 			break;
 		case InputType::Released:
 			if (controller.IsUpThisFrame(inputAction.Button))
-			{
 				inputAction.pCommand->Execute();
-			}
 			break;
 		case InputType::Pressed:
 			if (controller.IsPressedThisFrame(inputAction.Button))
-			{
 				inputAction.pCommand->Execute();
-			}
 			break;
 		case InputType::Joystick:
 			if (controller.IsThumbsNotInDeadZone())
-			{
 				inputAction.pCommand->Execute();
-			}
 			break;
 		}
 	}
