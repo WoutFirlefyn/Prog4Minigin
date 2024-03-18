@@ -1,4 +1,5 @@
 #pragma once
+#include <glm/glm.hpp>
 
 namespace dae
 {
@@ -30,45 +31,19 @@ namespace dae
 		GameObject* m_pGameObject;
 	};	 
 
-#pragma region MovementDirectionCommands
 	class MovementComponent;
 	class MoveCommand : public GameObjectCommand
 	{
 	public:
-		MoveCommand(GameObject* pGameObject);
-	protected:
-		MovementComponent* GetMovementComponent();
+		MoveCommand(GameObject* pGameObject, const glm::vec3& direction)
+			: GameObjectCommand{ pGameObject }
+			, m_Direction{ direction }
+		{
+		}
+
+		virtual void Execute() override;
 	private:
-		MovementComponent* m_pMovementComponent;
+		glm::vec3 m_Direction;
 	};
-
-	class MoveUpCommand : public MoveCommand
-	{
-	public:
-		MoveUpCommand(GameObject* pGameObject) : MoveCommand(pGameObject) {}
-		virtual void Execute() override;
-	};
-
-	class MoveDownCommand : public MoveCommand
-	{
-	public:
-		MoveDownCommand(GameObject* pGameObject) : MoveCommand(pGameObject) {}
-		virtual void Execute() override;
-	};
-
-	class MoveLeftCommand : public MoveCommand
-	{
-	public:
-		MoveLeftCommand(GameObject* pGameObject) : MoveCommand(pGameObject) {}
-		virtual void Execute() override;
-	};
-
-	class MoveRightCommand : public MoveCommand
-	{
-	public:
-		MoveRightCommand(GameObject* pGameObject) : MoveCommand(pGameObject) {}
-		virtual void Execute() override;
-	};
-#pragma endregion
 }
 
