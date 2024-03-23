@@ -31,7 +31,6 @@ namespace dae
 		GameObject* m_pGameObject;
 	};	 
 
-	class MovementComponent;
 	class MoveCommand : public GameObjectCommand
 	{
 	public:
@@ -44,6 +43,31 @@ namespace dae
 		virtual void Execute() override;
 	private:
 		glm::vec3 m_Direction;
+	};
+
+	class KillCommand : public GameObjectCommand
+	{
+	public:
+		KillCommand(GameObject* pGameObject)
+			: GameObjectCommand{ pGameObject }
+		{
+		}
+
+		virtual void Execute() override;
+	};
+
+	class ScoreCommand : public GameObjectCommand
+	{
+	public:
+		ScoreCommand(GameObject* pGameObject, int scoreIncrease)
+			: GameObjectCommand{ pGameObject }
+			, m_ScoreIncrease{ scoreIncrease }
+		{
+		}
+
+		virtual void Execute() override;
+	private:
+		int m_ScoreIncrease{};
 	};
 }
 

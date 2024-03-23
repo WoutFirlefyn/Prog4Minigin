@@ -56,6 +56,7 @@ void dae::FPSComponent::FixedUpdate()
 
 void dae::FPSComponent::RenderGUI()
 {
+
 }
 
 
