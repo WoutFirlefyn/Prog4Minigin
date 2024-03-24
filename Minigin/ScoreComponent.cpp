@@ -17,8 +17,8 @@ dae::ScoreComponent::ScoreComponent(GameObject* pGameObject, QbertComponent* pQb
 
 dae::ScoreComponent::~ScoreComponent()
 {
-	if (m_pQbertComponent)
-		m_pQbertComponent->ScoreChanged.RemoveObserver(this);
+	if (m_pQbertComponent && m_pQbertComponent->ScoreChanged)
+		m_pQbertComponent->ScoreChanged->RemoveObserver(this);
 }
 
 //---------------------------
@@ -27,7 +27,7 @@ dae::ScoreComponent::~ScoreComponent()
 
 void dae::ScoreComponent::Init()
 {
-	m_pQbertComponent->ScoreChanged.AddObserver(this);
+	m_pQbertComponent->ScoreChanged->AddObserver(this);
 	m_pTextComponent = GetGameObject()->GetComponent<TextComponent>();
 	UpdateText();
 }
@@ -44,10 +44,6 @@ void dae::ScoreComponent::Notify(ScoreType type)
 		break;
 	}
 	UpdateText();
-}
-
-void dae::ScoreComponent::SubjectDestroyed()
-{
 }
 
 void dae::ScoreComponent::UpdateText()

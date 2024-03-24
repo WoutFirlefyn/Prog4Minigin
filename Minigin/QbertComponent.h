@@ -5,6 +5,7 @@
 //-----------------------------------------------------
 #include "BaseComponent.h"
 #include "Observer.h"
+#include <memory>
 
 //-----------------------------------------------------
 // QbertComponent Class									
@@ -28,7 +29,7 @@ namespace dae
 		QbertComponent(const QbertComponent& other) = delete;
 		QbertComponent(QbertComponent&& other) noexcept = delete;
 		QbertComponent& operator=(const QbertComponent& other) = delete;
-		QbertComponent& operator=(QbertComponent&& other)	noexcept = delete;
+		QbertComponent& operator=(QbertComponent&& other) noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
@@ -37,15 +38,9 @@ namespace dae
 		void GainScore(ScoreType type);
 		int GetLives() const { return m_Lives; }
 
-		Subject<> PlayerDied;
-		Subject<ScoreType> ScoreChanged;
-
+		std::unique_ptr<Subject<>> PlayerDied;
+		std::unique_ptr<Subject<ScoreType>> ScoreChanged;
 	private:
-		//-------------------------------------------------
-		// Private member functions								
-		//-------------------------------------------------
-
-
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------

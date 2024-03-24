@@ -13,28 +13,25 @@ namespace dae
 {
 	class TextComponent;
 	class QbertComponent;
-	enum class ScoreType;
-	class ScoreComponent final : public BaseComponent, public Observer<ScoreType>
+	class LivesComponent final : public BaseComponent, public Observer<>
 	{
 	public:
-		ScoreComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);				// Constructor
-		virtual ~ScoreComponent() override;			// Destructor
+		LivesComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);				// Constructor
+		virtual ~LivesComponent() override;			// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		ScoreComponent(const ScoreComponent& other) = delete;
-		ScoreComponent(ScoreComponent&& other) noexcept = delete;
-		ScoreComponent& operator=(const ScoreComponent& other) = delete;
-		ScoreComponent& operator=(ScoreComponent&& other)	noexcept = delete;
+		LivesComponent(const LivesComponent& other) = delete;
+		LivesComponent(LivesComponent&& other) noexcept = delete;
+		LivesComponent& operator=(const LivesComponent& other) = delete;
+		LivesComponent& operator=(LivesComponent&& other) noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Init() override;
-		virtual void Notify(ScoreType type) override;
-
-		int GetScore() const { return m_Score; }
+		virtual void Notify() override;
 
 	private:
 		//-------------------------------------------------
@@ -47,8 +44,7 @@ namespace dae
 		//-------------------------------------------------
 		QbertComponent* m_pQbertComponent{};
 		TextComponent* m_pTextComponent{};
-		int m_Score{};
 	};
 }
 
- 
+

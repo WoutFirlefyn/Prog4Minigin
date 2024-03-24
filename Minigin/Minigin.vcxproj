@@ -194,6 +194,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraphComponent.h" />
     <ClInclude Include="GraphicsComponent.h" />
+    <ClInclude Include="LivesComponent.h" />
     <ClInclude Include="QbertComponent.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Minigin.h" />
@@ -228,6 +229,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphComponent.cpp" />
     <ClCompile Include="GraphicsComponent.cpp" />
+    <ClCompile Include="LivesComponent.cpp" />
     <ClCompile Include="QbertComponent.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Main.cpp" />
