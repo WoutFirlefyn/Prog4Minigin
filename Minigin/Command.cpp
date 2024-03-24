@@ -1,6 +1,6 @@
 #include "Command.h"
 #include "GameObject.h"
-#include "HealthComponent.h"
+#include "QbertComponent.h"
 #include "ScoreComponent.h"
 #include "Time.h"
 
@@ -15,12 +15,12 @@ void dae::KillCommand::Execute()
 {
 	auto go = GetGameObject();
 	if (go)
-		go->GetComponent<dae::HealthComponent>()->LoseALife();
+		go->GetComponent<dae::QbertComponent>()->Die();
 }
 
 void dae::ScoreCommand::Execute()
 {
 	auto go = GetGameObject();
 	if (go)
-		go->GetComponent<dae::ScoreComponent>()->IncreaseScore(m_ScoreIncrease);
+		go->GetComponent<dae::QbertComponent>()->GainScore(m_ScoreType);
 }

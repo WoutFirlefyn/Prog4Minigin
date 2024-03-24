@@ -56,18 +56,19 @@ namespace dae
 		virtual void Execute() override;
 	};
 
+	enum class ScoreType;
 	class ScoreCommand : public GameObjectCommand
 	{
 	public:
-		ScoreCommand(GameObject* pGameObject, int scoreIncrease)
+		ScoreCommand(GameObject* pGameObject, ScoreType scoreType)
 			: GameObjectCommand{ pGameObject }
-			, m_ScoreIncrease{ scoreIncrease }
+			, m_ScoreType{ scoreType }
 		{
 		}
 
 		virtual void Execute() override;
 	private:
-		int m_ScoreIncrease{};
+		ScoreType m_ScoreType{};
 	};
 }
 

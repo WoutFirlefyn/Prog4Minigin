@@ -4,48 +4,44 @@
 
 namespace dae
 {
-	class TextComponent;
-	class GameObject;
+	template <typename... Args>
 	class Observer
 	{
 	public:
 		Observer() = default;				
 		virtual ~Observer() = default;
 
-		virtual void Notify(GameObject* pGameObject) = 0;
+		virtual void Notify(Args... args) = 0;
+		virtual void SubjectDestroyed() = 0;
 	};	
-	
-	class HealthObserver : public Observer
+
+	template <typename... Args>
+	class Subject final
 	{
 	public:
-		HealthObserver(TextComponent* pTextComponent);
-		virtual ~HealthObserver() override = default;
+		Subject() = default;
+		~Subject()
+		{
+			for (auto& pObserver : m_vObservers)
+				pObserver->SubjectDestroyed();
+		}
 
-		virtual void Notify(GameObject* pGameObject) override;
+		void AddObserver(Observer<Args...>* pObserver)
+		{
+			if (pObserver)
+				m_vObservers.push_back(pObserver);
+		}
+		void RemoveObserver(Observer<Args...>* pObserver)
+		{
+			m_vObservers.erase(std::remove(m_vObservers.begin(), m_vObservers.end(), pObserver), m_vObservers.end());
+		}
+		void NotifyObservers(Args... args)
+		{
+			for (auto& pObserver : m_vObservers)
+				pObserver->Notify(args...);
+		}
 	private:
-		TextComponent* m_pTextComponent;
-	};
-	
-	class ScoreObserver : public Observer
-	{
-	public:
-		ScoreObserver(TextComponent* pTextComponent);
-		virtual ~ScoreObserver() override = default;
-
-		virtual void Notify(GameObject* pGameObject) override;
-	private:
-		TextComponent* m_pTextComponent;
-	};
-
-	class Subject
-	{
-	public:
-		void AddObserver(std::unique_ptr<Observer>&& pObserver);
-		void RemoveObserver(std::unique_ptr<Observer>&& pObserver);
-	protected:
-		void NotifyObservers(GameObject* pGameObject);
-	private:
-		std::vector<std::unique_ptr<Observer>> m_vObservers{};
+		std::vector<Observer<Args...>*> m_vObservers{};
 	};
 }
  

@@ -14,26 +14,6 @@ dae::GraphComponent::GraphComponent(GameObject* pGameObject) : BaseComponent(pGa
 {
 }
 
-void dae::GraphComponent::Init()
-{
-
-}
-
-void dae::GraphComponent::Render() const
-{
-
-}
-
-void dae::GraphComponent::Update()
-{
-
-}
-
-void dae::GraphComponent::FixedUpdate()
-{
-
-}
-
 void dae::GraphComponent::RenderGUI()
 {
 	ImGui_ImplOpenGL3_NewFrame();

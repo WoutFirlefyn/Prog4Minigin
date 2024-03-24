@@ -14,11 +14,6 @@ dae::GraphicsComponent::GraphicsComponent(GameObject* pGameObject, const std::st
 	SetTexture(filename);
 }
 
-void dae::GraphicsComponent::Init()
-{
-
-}
-
 void dae::GraphicsComponent::Render() const
 {
 	if (m_pTexture != nullptr)
@@ -26,20 +21,6 @@ void dae::GraphicsComponent::Render() const
 		const auto& pos = GetGameObject()->GetWorldTransform().GetPosition();
 		Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
 	}
-}
-
-void dae::GraphicsComponent::Update()
-{
-
-}
-
-void dae::GraphicsComponent::FixedUpdate()
-{
-
-}
-
-void dae::GraphicsComponent::RenderGUI()
-{
 }
 
 void dae::GraphicsComponent::SetTexture(const std::string& filename)

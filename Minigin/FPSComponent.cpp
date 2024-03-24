@@ -21,16 +21,6 @@ dae::FPSComponent::FPSComponent(GameObject* pGameObject) : BaseComponent(pGameOb
 // Member functions
 //---------------------------
 
-
-void dae::FPSComponent::Init()
-{
-
-}
-
-void dae::FPSComponent::Render() const
-{
-}
-
 void dae::FPSComponent::Update()
 {
 	++m_Count;
@@ -48,17 +38,3 @@ void dae::FPSComponent::Update()
 		m_Count = 0;
 	}
 }
-
-void dae::FPSComponent::FixedUpdate()
-{
-
-}
-
-void dae::FPSComponent::RenderGUI()
-{
-
-}
-
-
-
-

@@ -19,6 +19,7 @@ namespace dae
 	{
 	public:
 		TextComponent(GameObject* pGameObject, const std::string& text, std::shared_ptr<Font> pFont);				// Constructor
+		TextComponent(GameObject* pGameObject, std::shared_ptr<Font> pFont);				// Constructor
 		virtual ~TextComponent() override = default;				// Destructor
 
 		// -------------------------
@@ -32,11 +33,8 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		virtual void Init() override;
 		virtual void Render() const override;
 		virtual void Update() override;
-		virtual void FixedUpdate() override;
-		virtual void RenderGUI() override;
 		void SetText(const std::string& text);
 
 	private:

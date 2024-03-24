@@ -7,35 +7,38 @@
 #include "Observer.h"
 
 //-----------------------------------------------------
-// HealthComponent Class									
+// QbertComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
-	class HealthComponent final : public BaseComponent, public Subject
+	enum class ScoreType
+	{
+		TileCovered,
+		LevelCleared
+	};
+	class QbertComponent final : public BaseComponent
 	{
 	public:
-		HealthComponent(GameObject* pGameObject);				// Constructor
-		virtual ~HealthComponent() override = default;			// Destructor
+		QbertComponent(GameObject* pGameObject);				// Constructor
+		virtual ~QbertComponent() override = default;			// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		HealthComponent(const HealthComponent& other) = delete;
-		HealthComponent(HealthComponent&& other) noexcept = delete;
-		HealthComponent& operator=(const HealthComponent& other) = delete;
-		HealthComponent& operator=(HealthComponent&& other)	noexcept = delete;
+		QbertComponent(const QbertComponent& other) = delete;
+		QbertComponent(QbertComponent&& other) noexcept = delete;
+		QbertComponent& operator=(const QbertComponent& other) = delete;
+		QbertComponent& operator=(QbertComponent&& other)	noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		virtual void Init() override;
-		virtual void Render() const override;
-		virtual void Update() override;
-		virtual void FixedUpdate() override;
-		virtual void RenderGUI() override;
-
-		void LoseALife();
+		void Die();
+		void GainScore(ScoreType type);
 		int GetLives() const { return m_Lives; }
+
+		Subject<> PlayerDied;
+		Subject<ScoreType> ScoreChanged;
 
 	private:
 		//-------------------------------------------------

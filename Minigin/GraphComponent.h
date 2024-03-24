@@ -68,10 +68,6 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		virtual void Init() override;
-		virtual void Render() const override;
-		virtual void Update() override;
-		virtual void FixedUpdate() override;
 		virtual void RenderGUI() override;
 
 	private:

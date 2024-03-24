@@ -25,11 +25,6 @@ void dae::RotateComponent::Init()
 	m_Center = GetGameObject()->GetLocalPosition();
 }
 
-void dae::RotateComponent::Render() const
-{
-
-}
-
 void dae::RotateComponent::Update()
 {
 	m_CurrentAngle += m_Speed * Time::GetInstance().GetDeltaTime();
@@ -41,21 +36,3 @@ void dae::RotateComponent::Update()
 
 	GetGameObject()->SetPosition(newPosition);
 }
-
-void dae::RotateComponent::FixedUpdate()
-{
-}
-
-void dae::RotateComponent::RenderGUI()
-{
-}
-
-//---------------------------
-// Member functions
-//---------------------------
-
-// write member functions here
-
-
-
-
