@@ -10,7 +10,7 @@ dae::QbertComponent::QbertComponent(GameObject* pGameObject)
 	: BaseComponent(pGameObject)
 {
 	PlayerDied = std::make_unique<Subject<>>();
-	ScoreChanged = std::make_unique<Subject<ScoreType>>();
+	ScoreChanged = std::make_unique<Subject<>>();
 }
 
 //---------------------------
@@ -24,5 +24,15 @@ void dae::QbertComponent::Die()
 
 void dae::QbertComponent::GainScore(ScoreType type)
 {
-	ScoreChanged->NotifyObservers(type);
+	switch (type)
+	{
+	case ScoreType::TileCovered:
+		m_Score += 25;
+		break;
+	case ScoreType::LevelCleared:
+		m_Score += 100;
+		break;
+	}
+
+	ScoreChanged->NotifyObservers();
 }

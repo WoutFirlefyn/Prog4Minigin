@@ -32,6 +32,7 @@ namespace dae
 		//-------------------------------------------------
 		virtual void Init() override;
 		virtual void Notify() override;
+		virtual void SubjectDestroyed() override;
 
 	private:
 		//-------------------------------------------------

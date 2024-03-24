@@ -37,6 +37,11 @@ void dae::LivesComponent::Notify()
 	UpdateText();
 }
 
+void dae::LivesComponent::SubjectDestroyed()
+{
+	m_pQbertComponent = nullptr;
+}
+
 void dae::LivesComponent::UpdateText()
 {
 	if (m_pTextComponent)

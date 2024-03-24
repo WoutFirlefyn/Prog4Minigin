@@ -32,22 +32,18 @@ void dae::ScoreComponent::Init()
 	UpdateText();
 }
 
-void dae::ScoreComponent::Notify(ScoreType type)
+void dae::ScoreComponent::Notify()
 {
-	switch (type)
-	{
-	case ScoreType::TileCovered:
-		m_Score += 25;
-		break;
-	case ScoreType::LevelCleared:
-		m_Score += 100;
-		break;
-	}
 	UpdateText();
+}
+
+void dae::ScoreComponent::SubjectDestroyed()
+{
+	m_pQbertComponent = nullptr;
 }
 
 void dae::ScoreComponent::UpdateText()
 {
 	if (m_pTextComponent)
-		m_pTextComponent->SetText("Score: " + std::to_string(m_Score));
+		m_pTextComponent->SetText("Score: " + std::to_string(m_pQbertComponent->GetScore()));
 }

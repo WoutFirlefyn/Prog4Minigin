@@ -17,6 +17,7 @@ namespace dae
 		TileCovered,
 		LevelCleared
 	};
+
 	class QbertComponent final : public BaseComponent
 	{
 	public:
@@ -35,16 +36,18 @@ namespace dae
 		// Member functions						
 		//-------------------------------------------------
 		void Die();
-		void GainScore(ScoreType type);
 		int GetLives() const { return m_Lives; }
+		void GainScore(ScoreType type);		
+		int GetScore() const { return m_Score; }
 
 		std::unique_ptr<Subject<>> PlayerDied;
-		std::unique_ptr<Subject<ScoreType>> ScoreChanged;
+		std::unique_ptr<Subject<>> ScoreChanged;
 	private:
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
 		int m_Lives{ 3 };
+		int m_Score{ 0 };
 	};
 }
 

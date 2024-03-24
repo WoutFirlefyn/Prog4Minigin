@@ -7,14 +7,14 @@
 #include "Observer.h"
 
 //-----------------------------------------------------
-// QbertComponent Class									
+// ScoreComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
 	class TextComponent;
 	class QbertComponent;
 	enum class ScoreType;
-	class ScoreComponent final : public BaseComponent, public Observer<ScoreType>
+	class ScoreComponent final : public BaseComponent, public Observer<>
 	{
 	public:
 		ScoreComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);				// Constructor
@@ -32,9 +32,8 @@ namespace dae
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Init() override;
-		virtual void Notify(ScoreType type) override;
-
-		int GetScore() const { return m_Score; }
+		virtual void Notify() override;
+		virtual void SubjectDestroyed() override;
 
 	private:
 		//-------------------------------------------------
@@ -47,7 +46,6 @@ namespace dae
 		//-------------------------------------------------
 		QbertComponent* m_pQbertComponent{};
 		TextComponent* m_pTextComponent{};
-		int m_Score{};
 	};
 }
 

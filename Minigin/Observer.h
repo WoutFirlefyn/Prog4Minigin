@@ -12,7 +12,7 @@ namespace dae
 		virtual ~Observer() = default;
 
 		virtual void Notify(Args... args) = 0;
-		virtual void SubjectDestroyed() {};
+		virtual void SubjectDestroyed() = 0;
 	};	
 
 	template <typename... Args>
