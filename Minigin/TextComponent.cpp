@@ -19,14 +19,13 @@ dae::TextComponent::TextComponent(GameObject* pGameObject, const std::string& te
 {
 }
 
+dae::TextComponent::TextComponent(GameObject* pGameObject, std::shared_ptr<Font> pFont) : TextComponent(pGameObject, "", pFont)
+{
+}
+
 //---------------------------
 // Member functions
 //---------------------------
-
-void dae::TextComponent::Init()
-{
-
-}
 
 void dae::TextComponent::Render() const
 {
@@ -56,14 +55,6 @@ void dae::TextComponent::Update()
 		m_pTextTexture = std::make_shared<Texture2D>(texture);
 		m_NeedsUpdate = false;
 	}
-}
-
-void dae::TextComponent::FixedUpdate()
-{
-}
-
-void dae::TextComponent::RenderGUI()
-{
 }
 
 void dae::TextComponent::SetText(const std::string& text)

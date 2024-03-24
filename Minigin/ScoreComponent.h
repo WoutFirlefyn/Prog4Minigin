@@ -7,15 +7,18 @@
 #include "Observer.h"
 
 //-----------------------------------------------------
-// HealthComponent Class									
+// QbertComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
-	class ScoreComponent final : public BaseComponent, public Subject
+	class TextComponent;
+	class QbertComponent;
+	enum class ScoreType;
+	class ScoreComponent final : public BaseComponent, public Observer<ScoreType>
 	{
 	public:
-		ScoreComponent(GameObject* pGameObject);				// Constructor
-		virtual ~ScoreComponent() override = default;			// Destructor
+		ScoreComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);				// Constructor
+		virtual ~ScoreComponent() override;			// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
@@ -29,23 +32,21 @@ namespace dae
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Init() override;
-		virtual void Render() const override;
-		virtual void Update() override;
-		virtual void FixedUpdate() override;
-		virtual void RenderGUI() override;
+		virtual void Notify(ScoreType type) override;
 
-		void IncreaseScore(int scoreIncrease);
 		int GetScore() const { return m_Score; }
 
 	private:
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
-
+		void UpdateText();
 
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
+		QbertComponent* m_pQbertComponent{};
+		TextComponent* m_pTextComponent{};
 		int m_Score{};
 	};
 }

@@ -7,47 +7,44 @@
 #include "Observer.h"
 
 //-----------------------------------------------------
-// HealthComponent Class									
+// QbertComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
-	class HealthComponent final : public BaseComponent, public Subject
+	class TextComponent;
+	class QbertComponent;
+	class LivesComponent final : public BaseComponent, public Observer<>
 	{
 	public:
-		HealthComponent(GameObject* pGameObject);				// Constructor
-		virtual ~HealthComponent() override = default;			// Destructor
+		LivesComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);				// Constructor
+		virtual ~LivesComponent() override;			// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		HealthComponent(const HealthComponent& other) = delete;
-		HealthComponent(HealthComponent&& other) noexcept = delete;
-		HealthComponent& operator=(const HealthComponent& other) = delete;
-		HealthComponent& operator=(HealthComponent&& other)	noexcept = delete;
+		LivesComponent(const LivesComponent& other) = delete;
+		LivesComponent(LivesComponent&& other) noexcept = delete;
+		LivesComponent& operator=(const LivesComponent& other) = delete;
+		LivesComponent& operator=(LivesComponent&& other) noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Init() override;
-		virtual void Render() const override;
-		virtual void Update() override;
-		virtual void FixedUpdate() override;
-		virtual void RenderGUI() override;
-
-		void LoseALife();
-		int GetLives() const { return m_Lives; }
+		virtual void Notify() override;
 
 	private:
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
-
+		void UpdateText();
 
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		int m_Lives{ 3 };
+		QbertComponent* m_pQbertComponent{};
+		TextComponent* m_pTextComponent{};
 	};
 }
 
- 
+

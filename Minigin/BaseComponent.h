@@ -14,8 +14,6 @@ namespace dae
 	class BaseComponent
 	{
 	public:
-		BaseComponent() = default;
-		BaseComponent(GameObject* pGameObject);			// Constructor
 		virtual ~BaseComponent() = default;				// Destructor
 
 		// -------------------------
@@ -29,18 +27,15 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		virtual void Init() = 0;
-		virtual void Render() const = 0;
-		virtual void Update() = 0;
-		virtual void FixedUpdate() = 0;
-		virtual void RenderGUI() = 0;
+		virtual void Init() {};
+		virtual void Render() const {};
+		virtual void Update() {};
+		virtual void FixedUpdate() {};
+		virtual void RenderGUI() {};
 	protected:
+		BaseComponent(GameObject* pGameObject);			// Constructor
 		GameObject* GetGameObject() const;
 	private:
-		//-------------------------------------------------
-		// Private member functions								
-		//-------------------------------------------------
-
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
