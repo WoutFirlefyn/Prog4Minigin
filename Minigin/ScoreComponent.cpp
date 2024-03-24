@@ -17,7 +17,7 @@ dae::ScoreComponent::ScoreComponent(GameObject* pGameObject, QbertComponent* pQb
 
 dae::ScoreComponent::~ScoreComponent()
 {
-	if (m_pQbertComponent && m_pQbertComponent->ScoreChanged)
+	if (m_pQbertComponent)
 		m_pQbertComponent->ScoreChanged->RemoveObserver(this);
 }
 

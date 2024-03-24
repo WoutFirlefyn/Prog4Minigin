@@ -17,7 +17,7 @@ dae::LivesComponent::LivesComponent(GameObject* pGameObject, QbertComponent* pQb
 
 dae::LivesComponent::~LivesComponent()
 {
-	if (m_pQbertComponent && m_pQbertComponent->PlayerDied.get())
+	if (m_pQbertComponent)
 		m_pQbertComponent->PlayerDied->RemoveObserver(this);
 }
 
