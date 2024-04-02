@@ -4,40 +4,24 @@
 #include <memory>
 #include <vector>
 #include "Singleton.h"
-#include "Command.h"
-
-enum class InputType
-{
-	Pressed,
-	Released,
-	Down,
-	Joystick
-};
+#include "Controller.h"
+#include "Input.h"
 
 namespace dae
 {
-	struct InputAction
-	{
-		InputAction(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType inputType)
-			: pCommand{ std::move(pCommand) }
-			, Button{ button }
-			, InputType{ inputType }
-		{
-		}
-
-		std::unique_ptr<Command> pCommand;
-		unsigned int Button;
-		InputType InputType;
-	};
-
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
+		InputManager();
+		~InputManager();
 		bool ProcessInput();
-		void BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType, bool isKeyboardInput = true);
+		void BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType, uint8_t controllerIdx = -1);
+		void AddController(int amount = 1);
 	private:
 		std::vector<InputAction> m_vKeyboardInputAction{};
-		std::vector<InputAction> m_vControllerInputAction{};
+		std::vector<std::unique_ptr<Controller>> m_vControllers{};
+		static constexpr int m_MaxControllers = 4;
+		//std::vector<InputAction> m_vControllerInputAction{};
 	};
 
 }

@@ -47,7 +47,7 @@ namespace dae
 		template <typename T, typename... Args>
 		void AddComponent(Args&&... args)
 		{
-			m_vComponents.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
+			m_vComponents.emplace_back(std::make_unique<T>(this, std::forward<Args>(args)...));
 		}
 
 		template<typename T>
@@ -58,8 +58,11 @@ namespace dae
 			    {
 			        return dynamic_cast<T*>(pComponent.get()) != nullptr;
 				});
-			assert(it != m_vComponents.end() && "Component to remove not found");
-			m_vComponents.erase(it, m_vComponents.end());
+
+			if (it != m_vComponents.end())
+				m_vComponents.erase(it, m_vComponents.end());
+			else
+				assert(false && "Component to remove not found");
 		}
 
 		template<typename T>
@@ -71,9 +74,12 @@ namespace dae
 					return dynamic_cast<T*>(pComponent.get()) != nullptr;
 				});
 
-			assert(it != m_vComponents.end() && "Component to get not found");
+			if (it != m_vComponents.end())
+				return static_cast<T*>((*it).get());
+			else
+				assert(false && "Component to get not found");
 
-			return static_cast<T*>((*it).get());
+			return nullptr;
 		}
 
 		template<typename T>

@@ -221,6 +221,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraphComponent.h" />
     <ClInclude Include="GraphicsComponent.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="LivesComponent.h" />
     <ClInclude Include="QbertComponent.h" />
     <ClInclude Include="InputManager.h" />

@@ -3,13 +3,17 @@
 //---------------------------
 #include <windows.h>
 #include <Xinput.h>
-#include <SDL_syswm.h>
+#include <vector>
 #include <cmath>
+#include "Input.h"
+#include "Command.h"
 #include "Controller.h"
 class dae::Controller::ControllerImpl
 {
 public:
-	ControllerImpl() = default;
+	ControllerImpl(uint8_t controllerIdx) : m_ControllerIndex{ controllerIdx }
+	{
+	}
 	~ControllerImpl() = default;
 
 	ControllerImpl(const ControllerImpl& other) = delete;
@@ -18,13 +22,17 @@ public:
 	ControllerImpl& operator=(ControllerImpl&& other) noexcept = delete;
 
 	void ProcessInput();
+	void BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType);
 
 	bool IsPressedThisFrame(unsigned int button) const;
 	bool IsUpThisFrame(unsigned int button) const;
 	bool IsDown(unsigned int button) const;
 	bool IsThumbsNotInDeadZone() const;
+
+	uint8_t GetIndex() const { return m_ControllerIndex; }
 private:
-	DWORD m_ControllerIndex{};
+	std::vector<InputAction> m_vControllerInputAction{};
+	uint8_t m_ControllerIndex{};
 	int m_ButtonsPressedThisFrame{};
 	int m_ButtonsReleasedThisFrame{};
 
@@ -42,6 +50,34 @@ void dae::Controller::ControllerImpl::ProcessInput()
 	auto buttonChanges = m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons;
 	m_ButtonsPressedThisFrame = buttonChanges & m_CurrentState.Gamepad.wButtons;
 	m_ButtonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
+
+	for (const InputAction& inputAction : m_vControllerInputAction)
+	{
+		switch (inputAction.InputType)
+		{
+		case InputType::Down:
+			if (IsDown(inputAction.Button))
+				inputAction.pCommand->Execute();
+			break;
+		case InputType::Released:
+			if (IsUpThisFrame(inputAction.Button))
+				inputAction.pCommand->Execute();
+			break;
+		case InputType::Pressed:
+			if (IsPressedThisFrame(inputAction.Button))
+				inputAction.pCommand->Execute();
+			break;
+		case InputType::Joystick:
+			if (IsThumbsNotInDeadZone())
+				inputAction.pCommand->Execute();
+			break;
+		}
+	}
+}
+
+void dae::Controller::ControllerImpl::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType)
+{
+	m_vControllerInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType));
 }
 
 bool dae::Controller::ControllerImpl::IsPressedThisFrame(unsigned int button) const
@@ -69,7 +105,7 @@ bool dae::Controller::ControllerImpl::IsThumbsNotInDeadZone() const
 	return (percentageThumbL > m_DeadzonePercentage) || (percentageThumbR > m_DeadzonePercentage);
 }
 
-dae::Controller::Controller() : m_pControllerImpl{ std::make_unique<ControllerImpl>() }
+dae::Controller::Controller(uint8_t controllerIdx) : m_pControllerImpl{ std::make_unique<ControllerImpl>(controllerIdx) }
 {
 }
 
@@ -78,6 +114,11 @@ dae::Controller::~Controller() = default;
 void dae::Controller::ProcessInput()
 {
 	m_pControllerImpl->ProcessInput();
+}
+
+void dae::Controller::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType)
+{
+	m_pControllerImpl->BindCommand(std::move(pCommand), button, triggerType);
 }
 
 bool dae::Controller::IsPressedThisFrame(unsigned int button) const

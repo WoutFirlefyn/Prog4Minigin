@@ -5,6 +5,9 @@
 #include "Controller.h"
 #include "Command.h"
 
+dae::InputManager::InputManager() = default;
+dae::InputManager::~InputManager() = default;
+
 bool dae::InputManager::ProcessInput()
 {
 	const Uint8* pKeyboardState = SDL_GetKeyboardState(nullptr);
@@ -40,41 +43,60 @@ bool dae::InputManager::ProcessInput()
 			inputAction.pCommand->Execute();
 	}
 
-	auto& controller = Controller::GetInstance();
-	controller.ProcessInput();
+	//auto& controller = Controller::GetInstance();
+	for (auto& controller : m_vControllers)
+		controller->ProcessInput();
 
-	for (const InputAction& inputAction : m_vControllerInputAction)
-	{
-		switch (inputAction.InputType)
-		{
-		case InputType::Down:
-			if (controller.IsDown(inputAction.Button))
-				inputAction.pCommand->Execute();
-			break;
-		case InputType::Released:
-			if (controller.IsUpThisFrame(inputAction.Button))
-				inputAction.pCommand->Execute();
-			break;
-		case InputType::Pressed:
-			if (controller.IsPressedThisFrame(inputAction.Button))
-				inputAction.pCommand->Execute();
-			break;
-		case InputType::Joystick:
-			if (controller.IsThumbsNotInDeadZone())
-				inputAction.pCommand->Execute();
-			break;
-		}
-	}
+	//for (const InputAction& inputAction : m_vControllerInputAction)
+	//{
+	//	switch (inputAction.InputType)
+	//	{
+	//	case InputType::Down:
+	//		if (controller.IsDown(inputAction.Button))
+	//			inputAction.pCommand->Execute();
+	//		break;
+	//	case InputType::Released:
+	//		if (controller.IsUpThisFrame(inputAction.Button))
+	//			inputAction.pCommand->Execute();
+	//		break;
+	//	case InputType::Pressed:
+	//		if (controller.IsPressedThisFrame(inputAction.Button))
+	//			inputAction.pCommand->Execute();
+	//		break;
+	//	case InputType::Joystick:
+	//		if (controller.IsThumbsNotInDeadZone())
+	//			inputAction.pCommand->Execute();
+	//		break;
+	//	}
+	//}
 
 	return true;
 }
 
-void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType, bool isKeyboardInput)
+void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType, uint8_t controllerIdx)
 {
 	assert(pCommand);
-	if (isKeyboardInput)
-		m_vKeyboardInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType));
+	if (controllerIdx >= 0 && controllerIdx < 4)
+	{
+		if (controllerIdx < m_vControllers.size())
+			m_vControllers[controllerIdx]->BindCommand(std::move(pCommand), button, triggerType);
+		else
+			assert(false && "Trying to bind a command to a controller that doesn't exist");
+	}
 	else
-		m_vControllerInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType));
+		m_vKeyboardInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType));
+}
 
+void dae::InputManager::AddController(int amount)
+{
+	if (m_vControllers.size() >= m_MaxControllers)
+	{
+		assert(false && "Max amount of controllers reached");
+		return;
+	}
+
+	amount = std::min(m_MaxControllers - static_cast<int>(m_vControllers.size()), amount);
+
+	for (int i{}; i < amount; ++i)
+		m_vControllers.push_back(std::make_unique<Controller>(static_cast<uint8_t>(m_vControllers.size())));
 }

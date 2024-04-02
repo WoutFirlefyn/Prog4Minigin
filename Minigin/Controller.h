@@ -4,17 +4,18 @@
 // Include Files
 //-----------------------------------------------------
 #include <memory>
-#include "Singleton.h"
 
 //-----------------------------------------------------
 // Controller Class									
 //-----------------------------------------------------
 namespace dae
 {
-	class Controller final : public Singleton<Controller>
+	class Command;
+	enum class InputType;
+	class Controller final
 	{
 	public:
-		Controller();
+		Controller(uint8_t controllerIdx);
 
 		~Controller();
 
@@ -24,6 +25,7 @@ namespace dae
 		Controller& operator=(Controller&& other) noexcept = delete;
 
 		void ProcessInput();
+		void BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType);
 		
 		bool IsPressedThisFrame(unsigned int button) const;
 		bool IsUpThisFrame(unsigned int button) const;
