@@ -4,48 +4,49 @@
 // Include Files
 //-----------------------------------------------------
 #include "BaseComponent.h"
-#include "Observer.h"
 
 //-----------------------------------------------------
-// ScoreComponent Class									
+// SpritesheetComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
-	class TextComponent;
-	class QbertComponent;
-	enum class ScoreType;
-	class ScoreComponent final : public BaseComponent, public Observer<>
+	class GraphicsComponent;
+	class SpritesheetComponent final : public BaseComponent
 	{
 	public:
-		ScoreComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);
-		virtual ~ScoreComponent() override;
+		SpritesheetComponent(GameObject* pGameObject);
+		SpritesheetComponent(GameObject* pGameObject, int spriteCols, int spriteRows);
+		~SpritesheetComponent() = default;			
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		ScoreComponent(const ScoreComponent& other) = delete;
-		ScoreComponent(ScoreComponent&& other) noexcept = delete;
-		ScoreComponent& operator=(const ScoreComponent& other) = delete;
-		ScoreComponent& operator=(ScoreComponent&& other)	noexcept = delete;
+		SpritesheetComponent(const SpritesheetComponent& other) = delete;
+		SpritesheetComponent(SpritesheetComponent&& other) noexcept = delete;
+		SpritesheetComponent& operator=(const SpritesheetComponent& other) = delete;
+		SpritesheetComponent& operator=(SpritesheetComponent&& other)	noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Init() override;
-		virtual void Notify() override;
-		virtual void SubjectDestroyed() override;
+		virtual void Update() override;
+
 
 	private:
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
-		void UpdateText();
+
 
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		QbertComponent* m_pQbertComponent{};
-		TextComponent* m_pTextComponent{};
+		GraphicsComponent* m_pGraphicsComponent;
+		int m_SpriteWidth{};
+		int m_SpriteHeight{};
+		int m_SpriteRows{};
+		int m_SpriteCols{};
 	};
 }
 

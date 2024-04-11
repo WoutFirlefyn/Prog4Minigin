@@ -5,6 +5,7 @@
 #include "ResourceManager.h"
 #include "Renderer.h"
 #include "GameObject.h"
+#include "Texture2D.h"
 
 //---------------------------
 // Constructor & Destructor

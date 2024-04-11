@@ -33,6 +33,7 @@ namespace dae
 		//-------------------------------------------------
 		virtual void Render() const override;
 		void SetTexture(const std::string& filename);
+		Texture2D* GetTexture() const { return m_pTexture.get(); }
 
 	private:
 		//-------------------------------------------------
@@ -44,8 +45,6 @@ namespace dae
 		// Datamembers								
 		//-------------------------------------------------
 		std::shared_ptr<Texture2D> m_pTexture{};
-
-
 	};
 }
  
