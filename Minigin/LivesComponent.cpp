@@ -37,9 +37,10 @@ void dae::LivesComponent::Notify()
 	UpdateText();
 }
 
-void dae::LivesComponent::SubjectDestroyed()
+void dae::LivesComponent::SubjectDestroyed(Subject<>* pSubject)
 {
-	m_pQbertComponent = nullptr;
+	if (pSubject == m_pQbertComponent->PlayerDied.get())
+		m_pQbertComponent = nullptr;
 }
 
 void dae::LivesComponent::UpdateText()

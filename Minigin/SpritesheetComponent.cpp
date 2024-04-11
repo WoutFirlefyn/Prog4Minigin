@@ -9,10 +9,6 @@
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::SpritesheetComponent::SpritesheetComponent(GameObject* pGameObject) : BaseComponent(pGameObject)
-{
-}
-
 dae::SpritesheetComponent::SpritesheetComponent(GameObject* pGameObject, int spriteCols, int spriteRows) : BaseComponent(pGameObject)
 	, m_SpriteCols{ spriteCols }
 	, m_SpriteRows{ spriteRows }

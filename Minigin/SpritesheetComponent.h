@@ -11,10 +11,9 @@
 namespace dae
 {
 	class GraphicsComponent;
-	class SpritesheetComponent final : public BaseComponent
+	class SpritesheetComponent : public BaseComponent
 	{
 	public:
-		SpritesheetComponent(GameObject* pGameObject);
 		SpritesheetComponent(GameObject* pGameObject, int spriteCols, int spriteRows);
 		~SpritesheetComponent() = default;			
 
@@ -42,7 +41,7 @@ namespace dae
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		GraphicsComponent* m_pGraphicsComponent;
+		GraphicsComponent* m_pGraphicsComponent{ nullptr };
 		int m_SpriteWidth{};
 		int m_SpriteHeight{};
 		int m_SpriteRows{};

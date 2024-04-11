@@ -5,6 +5,9 @@
 namespace dae
 {
 	template <typename... Args>
+	class Subject;
+
+	template <typename... Args>
 	class Observer
 	{
 	public:
@@ -12,7 +15,7 @@ namespace dae
 		virtual ~Observer() = default;
 
 		virtual void Notify(Args... args) = 0;
-		virtual void SubjectDestroyed() = 0;
+		virtual void SubjectDestroyed(Subject<Args...>* pSubject) = 0;
 	};	
 
 	template <typename... Args>
@@ -23,7 +26,7 @@ namespace dae
 		~Subject()
 		{
 			for (auto& pObserver : m_vObservers)
-				pObserver->SubjectDestroyed();
+				pObserver->SubjectDestroyed(this);
 		}
 
 		void AddObserver(Observer<Args...>* pObserver)

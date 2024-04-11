@@ -33,7 +33,7 @@ namespace dae
 		//-------------------------------------------------
 		virtual void Init() override;
 		virtual void Notify() override;
-		virtual void SubjectDestroyed() override;
+		virtual void SubjectDestroyed(Subject<>* pSubject) override;
 
 	private:
 		//-------------------------------------------------

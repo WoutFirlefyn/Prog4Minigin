@@ -3,49 +3,50 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
+#include <vector>
+#include <memory>
 #include "BaseComponent.h"
-#include "Observer.h"
 
 //-----------------------------------------------------
-// QbertComponent Class									
+// LevelManagerComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
-	class TextComponent;
-	class QbertComponent;
-	class LivesComponent final : public BaseComponent, public Observer<>
+	class Scene;
+	class TileComponent;
+	class LevelManagerComponent final : public BaseComponent
 	{
 	public:
-		LivesComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);				// Constructor
-		virtual ~LivesComponent() override;			// Destructor
+		LevelManagerComponent(GameObject* pGameObject, Scene& scene);				// Constructor
+		~LevelManagerComponent() = default;				// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		LivesComponent(const LivesComponent& other) = delete;
-		LivesComponent(LivesComponent&& other) noexcept = delete;
-		LivesComponent& operator=(const LivesComponent& other) = delete;
-		LivesComponent& operator=(LivesComponent&& other) noexcept = delete;
+		LevelManagerComponent(const LevelManagerComponent& other)				 = delete;
+		LevelManagerComponent(LevelManagerComponent&& other) noexcept			 = delete;
+		LevelManagerComponent& operator=(const LevelManagerComponent& other)	 = delete;
+		LevelManagerComponent& operator=(LevelManagerComponent&& other)	noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Init() override;
-		virtual void Notify() override;
-		virtual void SubjectDestroyed(Subject<>* pSubject) override;
+		virtual void Update() override;
 
 	private:
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
-		void UpdateText();
+		std::vector<TileComponent*> GetAdjacentTiles(const std::vector<std::vector<GameObject*>>& vTiles, size_t row, size_t col) const;
 
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		QbertComponent* m_pQbertComponent{};
-		TextComponent* m_pTextComponent{};
+		//std::vector<std::vector<GameObject*>> m_vTiles;
+		int m_LevelLength{ 7 };
+
 	};
 }
 
-
+ 

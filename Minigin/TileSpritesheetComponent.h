@@ -3,32 +3,31 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
-#include "BaseComponent.h"
-#include <vector>
+#include "SpritesheetComponent.h"
 
 //-----------------------------------------------------
-// TileComponent Class									
+// TileSpritesheetComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
-	class TileComponent final : public BaseComponent
+	class TileSpritesheetComponent final : public SpritesheetComponent
 	{
 	public:
-		TileComponent(GameObject* pGameObject);	// Constructor
-		virtual ~TileComponent() override = default;				// Destructor
+		TileSpritesheetComponent(GameObject* pGameObject, int spriteCols, int spriteRows);				// Constructor
+		~TileSpritesheetComponent() = default;				// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		TileComponent(const TileComponent& other)					= delete;
-		TileComponent(TileComponent&& other) noexcept				= delete;
-		TileComponent& operator=(const TileComponent& other)		= delete;
-		TileComponent& operator=(TileComponent&& other)	noexcept	= delete;
+		TileSpritesheetComponent(const TileSpritesheetComponent& other)					 = delete;
+		TileSpritesheetComponent(TileSpritesheetComponent&& other) noexcept				 = delete;
+		TileSpritesheetComponent& operator=(const TileSpritesheetComponent& other)		 = delete;
+		TileSpritesheetComponent& operator=(TileSpritesheetComponent&& other)	noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		void SetNeighboringTiles(const std::vector<TileComponent*>& vNeighboringTiles) { m_vNeighboringTiles = vNeighboringTiles; }
+
 
 
 	private:
@@ -40,8 +39,7 @@ namespace dae
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		// vector containing all characters on this tile
-		std::vector<TileComponent*> m_vNeighboringTiles{};
+
 
 	};
 }

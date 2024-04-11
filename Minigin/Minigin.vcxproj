@@ -222,6 +222,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="GraphComponent.h" />
     <ClInclude Include="GraphicsComponent.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="LevelManagerComponent.h" />
     <ClInclude Include="LivesComponent.h" />
     <ClInclude Include="QbertComponent.h" />
     <ClInclude Include="InputManager.h" />
@@ -239,6 +240,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="TextObject.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TileComponent.h" />
+    <ClInclude Include="TileSpritesheetComponent.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
@@ -261,12 +263,12 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphComponent.cpp" />
     <ClCompile Include="GraphicsComponent.cpp" />
+    <ClCompile Include="LevelManagerComponent.cpp" />
     <ClCompile Include="LivesComponent.cpp" />
     <ClCompile Include="QbertComponent.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Minigin.cpp" />
-    <ClCompile Include="Observer.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="RotateComponent.cpp" />
@@ -278,6 +280,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClCompile Include="TextObject.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="TileComponent.cpp" />
+    <ClCompile Include="TileSpritesheetComponent.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>

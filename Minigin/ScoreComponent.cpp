@@ -37,9 +37,10 @@ void dae::ScoreComponent::Notify()
 	UpdateText();
 }
 
-void dae::ScoreComponent::SubjectDestroyed()
+void dae::ScoreComponent::SubjectDestroyed(Subject<>* pSubject)
 {
-	m_pQbertComponent = nullptr;
+	if (pSubject == m_pQbertComponent->ScoreChanged.get())
+		m_pQbertComponent = nullptr;
 }
 
 void dae::ScoreComponent::UpdateText()
