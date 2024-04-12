@@ -17,7 +17,7 @@ dae::GraphicsComponent::GraphicsComponent(GameObject* pGameObject, const std::st
 
 void dae::GraphicsComponent::Render() const
 {
-	if (m_pTexture != nullptr)
+	if (m_pTexture != nullptr && test)
 	{
 		const auto& pos = GetGameObject()->GetWorldTransform().GetPosition();
 		Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);

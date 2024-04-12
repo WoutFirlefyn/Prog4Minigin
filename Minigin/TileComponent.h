@@ -52,6 +52,7 @@ namespace dae
 		// vector containing all characters on this tile
 		std::vector<TileComponent*> m_vNeighboringTiles{};
 		QbertComponent* m_pQbertComponent{ nullptr };
+		bool m_QbertIsHere{ false };
 
 	};
 }
