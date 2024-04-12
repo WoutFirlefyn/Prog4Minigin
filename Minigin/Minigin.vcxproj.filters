@@ -144,9 +144,6 @@
     <ClInclude Include="SpritesheetComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="LevelManagerComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="TileSpritesheetComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -258,9 +255,6 @@
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="SpritesheetComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelManagerComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="TileSpritesheetComponent.cpp">

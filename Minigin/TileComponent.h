@@ -4,6 +4,7 @@
 // Include Files
 //-----------------------------------------------------
 #include "BaseComponent.h"
+#include "QbertComponent.h"
 #include <vector>
 
 //-----------------------------------------------------
@@ -11,11 +12,14 @@
 //-----------------------------------------------------
 namespace dae
 {
-	class TileComponent final : public BaseComponent
+	//class QbertComponent;
+	//enum class MovementDirection;
+	class TileComponent final : public BaseComponent , public Observer<MovementDirection>
 	{
 	public:
 		TileComponent(GameObject* pGameObject);	// Constructor
-		virtual ~TileComponent() override = default;				// Destructor
+		TileComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);	// Constructor
+		virtual ~TileComponent() override;				// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
@@ -28,7 +32,12 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		void SetNeighboringTiles(const std::vector<TileComponent*>& vNeighboringTiles) { m_vNeighboringTiles = vNeighboringTiles; }
+		virtual void Init() override;
+
+		virtual void Notify(MovementDirection movementDirection) override;
+		virtual void SubjectDestroyed(Subject<MovementDirection>* pSubject) override;
+
+		void SetNeighboringTiles(const std::vector<std::vector<GameObject*>>& vTiles, int row, int col);
 
 
 	private:
@@ -42,6 +51,7 @@ namespace dae
 		//-------------------------------------------------
 		// vector containing all characters on this tile
 		std::vector<TileComponent*> m_vNeighboringTiles{};
+		QbertComponent* m_pQbertComponent{ nullptr };
 
 	};
 }

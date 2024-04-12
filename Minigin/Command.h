@@ -3,6 +3,7 @@
 
 namespace dae
 {
+	enum class MovementDirection;
 	class Command
 	{
 	public:
@@ -43,6 +44,7 @@ namespace dae
 		virtual void Execute() override;
 	private:
 		glm::vec3 m_Direction;
+		MovementDirection m_Direction1;
 	};
 
 	class KillCommand : public GameObjectCommand

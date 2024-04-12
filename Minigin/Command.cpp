@@ -9,6 +9,10 @@ void dae::MoveCommand::Execute()
 	auto go = GetGameObject();
 	if (go)
 		go->SetPosition(go->GetLocalPosition() + m_Direction * Time::GetInstance().GetDeltaTime());
+	if (go)
+	{
+		go->GetComponent<QbertComponent>()->PlayerMoved->NotifyObservers(m_Direction1);
+	}
 }
 
 void dae::KillCommand::Execute()

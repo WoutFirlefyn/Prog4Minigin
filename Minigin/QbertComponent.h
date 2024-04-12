@@ -18,6 +18,14 @@ namespace dae
 		LevelCleared
 	};
 
+	enum class MovementDirection
+	{
+		Up,
+		Down,
+		Left,
+		Right
+	};
+
 	class QbertComponent final : public BaseComponent
 	{
 	public:
@@ -42,6 +50,7 @@ namespace dae
 
 		std::unique_ptr<Subject<>> PlayerDied;
 		std::unique_ptr<Subject<>> ScoreChanged;
+		std::unique_ptr<Subject<MovementDirection>> PlayerMoved;
 	private:
 		//-------------------------------------------------
 		// Datamembers								
