@@ -4,6 +4,8 @@
 // Include Files
 //-----------------------------------------------------
 #include "SpritesheetComponent.h"
+#include "Observer.h"
+#include <memory>
 
 //-----------------------------------------------------
 // TileSpritesheetComponent Class									
@@ -22,19 +24,19 @@ namespace dae
 		TileSpritesheetComponent(const TileSpritesheetComponent& other)					 = delete;
 		TileSpritesheetComponent(TileSpritesheetComponent&& other) noexcept				 = delete;
 		TileSpritesheetComponent& operator=(const TileSpritesheetComponent& other)		 = delete;
-		TileSpritesheetComponent& operator=(TileSpritesheetComponent&& other)	noexcept = delete;
+		TileSpritesheetComponent& operator=(TileSpritesheetComponent&& other) noexcept   = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-
+		void MoveSourceRect(int cols, int rows);
 
 
 	private:
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
-
+		
 
 		//-------------------------------------------------
 		// Datamembers								

@@ -1,9 +1,9 @@
 #include <stdexcept>
-#define WIN32_LEAN_AND_MEAN 
-#pragma warning (push)
-#pragma warning (disable: 4996)
-#include "steam_api.h"
-#pragma warning (pop)
+//#define WIN32_LEAN_AND_MEAN 
+//#pragma warning (push)
+//#pragma warning (disable: 4996)
+//#include "steam_api.h"
+//#pragma warning (pop)
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -110,7 +110,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		lag += deltaTime;
 
 		time.SetDeltaTime(deltaTime);
-		SteamAPI_RunCallbacks();
+		//SteamAPI_RunCallbacks();
 
 		doContinue = input.ProcessInput();
 		while (lag >= FIXED_TIME_STEP)

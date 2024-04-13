@@ -17,23 +17,30 @@ dae::SpritesheetComponent::SpritesheetComponent(GameObject* pGameObject, int spr
 
 void dae::SpritesheetComponent::Init()
 {
-	m_pGraphicsComponent = GetGameObject()->GetComponent<GraphicsComponent>();
-	auto pTexture = m_pGraphicsComponent->GetTexture();
-	auto size = pTexture->GetSize();
+	m_pTexture = GetGameObject()->GetComponent<GraphicsComponent>()->GetTexture();
+	auto size = m_pTexture->GetSize();
 	m_SpriteWidth = size.x / m_SpriteCols;
 	m_SpriteHeight = size.y / m_SpriteRows;
-	pTexture->SetSourceRect(0, 0, m_SpriteWidth, m_SpriteHeight);
+	m_pTexture->SetSourceRect(0, 0, m_SpriteWidth, m_SpriteHeight);
 }
 
 void dae::SpritesheetComponent::Update()
 {
 }
 
+void dae::SpritesheetComponent::MoveSourceRect(int cols, int rows)
+{
+	if (m_pTexture)
+	{
+		auto srcRectSize = m_pTexture->GetSourceRectSize();
+		m_pTexture->SetSourceRect(srcRectSize.x * cols, srcRectSize.y * rows);
+	}
+}
+
 //---------------------------
 // Member functions
 //---------------------------
 
-// write member functions here
 
 
 

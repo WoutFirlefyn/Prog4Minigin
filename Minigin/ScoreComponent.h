@@ -35,6 +35,8 @@ namespace dae
 		virtual void Notify() override;
 		virtual void SubjectDestroyed(Subject<>* pSubject) override;
 
+		int GetScore() const { return m_Score; }
+
 	private:
 		//-------------------------------------------------
 		// Private member functions								
@@ -44,6 +46,7 @@ namespace dae
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
+		int m_Score{ 0 };
 		QbertComponent* m_pQbertComponent{};
 		TextComponent* m_pTextComponent{};
 	};

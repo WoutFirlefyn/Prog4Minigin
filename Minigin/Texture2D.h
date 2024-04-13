@@ -20,7 +20,8 @@ namespace dae
 
 		void SetSourceRect(int x, int y, int width, int height);
 		void SetSourceRect(int x, int y);
-		const SDL_Rect* GetSourceRect() const;
+		SDL_Rect* GetSourceRect() const;
+		glm::ivec2 GetSourceRectSize() const;
 
 		Texture2D(const Texture2D &) = delete;
 		Texture2D(Texture2D &&) = delete;

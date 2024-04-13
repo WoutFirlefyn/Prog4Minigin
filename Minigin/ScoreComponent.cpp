@@ -4,6 +4,7 @@
 #include "ScoreComponent.h"
 #include "TextComponent.h"
 #include "QbertComponent.h"
+#include "TileComponent.h"
 #include "GameObject.h"
 
 //---------------------------
@@ -17,8 +18,7 @@ dae::ScoreComponent::ScoreComponent(GameObject* pGameObject, QbertComponent* pQb
 
 dae::ScoreComponent::~ScoreComponent()
 {
-	if (m_pQbertComponent)
-		m_pQbertComponent->ScoreChanged->RemoveObserver(this);
+	dae::TileComponent::TileChanged->RemoveObserver(this);
 }
 
 //---------------------------
@@ -27,24 +27,24 @@ dae::ScoreComponent::~ScoreComponent()
 
 void dae::ScoreComponent::Init()
 {
-	m_pQbertComponent->ScoreChanged->AddObserver(this);
 	m_pTextComponent = GetGameObject()->GetComponent<TextComponent>();
 	UpdateText();
 }
 
 void dae::ScoreComponent::Notify()
 {
+	m_Score += 25;
+	//if ()
 	UpdateText();
 }
 
 void dae::ScoreComponent::SubjectDestroyed(Subject<>* pSubject)
 {
-	if (pSubject == m_pQbertComponent->ScoreChanged.get())
-		m_pQbertComponent = nullptr;
+	(void)pSubject;
 }
 
 void dae::ScoreComponent::UpdateText()
 {
 	if (m_pTextComponent)
-		m_pTextComponent->SetText("Score: " + std::to_string(m_pQbertComponent->GetScore()));
+		m_pTextComponent->SetText("Score: " + std::to_string(m_Score));
 }

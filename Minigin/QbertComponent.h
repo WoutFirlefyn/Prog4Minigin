@@ -6,6 +6,7 @@
 #include "BaseComponent.h"
 #include "Observer.h"
 #include <memory>
+#include <glm/glm.hpp>
 
 //-----------------------------------------------------
 // QbertComponent Class									
@@ -21,9 +22,10 @@ namespace dae
 	enum class MovementDirection
 	{
 		Up,
-		Down,
 		Left,
-		Right
+		Right,
+		Down,
+		None
 	};
 
 	class QbertComponent final : public BaseComponent
@@ -43,20 +45,26 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
+		virtual void Update() override;
+
+		void Jump(MovementDirection direction);
+		bool IsMoving() const { return m_MovementDirection != MovementDirection::None; }
 		void Die();
 		int GetLives() const { return m_Lives; }
-		void GainScore(ScoreType type);		
-		int GetScore() const { return m_Score; }
 
 		std::unique_ptr<Subject<>> PlayerDied;
-		std::unique_ptr<Subject<>> ScoreChanged;
 		std::unique_ptr<Subject<MovementDirection>> PlayerMoved;
+		std::unique_ptr<Subject<>> PlayerFinishedMoving;
 	private:
+
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
 		int m_Lives{ 3 };
-		int m_Score{ 0 };
+		float m_AccumSec{ 0 };
+		float m_JumpDuration{ 0.5f };
+		MovementDirection m_MovementDirection{ MovementDirection::None };
+		glm::vec3 m_StartPos{};
 	};
 }
 

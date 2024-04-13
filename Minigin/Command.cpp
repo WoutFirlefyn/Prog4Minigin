@@ -8,11 +8,7 @@ void dae::MoveCommand::Execute()
 {
 	auto go = GetGameObject();
 	if (go)
-		go->SetPosition(go->GetLocalPosition() + m_Direction * Time::GetInstance().GetDeltaTime());
-	if (go)
-	{
-		go->GetComponent<QbertComponent>()->PlayerMoved->NotifyObservers(m_Direction1);
-	}
+		go->GetComponent<QbertComponent>()->Jump(m_Direction);
 }
 
 void dae::KillCommand::Execute()
@@ -24,7 +20,7 @@ void dae::KillCommand::Execute()
 
 void dae::ScoreCommand::Execute()
 {
-	auto go = GetGameObject();
-	if (go)
-		go->GetComponent<dae::QbertComponent>()->GainScore(m_ScoreType);
+	//auto go = GetGameObject();
+	//if (go)
+	//	go->GetComponent<dae::QbertComponent>()->GainScore(m_ScoreType);
 }

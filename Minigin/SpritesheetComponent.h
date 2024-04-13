@@ -10,6 +10,7 @@
 //-----------------------------------------------------
 namespace dae
 {
+	class Texture2D;
 	class GraphicsComponent;
 	class SpritesheetComponent : public BaseComponent
 	{
@@ -31,8 +32,9 @@ namespace dae
 		virtual void Init() override;
 		virtual void Update() override;
 
+		void MoveSourceRect(int cols, int rows);
 
-	private:
+	protected:
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
@@ -41,7 +43,8 @@ namespace dae
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		GraphicsComponent* m_pGraphicsComponent{ nullptr };
+		//GraphicsComponent* m_pGraphicsComponent{ nullptr };
+		Texture2D* m_pTexture{ nullptr };
 		int m_SpriteWidth{};
 		int m_SpriteHeight{};
 		int m_SpriteRows{};

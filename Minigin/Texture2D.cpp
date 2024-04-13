@@ -26,9 +26,14 @@ void dae::Texture2D::SetSourceRect(int x, int y)
 	SetSourceRect(x, y, m_pSrcRect->w, m_pSrcRect->h);
 }
 
-const SDL_Rect* dae::Texture2D::GetSourceRect() const
+SDL_Rect* dae::Texture2D::GetSourceRect() const
 {
 	return m_pSrcRect.get();
+}
+
+glm::ivec2 dae::Texture2D::GetSourceRectSize() const
+{
+	return { m_pSrcRect->w, m_pSrcRect->h };
 }
 
 SDL_Texture* dae::Texture2D::GetSDLTexture() const

@@ -36,22 +36,15 @@ namespace dae
 	class MoveCommand : public GameObjectCommand
 	{
 	public:
-		MoveCommand(GameObject* pGameObject, const glm::vec3& direction)
+		MoveCommand(GameObject* pGameObject, MovementDirection movementDirection)
 			: GameObjectCommand{ pGameObject }
-			, m_Direction{ direction }
-		{
-		}
-		MoveCommand(GameObject* pGameObject, const glm::vec3& direction, MovementDirection movementDirection)
-			: GameObjectCommand{ pGameObject }
-			, m_Direction{ direction }
-			, m_Direction1{ movementDirection }
+			, m_Direction{ movementDirection }
 		{
 		}
 
 		virtual void Execute() override;
 	private:
-		glm::vec3 m_Direction;
-		MovementDirection m_Direction1{};
+		MovementDirection m_Direction{};
 	};
 
 	class KillCommand : public GameObjectCommand
