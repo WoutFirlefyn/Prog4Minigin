@@ -1,9 +1,10 @@
 #pragma once
 #include <glm/glm.hpp>
+#include "QbertComponent.h"
 
 namespace dae
 {
-	enum class MovementDirection;
+	//enum class MovementDirection;
 	class Command
 	{
 	public:
@@ -40,11 +41,17 @@ namespace dae
 			, m_Direction{ direction }
 		{
 		}
+		MoveCommand(GameObject* pGameObject, const glm::vec3& direction, MovementDirection movementDirection)
+			: GameObjectCommand{ pGameObject }
+			, m_Direction{ direction }
+			, m_Direction1{ movementDirection }
+		{
+		}
 
 		virtual void Execute() override;
 	private:
 		glm::vec3 m_Direction;
-		MovementDirection m_Direction1;
+		MovementDirection m_Direction1{};
 	};
 
 	class KillCommand : public GameObjectCommand

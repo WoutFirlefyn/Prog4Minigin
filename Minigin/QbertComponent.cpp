@@ -11,6 +11,7 @@ dae::QbertComponent::QbertComponent(GameObject* pGameObject)
 {
 	PlayerDied = std::make_unique<Subject<>>();
 	ScoreChanged = std::make_unique<Subject<>>();
+	PlayerMoved = std::make_unique<Subject<MovementDirection>>();
 }
 
 //---------------------------

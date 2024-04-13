@@ -5,6 +5,7 @@
 //-----------------------------------------------------
 #include "BaseComponent.h"
 #include "QbertComponent.h"
+#include "Observer.h"
 #include <vector>
 
 //-----------------------------------------------------
@@ -14,6 +15,7 @@ namespace dae
 {
 	//class QbertComponent;
 	//enum class MovementDirection;
+	static bool QbertMoving{ false };
 	class TileComponent final : public BaseComponent , public Observer<MovementDirection>
 	{
 	public:
@@ -33,11 +35,13 @@ namespace dae
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Init() override;
+		virtual void Update() override;
 
 		virtual void Notify(MovementDirection movementDirection) override;
 		virtual void SubjectDestroyed(Subject<MovementDirection>* pSubject) override;
 
-		void SetNeighboringTiles(const std::vector<std::vector<GameObject*>>& vTiles, int row, int col);
+		void SetNeighboringTiles(const std::vector<std::vector<GameObject*>>& vTiles, size_t row, size_t col);
+		void MoveQbertHere();
 
 
 	private:
