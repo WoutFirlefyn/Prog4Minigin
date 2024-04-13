@@ -10,14 +10,15 @@
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::GraphicsComponent::GraphicsComponent(GameObject* pGameObject, const std::string& filename) : BaseComponent(pGameObject)
+dae::GraphicsComponent::GraphicsComponent(GameObject* pGameObject, const std::string& filename, bool renderingEnabled) : BaseComponent(pGameObject)
+	, m_RenderingEnabled{ renderingEnabled }
 {
 	SetTexture(filename);
 }
 
 void dae::GraphicsComponent::Render() const
 {
-	if (m_pTexture != nullptr)
+	if (m_pTexture != nullptr && m_RenderingEnabled)
 	{
 		const auto& pos = GetGameObject()->GetWorldTransform().GetPosition();
 		Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);

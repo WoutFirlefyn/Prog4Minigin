@@ -14,7 +14,7 @@
 namespace dae
 {
 	static bool QbertMoving{ false };
-	class TileComponent final : public BaseComponent, public Observer<MovementDirection>, public Observer<>
+	class TileComponent final : public BaseComponent, public Observer<MovementState, MovementDirection>
 	{
 	public:
 		TileComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);	// Constructor
@@ -33,15 +33,17 @@ namespace dae
 		//-------------------------------------------------
 		virtual void Init() override;
 
-		virtual void Notify(MovementDirection movementDirection) override;
-		virtual void Notify() override;
-		virtual void SubjectDestroyed(Subject<MovementDirection>* pSubject) override;
-		virtual void SubjectDestroyed(Subject<>* pSubject) override;
+		virtual void Notify(MovementState movementState, MovementDirection movementDirection) override;
+		//virtual void Notify() override;
+		virtual void SubjectDestroyed(Subject<MovementState, MovementDirection>* pSubject) override;
+		//virtual void SubjectDestroyed(Subject<>* pSubject) override;
 
 		void SetNeighboringTiles(const std::vector<std::vector<GameObject*>>& vTiles, size_t row, size_t col);
 		void MoveQbertHere();
 
 		static std::unique_ptr<Subject<>> TileChanged;
+		static int m_TileCount;
+		static int m_TilesCovered;
 	private:
 		//-------------------------------------------------
 		// Private member functions								
@@ -57,8 +59,6 @@ namespace dae
 		bool m_QbertIsHere{ false };
 		int m_TileStage{ 0 };
 		int m_MaxTileStage{ 1 };
-		static int m_TileCount;
-		static int m_TilesCovered;
 		const int m_TileId;
 	};
 }

@@ -4,6 +4,7 @@
 #include "QbertComponent.h"
 #include "GameObject.h"
 #include "Time.h"
+#include "SpritesheetComponent.h"
 
 //---------------------------
 // Constructor & Destructor
@@ -12,8 +13,13 @@ dae::QbertComponent::QbertComponent(GameObject* pGameObject)
 	: BaseComponent(pGameObject)
 {
 	PlayerDied = std::make_unique<Subject<>>();
-	PlayerMoved = std::make_unique<Subject<MovementDirection>>();
-	PlayerFinishedMoving = std::make_unique<Subject<>>();
+	PlayerMoveStateChanged = std::make_unique<Subject<MovementState, MovementDirection>>();
+	//PlayerStopMoving = std::make_unique<Subject<>>();
+}
+
+void dae::QbertComponent::Init()
+{
+	GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
 }
 
 void dae::QbertComponent::Update()
@@ -59,8 +65,8 @@ void dae::QbertComponent::Update()
 
 	if (t >= 1.f)
 	{
+		PlayerMoveStateChanged->NotifyObservers(MovementState::End, m_MovementDirection);
 		m_MovementDirection = MovementDirection::None;
-		PlayerFinishedMoving->NotifyObservers();
 	}
 }
 
@@ -68,8 +74,9 @@ void dae::QbertComponent::Jump(MovementDirection direction)
 {
 	if (IsMoving())
 		return;
-	PlayerMoved->NotifyObservers(direction);
+	PlayerMoveStateChanged->NotifyObservers(MovementState::Start, direction);
 	m_MovementDirection = direction;
+	GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(static_cast<int>(direction), 0);
 	m_AccumSec = 0.f;
 	m_StartPos = GetGameObject()->GetLocalPosition();
 }

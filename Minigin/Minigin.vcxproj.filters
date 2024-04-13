@@ -144,9 +144,6 @@
     <ClInclude Include="SpritesheetComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="TileSpritesheetComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ResourceManager.cpp">
@@ -255,9 +252,6 @@
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="SpritesheetComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="TileSpritesheetComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>

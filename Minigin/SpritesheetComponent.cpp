@@ -13,15 +13,15 @@ dae::SpritesheetComponent::SpritesheetComponent(GameObject* pGameObject, int spr
 	, m_SpriteCols{ spriteCols }
 	, m_SpriteRows{ spriteRows }
 {
-}
-
-void dae::SpritesheetComponent::Init()
-{
 	m_pTexture = GetGameObject()->GetComponent<GraphicsComponent>()->GetTexture();
 	auto size = m_pTexture->GetSize();
 	m_SpriteWidth = size.x / m_SpriteCols;
 	m_SpriteHeight = size.y / m_SpriteRows;
 	m_pTexture->SetSourceRect(0, 0, m_SpriteWidth, m_SpriteHeight);
+}
+
+void dae::SpritesheetComponent::Init()
+{
 }
 
 void dae::SpritesheetComponent::Update()

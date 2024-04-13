@@ -4,7 +4,7 @@
 #include "TileComponent.h"
 #include "QbertComponent.h"
 #include "GraphicsComponent.h"
-#include "TileSpritesheetComponent.h"
+#include "SpritesheetComponent.h"
 #include "GameObject.h"
 #include <iostream>
 
@@ -22,56 +22,58 @@ dae::TileComponent::TileComponent(GameObject* pGameObject, QbertComponent* pQber
 
 dae::TileComponent::~TileComponent()
 {
-    if (m_pQbertComponent->PlayerMoved)
-        m_pQbertComponent->PlayerMoved->RemoveObserver(this);
-    if (m_pQbertComponent->PlayerFinishedMoving)
-        m_pQbertComponent->PlayerFinishedMoving->RemoveObserver(this);
+    if (m_pQbertComponent->PlayerMoveStateChanged)
+        m_pQbertComponent->PlayerMoveStateChanged->RemoveObserver(this);
 }
 
 void dae::TileComponent::Init()
 {
-    m_pQbertComponent->PlayerMoved->AddObserver(this);
-    m_pQbertComponent->PlayerFinishedMoving->AddObserver(this);
+    m_pQbertComponent->PlayerMoveStateChanged->AddObserver(this);
     if (m_TileId == 0)
         MoveQbertHere();
 }
 
-void dae::TileComponent::Notify(MovementDirection movementDirection)
+void dae::TileComponent::Notify(MovementState movementState, MovementDirection movementDirection)
 {
-    if (m_QbertIsHere && !QbertMoving)
+    switch (movementState)
     {
-        auto pTile = m_vNeighboringTiles[static_cast<size_t>(movementDirection)];
-        if (pTile)
+    case MovementState::Start:
+        if (m_QbertIsHere && !QbertMoving)
         {
             m_QbertIsHere = false;
             QbertMoving = true;
-            pTile->MoveQbertHere();
+            if (auto pTile = m_vNeighboringTiles[static_cast<size_t>(movementDirection)])
+                pTile->MoveQbertHere();
         }
+        break;
+    case MovementState::End:
+        //if (m_QbertIsHere && !QbertMoving)
+        //{
+        //    if (auto pTile = m_vNeighboringTiles[static_cast<size_t>(movementDirection)])
+        //    {
+        //        QbertMoving = true;
+        //        m_QbertIsHere = false;
+        //        pTile->MoveQbertHere();
+        //    }
+        //}
+        QbertMoving = false;
+        if (m_QbertIsHere && m_TileStage != m_MaxTileStage)
+        {
+            ++m_TileStage;
+            ++m_TilesCovered;
+            GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(0, m_TileStage);
+            TileChanged->NotifyObservers();
+        }
+        break;
+    default:
+        break;
     }
 }
 
-void dae::TileComponent::Notify()
+void dae::TileComponent::SubjectDestroyed(Subject<MovementState, MovementDirection>* pSubject)
 {
-    QbertMoving = false;
-    if (m_QbertIsHere && m_TileStage != m_MaxTileStage)
-    {
-        ++m_TileStage;
-        ++m_TilesCovered;
-        GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(0, m_TileStage);
-        TileChanged->NotifyObservers();
-    }
-}
-
-void dae::TileComponent::SubjectDestroyed(Subject<MovementDirection>* pSubject)
-{
-    if (pSubject == m_pQbertComponent->PlayerMoved.get())
-        m_pQbertComponent->PlayerMoved = nullptr;
-}
-
-void dae::TileComponent::SubjectDestroyed(Subject<>* pSubject)
-{
-    if (pSubject == m_pQbertComponent->PlayerFinishedMoving.get())
-        m_pQbertComponent->PlayerFinishedMoving = nullptr;
+    if (pSubject == m_pQbertComponent->PlayerMoveStateChanged.get())
+        m_pQbertComponent->PlayerMoveStateChanged = nullptr;
 }
 
 void dae::TileComponent::SetNeighboringTiles(const std::vector<std::vector<GameObject*>>& vTiles, size_t row, size_t col)
@@ -86,12 +88,6 @@ void dae::TileComponent::MoveQbertHere()
 {
     m_QbertIsHere = true;
 }
-
-//---------------------------
-// Member functions
-//---------------------------
-
-// write member functions here
 
 
 

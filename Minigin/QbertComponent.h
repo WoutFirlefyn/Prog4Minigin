@@ -13,10 +13,11 @@
 //-----------------------------------------------------
 namespace dae
 {
-	enum class ScoreType
+	enum class MovementState
 	{
-		TileCovered,
-		LevelCleared
+		Start,
+		Moving,
+		End
 	};
 
 	enum class MovementDirection
@@ -45,6 +46,7 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
+		virtual void Init() override;
 		virtual void Update() override;
 
 		void Jump(MovementDirection direction);
@@ -53,8 +55,8 @@ namespace dae
 		int GetLives() const { return m_Lives; }
 
 		std::unique_ptr<Subject<>> PlayerDied;
-		std::unique_ptr<Subject<MovementDirection>> PlayerMoved;
-		std::unique_ptr<Subject<>> PlayerFinishedMoving;
+		std::unique_ptr<Subject<MovementState, MovementDirection>> PlayerMoveStateChanged;
+		//std::unique_ptr<Subject<>> PlayerStopMoving;
 	private:
 
 		//-------------------------------------------------
