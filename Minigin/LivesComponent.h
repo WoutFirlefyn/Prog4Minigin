@@ -11,7 +11,6 @@
 //-----------------------------------------------------
 namespace dae
 {
-	class TextComponent;
 	class QbertComponent;
 	class LivesComponent final : public BaseComponent, public Observer<>
 	{
@@ -38,13 +37,13 @@ namespace dae
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
-		void UpdateText();
 
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
 		QbertComponent* m_pQbertComponent{};
-		TextComponent* m_pTextComponent{};
+		static int m_CurrentId;
+		const int m_HeartId;
 	};
 }
 

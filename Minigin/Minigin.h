@@ -1,4 +1,5 @@
 #pragma once
+//#define Steam
 #include <string>
 #include <functional>
 

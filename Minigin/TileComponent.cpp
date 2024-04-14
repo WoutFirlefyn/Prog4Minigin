@@ -59,7 +59,7 @@ void dae::TileComponent::Notify(MovementState movementState, MovementDirection m
             ++m_TileStage;
             ++m_TilesCovered;
             GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(m_CurrentRound, m_TileStage);
-            TileChanged->NotifyObservers(m_TileCount == m_TilesCovered);
+            TileChanged->NotifyObservers(m_TileCount * m_MaxTileStage == m_TilesCovered);
         }
         break;
     default:

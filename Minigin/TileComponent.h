@@ -60,7 +60,7 @@ namespace dae
 		QbertComponent* m_pQbertComponent{ nullptr };
 		bool m_QbertIsHere{ false };
 		int m_TileStage{ 0 };
-		int m_MaxTileStage{ 2 };
+		int m_MaxTileStage{ 1 };
 		int m_CurrentRound{ 0 };
 		const int m_TileId;
 		static int m_TileCount;

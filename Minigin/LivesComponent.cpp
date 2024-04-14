@@ -4,14 +4,18 @@
 #include "LivesComponent.h"
 #include "TextComponent.h"
 #include "QbertComponent.h"
+#include "GraphicsComponent.h"
 #include "GameObject.h"
 
 //---------------------------
 // Constructor & Destructor
 //---------------------------
+int dae::LivesComponent::m_CurrentId{ 0 };
+
 dae::LivesComponent::LivesComponent(GameObject* pGameObject, QbertComponent* pQbertComponent)
 	: BaseComponent(pGameObject)
 	, m_pQbertComponent{ pQbertComponent }
+	, m_HeartId{ m_CurrentId++ }
 {
 }
 
@@ -28,23 +32,16 @@ dae::LivesComponent::~LivesComponent()
 void dae::LivesComponent::Init()
 {
 	m_pQbertComponent->PlayerDied->AddObserver(this);
-	m_pTextComponent = GetGameObject()->GetComponent<TextComponent>();
-	UpdateText();
 }
 
 void dae::LivesComponent::Notify()
 {
-	UpdateText();
+	if (m_pQbertComponent->GetLives() == m_HeartId)
+		GetGameObject()->GetComponent<GraphicsComponent>()->ToggleRendering(false);
 }
 
 void dae::LivesComponent::SubjectDestroyed(Subject<>* pSubject)
 {
 	if (pSubject == m_pQbertComponent->PlayerDied.get())
 		m_pQbertComponent = nullptr;
-}
-
-void dae::LivesComponent::UpdateText()
-{
-	if (m_pTextComponent)
-		m_pTextComponent->SetText("Lives: " + std::to_string(m_pQbertComponent->GetLives()));
 }

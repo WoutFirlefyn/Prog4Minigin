@@ -69,7 +69,7 @@ void dae::QbertComponent::Update()
 
 	if (t >= 1.f)
 	{
-		PlayerMoveStateChanged->NotifyObservers(MovementState::End, m_MovementDirection);
+		PlayerMoveStateChanged->NotifyObservers((m_IsFalling ? MovementState::Falling : MovementState::End), m_MovementDirection);
 		m_MovementDirection = MovementDirection::None;
 	}
 }
@@ -87,11 +87,6 @@ void dae::QbertComponent::Notify(MovementState movementState, MovementDirection 
 	case MovementState::Moving:
 		break;
 	case MovementState::End:
-		if (m_IsFalling)
-		{
-			PlayerMoveStateChanged->NotifyObservers(MovementState::Falling, MovementDirection::None);
-			m_IsFalling = false;
-		}
 		break;
 	case MovementState::Falling:
 		Die();

@@ -18,6 +18,7 @@ namespace dae
 	{
 	public:
 		GraphicsComponent(GameObject* pGameObject, const std::string& name, bool renderingEnabled = true);				// Constructor
+		GraphicsComponent(GameObject* pGameObject);				// Constructor
 		virtual ~GraphicsComponent() override = default;		// Destructor
 
 		// -------------------------
@@ -34,6 +35,7 @@ namespace dae
 		virtual void Render() const override;
 		void ToggleRendering(bool isEnabled) { m_RenderingEnabled = isEnabled; }
 		void SetTexture(const std::string& filename);
+		void SetTexture(const std::shared_ptr<Texture2D>& pTexture);
 		Texture2D* GetTexture() const { return m_pTexture.get(); }
 	private:
 		//-------------------------------------------------

@@ -16,6 +16,10 @@ dae::GraphicsComponent::GraphicsComponent(GameObject* pGameObject, const std::st
 	SetTexture(filename);
 }
 
+dae::GraphicsComponent::GraphicsComponent(GameObject* pGameObject) : BaseComponent(pGameObject)
+{
+}
+
 void dae::GraphicsComponent::Render() const
 {
 	if (m_pTexture != nullptr && m_RenderingEnabled)
@@ -28,6 +32,11 @@ void dae::GraphicsComponent::Render() const
 void dae::GraphicsComponent::SetTexture(const std::string& filename)
 {
 	m_pTexture = ResourceManager::GetInstance().LoadTexture(filename);
+}
+
+void dae::GraphicsComponent::SetTexture(const std::shared_ptr<Texture2D>& pTexture)
+{
+	m_pTexture = pTexture;
 }
 
 

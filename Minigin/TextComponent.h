@@ -33,23 +33,16 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		virtual void Render() const override;
 		virtual void Update() override;
 		void SetText(const std::string& text);
 
 	private:
-		//-------------------------------------------------
-		// Private member functions								
-		//-------------------------------------------------
-
-
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
 		bool m_NeedsUpdate;
 		std::string m_Text;
 		std::shared_ptr<Font> m_pFont;
-		std::shared_ptr<Texture2D> m_pTextTexture;
 
 	};
 }
