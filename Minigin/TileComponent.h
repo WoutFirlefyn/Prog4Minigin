@@ -4,7 +4,6 @@
 // Include Files
 //-----------------------------------------------------
 #include "BaseComponent.h"
-#include "QbertComponent.h"
 #include "Observer.h"
 #include <vector>
 
@@ -14,7 +13,11 @@
 namespace dae
 {
 	static bool QbertMoving{ false };
-	class TileComponent final : public BaseComponent, public Observer<MovementState, MovementDirection>
+
+	enum class MovementState;
+	enum class MovementDirection;
+	class QbertComponent;
+	class TileComponent final : public BaseComponent, public Observer<MovementState, MovementDirection> , public Observer<bool>
 	{
 	public:
 		TileComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);	// Constructor
@@ -34,20 +37,19 @@ namespace dae
 		virtual void Init() override;
 
 		virtual void Notify(MovementState movementState, MovementDirection movementDirection) override;
-		//virtual void Notify() override;
 		virtual void SubjectDestroyed(Subject<MovementState, MovementDirection>* pSubject) override;
-		//virtual void SubjectDestroyed(Subject<>* pSubject) override;
+
+		virtual void Notify(bool roundFinished) override;
 
 		void SetNeighboringTiles(const std::vector<std::vector<GameObject*>>& vTiles, size_t row, size_t col);
 		void MoveQbertHere();
 
-		static std::unique_ptr<Subject<>> TileChanged;
-		static int m_TileCount;
-		static int m_TilesCovered;
+		static std::unique_ptr<Subject<bool>> TileChanged;
 	private:
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
+		bool AreAllTilesCovered() { return m_TileCount == m_TilesCovered; }
 
 
 		//-------------------------------------------------
@@ -58,8 +60,11 @@ namespace dae
 		QbertComponent* m_pQbertComponent{ nullptr };
 		bool m_QbertIsHere{ false };
 		int m_TileStage{ 0 };
-		int m_MaxTileStage{ 1 };
+		int m_MaxTileStage{ 2 };
+		int m_CurrentRound{ 0 };
 		const int m_TileId;
+		static int m_TileCount;
+		static int m_TilesCovered;
 	};
 }
 

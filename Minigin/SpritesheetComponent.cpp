@@ -20,14 +20,6 @@ dae::SpritesheetComponent::SpritesheetComponent(GameObject* pGameObject, int spr
 	m_pTexture->SetSourceRect(0, 0, m_SpriteWidth, m_SpriteHeight);
 }
 
-void dae::SpritesheetComponent::Init()
-{
-}
-
-void dae::SpritesheetComponent::Update()
-{
-}
-
 void dae::SpritesheetComponent::MoveSourceRect(int cols, int rows)
 {
 	if (m_pTexture)
@@ -36,11 +28,6 @@ void dae::SpritesheetComponent::MoveSourceRect(int cols, int rows)
 		m_pTexture->SetSourceRect(srcRectSize.x * cols, srcRectSize.y * rows);
 	}
 }
-
-//---------------------------
-// Member functions
-//---------------------------
-
 
 
 

@@ -31,16 +31,12 @@ void dae::ScoreComponent::Init()
 	UpdateText();
 }
 
-void dae::ScoreComponent::Notify()
+void dae::ScoreComponent::Notify(bool roundFinished)
 {
 	m_Score += 25;
-	//if ()
+	if (roundFinished)
+		m_Score += 100;
 	UpdateText();
-}
-
-void dae::ScoreComponent::SubjectDestroyed(Subject<>* pSubject)
-{
-	(void)pSubject;
 }
 
 void dae::ScoreComponent::UpdateText()

@@ -29,8 +29,6 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		virtual void Init() override;
-		virtual void Update() override;
 
 		void MoveSourceRect(int cols, int rows);
 

@@ -1,10 +1,9 @@
 #pragma once
-#include <glm/glm.hpp>
-#include "QbertComponent.h"
 
 namespace dae
 {
-	//enum class MovementDirection;
+	enum class MovementDirection;
+	class QbertComponent;
 	class Command
 	{
 	public:
@@ -36,41 +35,13 @@ namespace dae
 	class MoveCommand : public GameObjectCommand
 	{
 	public:
-		MoveCommand(GameObject* pGameObject, MovementDirection movementDirection)
-			: GameObjectCommand{ pGameObject }
-			, m_Direction{ movementDirection }
-		{
-		}
+		MoveCommand(GameObject* pGameObject, MovementDirection movementDirection);
 
 		virtual void Execute() override;
 	private:
+		// added m_pQbertComponent to avoid having to get it every time MoveCommand is executed (which could be a lot if the player is holding down the movementkey)
+		QbertComponent* m_pQbertComponent{ nullptr };
 		MovementDirection m_Direction{};
-	};
-
-	class KillCommand : public GameObjectCommand
-	{
-	public:
-		KillCommand(GameObject* pGameObject)
-			: GameObjectCommand{ pGameObject }
-		{
-		}
-
-		virtual void Execute() override;
-	};
-
-	enum class ScoreType;
-	class ScoreCommand : public GameObjectCommand
-	{
-	public:
-		ScoreCommand(GameObject* pGameObject, ScoreType scoreType)
-			: GameObjectCommand{ pGameObject }
-			, m_ScoreType{ scoreType }
-		{
-		}
-
-		virtual void Execute() override;
-	private:
-		ScoreType m_ScoreType{};
 	};
 }
 

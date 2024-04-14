@@ -15,7 +15,7 @@ namespace dae
 		virtual ~Observer() = default;
 
 		virtual void Notify(Args... args) = 0;
-		virtual void SubjectDestroyed(Subject<Args...>* pSubject) = 0;
+		virtual void SubjectDestroyed(Subject<Args...>* pSubject) { (void)pSubject; }
 	};	
 
 	template <typename... Args>

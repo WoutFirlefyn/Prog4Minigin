@@ -17,7 +17,8 @@ namespace dae
 	{
 		Start,
 		Moving,
-		End
+		End,
+		Falling
 	};
 
 	enum class MovementDirection
@@ -29,11 +30,11 @@ namespace dae
 		None
 	};
 
-	class QbertComponent final : public BaseComponent
+	class QbertComponent final : public BaseComponent, public Observer<MovementState, MovementDirection>, public Observer<bool>
 	{
 	public:
 		QbertComponent(GameObject* pGameObject);				// Constructor
-		virtual ~QbertComponent() override = default;			// Destructor
+		virtual ~QbertComponent() override;			// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
@@ -49,14 +50,16 @@ namespace dae
 		virtual void Init() override;
 		virtual void Update() override;
 
-		void Jump(MovementDirection direction);
+		virtual void Notify(MovementState movementState, MovementDirection movementDirection) override;
+		virtual void Notify(bool roundFinished) override;
+
 		bool IsMoving() const { return m_MovementDirection != MovementDirection::None; }
 		void Die();
 		int GetLives() const { return m_Lives; }
 
 		std::unique_ptr<Subject<>> PlayerDied;
 		std::unique_ptr<Subject<MovementState, MovementDirection>> PlayerMoveStateChanged;
-		//std::unique_ptr<Subject<>> PlayerStopMoving;
+		bool m_IsFalling{ false };
 	private:
 
 		//-------------------------------------------------
@@ -64,7 +67,7 @@ namespace dae
 		//-------------------------------------------------
 		int m_Lives{ 3 };
 		float m_AccumSec{ 0 };
-		float m_JumpDuration{ 0.5f };
+		float m_JumpDuration{ 0.4f };
 		MovementDirection m_MovementDirection{ MovementDirection::None };
 		glm::vec3 m_StartPos{};
 	};

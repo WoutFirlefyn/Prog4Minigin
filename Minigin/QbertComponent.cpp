@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Time.h"
 #include "SpritesheetComponent.h"
+#include "TileComponent.h"
 
 //---------------------------
 // Constructor & Destructor
@@ -14,11 +15,17 @@ dae::QbertComponent::QbertComponent(GameObject* pGameObject)
 {
 	PlayerDied = std::make_unique<Subject<>>();
 	PlayerMoveStateChanged = std::make_unique<Subject<MovementState, MovementDirection>>();
-	//PlayerStopMoving = std::make_unique<Subject<>>();
+}
+
+dae::QbertComponent::~QbertComponent()
+{
+	TileComponent::TileChanged->RemoveObserver(this);
 }
 
 void dae::QbertComponent::Init()
 {
+	PlayerMoveStateChanged->AddObserver(this);
+	TileComponent::TileChanged->AddObserver(this);
 	GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
 }
 
@@ -26,10 +33,6 @@ void dae::QbertComponent::Update()
 {
 	if (m_MovementDirection == MovementDirection::None)
 		return;
-
-	m_AccumSec += Time::GetInstance().GetDeltaTime();
-
-	float t = std::min(m_AccumSec / m_JumpDuration, 1.f);
 
 	glm::vec3 endPos{ m_StartPos };
 	switch (m_MovementDirection)
@@ -50,16 +53,17 @@ void dae::QbertComponent::Update()
 		return;
 	}
 
-	glm::vec3 control = m_StartPos;
+	glm::vec3 control { m_StartPos };
 
 	if (static_cast<int>(m_MovementDirection) < 2)
 		control += (endPos - m_StartPos) * glm::vec3( 0.1f, 1.f, 0.f );
 	else
 		control += (endPos - m_StartPos) * glm::vec3{ 1.0f, 0.1f, 0.f };
 
-	glm::vec3 currentPos{};
-	currentPos.x = (1 - t) * (1 - t) * m_StartPos.x + 2 * (1 - t) * t * control.x + t * t * endPos.x;
-	currentPos.y = (1 - t) * (1 - t) * m_StartPos.y + 2 * (1 - t) * t * control.y + t * t * endPos.y;
+	m_AccumSec += Time::GetInstance().GetDeltaTime();
+	float t = std::min(m_AccumSec / m_JumpDuration, 1.f);
+
+	glm::vec3 currentPos = (1 - t) * (1 - t) * m_StartPos + 2 * (1 - t) * t * control + t * t * endPos;
 
 	GetGameObject()->SetPosition(currentPos);
 
@@ -70,20 +74,41 @@ void dae::QbertComponent::Update()
 	}
 }
 
-void dae::QbertComponent::Jump(MovementDirection direction)
+void dae::QbertComponent::Notify(MovementState movementState, MovementDirection movementDirection)
 {
-	if (IsMoving())
-		return;
-	PlayerMoveStateChanged->NotifyObservers(MovementState::Start, direction);
-	m_MovementDirection = direction;
-	GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(static_cast<int>(direction), 0);
-	m_AccumSec = 0.f;
-	m_StartPos = GetGameObject()->GetLocalPosition();
+	switch (movementState)
+	{
+	case MovementState::Start:
+		m_MovementDirection = movementDirection;
+		GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(static_cast<int>(m_MovementDirection), 0);
+		m_AccumSec = 0.f;
+		m_StartPos = GetGameObject()->GetLocalPosition();
+		break;
+	case MovementState::Moving:
+		break;
+	case MovementState::End:
+		if (m_IsFalling)
+		{
+			PlayerMoveStateChanged->NotifyObservers(MovementState::Falling, MovementDirection::None);
+			m_IsFalling = false;
+		}
+		break;
+	case MovementState::Falling:
+		Die();
+		GetGameObject()->SetPosition(m_StartPos);
+		m_IsFalling = false;
+		break;
+	default:
+		break;
+	}
 }
 
-//---------------------------
-// Member functions
-//---------------------------
+void dae::QbertComponent::Notify(bool roundFinished)
+{
+	if (roundFinished)
+		GetGameObject()->SetPosition(308, 193);
+}
+
 void dae::QbertComponent::Die()
 {
 	--m_Lives;

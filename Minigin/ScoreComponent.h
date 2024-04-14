@@ -14,7 +14,7 @@ namespace dae
 	class TextComponent;
 	class QbertComponent;
 	enum class ScoreType;
-	class ScoreComponent final : public BaseComponent, public Observer<>
+	class ScoreComponent final : public BaseComponent, public Observer<bool>
 	{
 	public:
 		ScoreComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);
@@ -32,8 +32,7 @@ namespace dae
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Init() override;
-		virtual void Notify() override;
-		virtual void SubjectDestroyed(Subject<>* pSubject) override;
+		virtual void Notify(bool roundFinished) override;
 
 		int GetScore() const { return m_Score; }
 
