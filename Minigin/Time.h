@@ -32,7 +32,7 @@ namespace dae
 		Time() = default;
 		float m_DeltaTime{};
 		float m_MsPerFrame{ 1000.f / 60.f };
-		float m_FixedTimeStep{ 20.f };
+		float m_FixedTimeStep{ 0.02f };
 	};
 }
 

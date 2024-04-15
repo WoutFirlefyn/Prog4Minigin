@@ -19,7 +19,7 @@ dae::TextComponent::TextComponent(GameObject* pGameObject, const std::string& te
 {
 }
 
-dae::TextComponent::TextComponent(GameObject* pGameObject, std::shared_ptr<Font> pFont) : TextComponent(pGameObject, "", pFont)
+dae::TextComponent::TextComponent(GameObject* pGameObject, std::shared_ptr<Font> pFont) : TextComponent(pGameObject, " ", pFont)
 {
 }
 

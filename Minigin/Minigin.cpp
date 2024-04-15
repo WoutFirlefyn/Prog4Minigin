@@ -11,7 +11,7 @@
 #include "ResourceManager.h"
 #include "Time.h"
 
-#ifdef Steam
+#ifdef STEAM
 #define WIN32_LEAN_AND_MEAN 
 #pragma warning (push)
 #pragma warning (disable: 4996)
@@ -98,7 +98,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	time.SetFPSCap(60.f);
 
 	LONGLONG MS_PER_FRAME = static_cast<LONGLONG>(time.GetMsPerFrame());
-	LONGLONG FIXED_TIME_STEP = static_cast<LONGLONG>(time.GetFixedTimeStep());
+	float FIXED_TIME_STEP = time.GetFixedTimeStep();
 
 	sceneManager.Init();
 
@@ -114,7 +114,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 		time.SetDeltaTime(deltaTime);
 
-#ifdef Steam
+#ifdef STEAM
 		SteamAPI_RunCallbacks();
 #endif // Steam
 

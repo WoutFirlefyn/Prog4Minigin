@@ -30,6 +30,7 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
+		virtual void Init() override;
 		virtual void Update() override;
 
 	private:

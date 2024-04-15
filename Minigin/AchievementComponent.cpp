@@ -59,9 +59,8 @@ void dae::AchievementComponent::Notify()
 		UnlockAchievement(NEW_ACHIEVEMENT_0_4);
 }
 
-void dae::AchievementComponent::SubjectDestroyed(Subject<>* pSubject)
+void dae::AchievementComponent::SubjectDestroyed(Subject<>*)
 {
-	(void)pSubject;
 	// It should only set one component to nullptr instead of both at the same time but can't be bothered 
 	// to fix it since it works perfectly fine like this and we will never use this code again after this assignment anyways
 	//if (pSubject == m_pQbertComponent1->ScoreChanged.get())

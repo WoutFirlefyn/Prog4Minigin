@@ -1,5 +1,5 @@
 #pragma once
-//#define Steam
+//#define STEAM
 #include <string>
 #include <functional>
 
