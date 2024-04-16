@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <unordered_map>
+#include <typeindex>
 #include <string>
 #include <stdexcept>
 #include <execution>
@@ -48,49 +50,33 @@ namespace dae
 		template <typename T, typename... Args>
 		void AddComponent(Args&&... args)
 		{
-			m_vComponents.emplace_back(std::make_unique<T>(this, std::forward<Args>(args)...));
+			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
+			m_Components.insert(std::make_pair(std::type_index(typeid(T)), std::make_unique<T>(this, std::forward<Args>(args)...)));
 		}
 
 		template<typename T>
 		void RemoveComponent() 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
-			auto it = std::remove_if(std::execution::par_unseq, m_vComponents.begin(), m_vComponents.end(), [](const auto& pComponent)
-			    {
-			        return dynamic_cast<T*>(pComponent.get()) != nullptr;
-				});
-
-			if (it != m_vComponents.end())
-				m_vComponents.erase(it, m_vComponents.end());
-			else
-				assert(false && "Component to remove not found");
+			m_Components.erase(typeid(T));
 		}
 
 		template<typename T>
 		T* GetComponent() const 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
-			auto it = std::find_if(std::execution::par_unseq, m_vComponents.begin(), m_vComponents.end(), [](const auto& pComponent)
-				{
-					return dynamic_cast<T*>(pComponent.get()) != nullptr;
-				});
 
-			if (it != m_vComponents.end())
-				return static_cast<T*>((*it).get());
-
-			return nullptr;
+			if (HasComponent<T>())
+				return dynamic_cast<T*>((*m_Components.find(typeid(T))).second.get());
+			else
+				return nullptr;
 		}
 
 		template<typename T>
-		bool CheckComponent() const 
+		bool HasComponent() const 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
-			auto it = std::find_if(std::execution::par_unseq, m_vComponents.begin(), m_vComponents.end(), [](const auto& pComponent)
-				{
-					return dynamic_cast<T*>(pComponent.get()) != nullptr;
-				});
-
-			return it != m_vComponents.end();
+			return m_Components.contains(typeid(T));
 		}
 #pragma endregion
 
@@ -102,7 +88,7 @@ namespace dae
 
 		GameObject* m_pParent{};
 		std::vector<GameObject*> m_vChildren{};
-		std::vector<std::unique_ptr<BaseComponent>> m_vComponents{};
+		std::unordered_map<std::type_index, std::unique_ptr<BaseComponent>> m_Components{};
 
 		Transform m_WorldTransform{};
 		Transform m_LocalTransform{};
