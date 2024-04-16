@@ -68,8 +68,7 @@ namespace dae
 
 			if (HasComponent<T>())
 				return dynamic_cast<T*>((*m_Components.find(typeid(T))).second.get());
-			else
-				return nullptr;
+			return nullptr;
 		}
 
 		template<typename T>

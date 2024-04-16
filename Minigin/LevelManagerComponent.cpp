@@ -76,8 +76,8 @@ void dae::LevelManagerComponent::Notify(Character character, MovementState movem
             std::pair<Character, GameObject*> characterObject = std::make_pair(character, nullptr);
             pCurrentTile->GetCharacter(characterObject);
 
-            if (auto pTileComponent = pNextTile->GetComponent<TileComponent>())
-                pTileComponent->MoveCharacterHere(characterObject);
+            if (pNextTile->HasComponent<TileComponent>())
+                pNextTile->GetComponent<TileComponent>()->MoveCharacterHere(characterObject);
             else
             {
                 // disc code
