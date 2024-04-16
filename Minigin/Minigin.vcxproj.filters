@@ -147,6 +147,9 @@
     <ClInclude Include="QbertCurseComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DiscComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ResourceManager.cpp">
@@ -259,6 +262,9 @@
     </ClCompile>
     <ClCompile Include="QbertCurseComponent.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DiscComponent.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -7,27 +7,27 @@
 #include "Observer.h"
 
 //-----------------------------------------------------
-// QbertCurseComponent Class									
+// DiscComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
+	enum class Characters;
 	enum class MovementState;
 	enum class MovementDirection;
-	enum class Characters;
 	class QbertComponent;
-	class QbertCurseComponent final : public BaseComponent, public Observer<Characters, MovementState, MovementDirection>
+	class DiscComponent final : public BaseComponent, public Observer<Characters, MovementState, MovementDirection>
 	{
 	public:
-		QbertCurseComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);				// Constructor
-		~QbertCurseComponent();				// Destructor
+		DiscComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);
+		~DiscComponent();			
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		QbertCurseComponent(const QbertCurseComponent& other) = delete;
-		QbertCurseComponent(QbertCurseComponent&& other) noexcept = delete;
-		QbertCurseComponent& operator=(const QbertCurseComponent& other) = delete;
-		QbertCurseComponent& operator=(QbertCurseComponent&& other)	noexcept = delete;
+		DiscComponent(const DiscComponent& other) = delete;
+		DiscComponent(DiscComponent&& other) noexcept = delete;
+		DiscComponent& operator=(const DiscComponent& other) = delete;
+		DiscComponent& operator=(DiscComponent&& other)	noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
@@ -49,9 +49,6 @@ namespace dae
 		// Datamembers								
 		//-------------------------------------------------
 		QbertComponent* m_pQbertComponent;
-		float m_AccumSec{ 0.f };
-		float m_CurseDuration{ 1.f };
-
 	};
 }
 

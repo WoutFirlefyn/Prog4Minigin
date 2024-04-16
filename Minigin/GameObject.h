@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <execution>
 #include "Transform.h"
 #include "BaseComponent.h"
 
@@ -54,7 +55,7 @@ namespace dae
 		void RemoveComponent() 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
-			auto it = std::remove_if(m_vComponents.begin(), m_vComponents.end(), [](const auto& pComponent)
+			auto it = std::remove_if(std::execution::par_unseq, m_vComponents.begin(), m_vComponents.end(), [](const auto& pComponent)
 			    {
 			        return dynamic_cast<T*>(pComponent.get()) != nullptr;
 				});
@@ -69,15 +70,13 @@ namespace dae
 		T* GetComponent() const 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
-			auto it = std::ranges::find_if(m_vComponents, [](const auto& pComponent)
+			auto it = std::find_if(std::execution::par_unseq, m_vComponents.begin(), m_vComponents.end(), [](const auto& pComponent)
 				{
 					return dynamic_cast<T*>(pComponent.get()) != nullptr;
 				});
 
 			if (it != m_vComponents.end())
 				return static_cast<T*>((*it).get());
-			else
-				assert(false && "Component to get not found");
 
 			return nullptr;
 		}
@@ -86,7 +85,7 @@ namespace dae
 		bool CheckComponent() const 
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
-			auto it = std::ranges::find_if(m_vComponents, [](const auto& pComponent)
+			auto it = std::find_if(std::execution::par_unseq, m_vComponents.begin(), m_vComponents.end(), [](const auto& pComponent)
 				{
 					return dynamic_cast<T*>(pComponent.get()) != nullptr;
 				});

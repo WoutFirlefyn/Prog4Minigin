@@ -14,7 +14,7 @@ dae::QbertComponent::QbertComponent(GameObject* pGameObject)
 	: BaseComponent(pGameObject)
 {
 	PlayerDied = std::make_unique<Subject<>>();
-	PlayerMoveStateChanged = std::make_unique<Subject<MovementState, MovementDirection>>();
+	MoveStateChanged = std::make_unique<Subject<Characters, MovementState, MovementDirection>>();
 }
 
 dae::QbertComponent::~QbertComponent()
@@ -24,7 +24,7 @@ dae::QbertComponent::~QbertComponent()
 
 void dae::QbertComponent::Init()
 {
-	PlayerMoveStateChanged->AddObserver(this);
+	MoveStateChanged->AddObserver(this);
 	TileComponent::TileChanged->AddObserver(this);
 	GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
 }
@@ -69,12 +69,12 @@ void dae::QbertComponent::Update()
 
 	if (t >= 1.f)
 	{
-		PlayerMoveStateChanged->NotifyObservers((m_IsFalling ? MovementState::Falling : MovementState::End), m_MovementDirection);
+		MoveStateChanged->NotifyObservers(Characters::Qbert1, (m_IsFalling ? MovementState::Falling : MovementState::End), m_MovementDirection);
 		m_MovementDirection = MovementDirection::None;
 	}
 }
 
-void dae::QbertComponent::Notify(MovementState movementState, MovementDirection movementDirection)
+void dae::QbertComponent::Notify(Characters, MovementState movementState, MovementDirection movementDirection)
 {
 	switch (movementState)
 	{
@@ -83,8 +83,6 @@ void dae::QbertComponent::Notify(MovementState movementState, MovementDirection 
 		GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(static_cast<int>(m_MovementDirection), 0);
 		m_AccumSec = 0.f;
 		m_StartPos = GetGameObject()->GetLocalPosition();
-		break;
-	case MovementState::Moving:
 		break;
 	case MovementState::End:
 		break;

@@ -30,7 +30,18 @@ namespace dae
 		None
 	};
 
-	class QbertComponent final : public BaseComponent, public Observer<MovementState, MovementDirection>, public Observer<bool>
+	enum class Characters
+	{
+		Qbert1,
+		Qbert2,
+		Coily,
+		Ugg,
+		Wrongway,
+		Slick,
+		Sam
+	};
+
+	class QbertComponent final : public BaseComponent, public Observer<Characters, MovementState, MovementDirection>, public Observer<bool>
 	{
 	public:
 		QbertComponent(GameObject* pGameObject);				// Constructor
@@ -50,7 +61,7 @@ namespace dae
 		virtual void Init() override;
 		virtual void Update() override;
 
-		virtual void Notify(MovementState movementState, MovementDirection movementDirection) override;
+		virtual void Notify(Characters character, MovementState movementState, MovementDirection movementDirection) override;
 		virtual void Notify(bool roundFinished) override;
 
 		bool IsMoving() const { return m_MovementDirection != MovementDirection::None; }
@@ -58,7 +69,7 @@ namespace dae
 		int GetLives() const { return m_Lives; }
 
 		std::unique_ptr<Subject<>> PlayerDied;
-		std::unique_ptr<Subject<MovementState, MovementDirection>> PlayerMoveStateChanged;
+		std::unique_ptr<Subject<Characters, MovementState, MovementDirection>> MoveStateChanged;
 		bool m_IsFalling{ false };
 	private:
 
