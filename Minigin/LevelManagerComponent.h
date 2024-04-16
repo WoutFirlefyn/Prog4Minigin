@@ -3,56 +3,63 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
+#include <vector>
+#include <memory>
 #include "BaseComponent.h"
 #include "Observer.h"
 
 //-----------------------------------------------------
-// QbertCurseComponent Class									
+// LevelManagerComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
+	class Scene;
+	class TileComponent;
+	class QbertComponent;
+	enum class Character;
 	enum class MovementState;
 	enum class MovementDirection;
-	enum class Character;
-	class QbertComponent;
-	class QbertCurseComponent final : public BaseComponent, public Observer<Character, MovementState, MovementDirection>
+	class LevelManagerComponent final : public BaseComponent, public Observer<Character, MovementState, MovementDirection>, public Observer<bool>
 	{
 	public:
-		QbertCurseComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);				// Constructor
-		~QbertCurseComponent();				// Destructor
+		LevelManagerComponent(GameObject* pGameObject, QbertComponent* pQbertComponent, Scene& scene);				// Constructor
+		~LevelManagerComponent();				// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		QbertCurseComponent(const QbertCurseComponent& other) = delete;
-		QbertCurseComponent(QbertCurseComponent&& other) noexcept = delete;
-		QbertCurseComponent& operator=(const QbertCurseComponent& other) = delete;
-		QbertCurseComponent& operator=(QbertCurseComponent&& other)	noexcept = delete;
+		LevelManagerComponent(const LevelManagerComponent& other) = delete;
+		LevelManagerComponent(LevelManagerComponent&& other) noexcept = delete;
+		LevelManagerComponent& operator=(const LevelManagerComponent& other) = delete;
+		LevelManagerComponent& operator=(LevelManagerComponent&& other)	noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Init() override;
-		virtual void Update() override;
 
 		virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
 		virtual void SubjectDestroyed(Subject<Character, MovementState, MovementDirection>* pSubject) override;
 
+		virtual void Notify(bool roundFinished) override;
 
+		std::unique_ptr<Subject<bool>> TileChanged;
 	private:
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
-
+		bool AreAllTilesCovered() const;
+		TileComponent* FindCharacter(Character character) const;
 
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
 		QbertComponent* m_pQbertComponent;
-		float m_AccumSec{ 0.f };
-		float m_CurseDuration{ 1.f };
+		std::vector<TileComponent*> m_vTiles;
+		int m_LevelLength{ 7 };
+		int m_TilesCovered{ 0 };
+		int m_CurrentRound{ 0 };
 
 	};
 }
 
- 

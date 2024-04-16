@@ -7,50 +7,48 @@
 #include "Observer.h"
 
 //-----------------------------------------------------
-// ScoreComponent Class									
+// DiscComponent Class									
 //-----------------------------------------------------
 namespace dae
 {
-	class TextComponent;
+	enum class Character;
+	enum class MovementState;
+	enum class MovementDirection;
 	class QbertComponent;
-	class LevelManagerComponent;
-	enum class ScoreType;
-	class ScoreComponent final : public BaseComponent, public Observer<bool>
+	class DiscComponent final : public BaseComponent, public Observer<Character, MovementState, MovementDirection>
 	{
 	public:
-		ScoreComponent(GameObject* pGameObject, QbertComponent* pQbertComponent, LevelManagerComponent* pLevelManagerComponent);
-		virtual ~ScoreComponent() override;
+		DiscComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);
+		~DiscComponent();			
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		ScoreComponent(const ScoreComponent& other) = delete;
-		ScoreComponent(ScoreComponent&& other) noexcept = delete;
-		ScoreComponent& operator=(const ScoreComponent& other) = delete;
-		ScoreComponent& operator=(ScoreComponent&& other)	noexcept = delete;
+		DiscComponent(const DiscComponent& other) = delete;
+		DiscComponent(DiscComponent&& other) noexcept = delete;
+		DiscComponent& operator=(const DiscComponent& other) = delete;
+		DiscComponent& operator=(DiscComponent&& other)	noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
 		virtual void Init() override;
-		virtual void Notify(bool roundFinished) override;
-		virtual void SubjectDestroyed(Subject<bool>* pSubject) override;
+		virtual void Update() override;
 
-		int GetScore() const { return m_Score; }
+		virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
+		virtual void SubjectDestroyed(Subject<Character, MovementState, MovementDirection>* pSubject) override;
+
 
 	private:
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
-		void UpdateText();
+
 
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		int m_Score{ 0 };
-		QbertComponent* m_pQbertComponent{};
-		LevelManagerComponent* m_pLevelManagerComponent{};
-		TextComponent* m_pTextComponent{};
+		QbertComponent* m_pQbertComponent;
 	};
 }
 
