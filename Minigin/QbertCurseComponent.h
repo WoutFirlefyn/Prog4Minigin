@@ -13,9 +13,9 @@ namespace dae
 {
 	enum class MovementState;
 	enum class MovementDirection;
-	enum class Characters;
+	enum class Character;
 	class QbertComponent;
-	class QbertCurseComponent final : public BaseComponent, public Observer<Characters, MovementState, MovementDirection>
+	class QbertCurseComponent final : public BaseComponent, public Observer<Character, MovementState, MovementDirection>
 	{
 	public:
 		QbertCurseComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);				// Constructor
@@ -35,8 +35,8 @@ namespace dae
 		virtual void Init() override;
 		virtual void Update() override;
 
-		virtual void Notify(Characters character, MovementState movementState, MovementDirection movementDirection) override;
-		virtual void SubjectDestroyed(Subject<Characters, MovementState, MovementDirection>* pSubject) override;
+		virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
+		virtual void SubjectDestroyed(Subject<Character, MovementState, MovementDirection>* pSubject) override;
 
 
 	private:

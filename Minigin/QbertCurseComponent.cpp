@@ -36,7 +36,7 @@ void dae::QbertCurseComponent::Update()
 	}
 }
 
-void dae::QbertCurseComponent::Notify(Characters, MovementState movementState, MovementDirection)
+void dae::QbertCurseComponent::Notify(Character, MovementState movementState, MovementDirection)
 {
 	if (movementState != MovementState::Falling)
 		return;
@@ -44,7 +44,7 @@ void dae::QbertCurseComponent::Notify(Characters, MovementState movementState, M
 	m_AccumSec = 0.f;
 }
 
-void dae::QbertCurseComponent::SubjectDestroyed(Subject<Characters, MovementState, MovementDirection>* pSubject)
+void dae::QbertCurseComponent::SubjectDestroyed(Subject<Character, MovementState, MovementDirection>* pSubject)
 {
 	if (pSubject == m_pQbertComponent->MoveStateChanged.get())
 		m_pQbertComponent = nullptr;

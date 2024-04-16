@@ -6,26 +6,28 @@
 #include "Time.h"
 #include "SpritesheetComponent.h"
 #include "TileComponent.h"
+#include "LevelManagerComponent.h"
 
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::QbertComponent::QbertComponent(GameObject* pGameObject)
+dae::QbertComponent::QbertComponent(GameObject* pGameObject) 
 	: BaseComponent(pGameObject)
 {
 	PlayerDied = std::make_unique<Subject<>>();
-	MoveStateChanged = std::make_unique<Subject<Characters, MovementState, MovementDirection>>();
+	MoveStateChanged = std::make_unique<Subject<Character, MovementState, MovementDirection>>();
 }
 
 dae::QbertComponent::~QbertComponent()
 {
-	TileComponent::TileChanged->RemoveObserver(this);
+	if (m_pLevelManagerComponent)
+		m_pLevelManagerComponent->TileChanged->RemoveObserver(this);
 }
 
 void dae::QbertComponent::Init()
 {
 	MoveStateChanged->AddObserver(this);
-	TileComponent::TileChanged->AddObserver(this);
+	m_pLevelManagerComponent->TileChanged->AddObserver(this);
 	GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
 }
 
@@ -69,12 +71,18 @@ void dae::QbertComponent::Update()
 
 	if (t >= 1.f)
 	{
-		MoveStateChanged->NotifyObservers(Characters::Qbert1, (m_IsFalling ? MovementState::Falling : MovementState::End), m_MovementDirection);
+		MoveStateChanged->NotifyObservers(Character::Qbert1, (m_IsFalling ? MovementState::Falling : MovementState::End), m_MovementDirection);
 		m_MovementDirection = MovementDirection::None;
 	}
 }
 
-void dae::QbertComponent::Notify(Characters, MovementState movementState, MovementDirection movementDirection)
+void dae::QbertComponent::AddObserver(BaseComponent* pBaseComponent)
+{
+	if (auto pComponent = dynamic_cast<LevelManagerComponent*>(pBaseComponent))
+		m_pLevelManagerComponent = pComponent;
+}
+
+void dae::QbertComponent::Notify(Character, MovementState movementState, MovementDirection movementDirection)
 {
 	switch (movementState)
 	{
@@ -94,6 +102,12 @@ void dae::QbertComponent::Notify(Characters, MovementState movementState, Moveme
 	default:
 		break;
 	}
+}
+
+void dae::QbertComponent::SubjectDestroyed(Subject<bool>* pSubject)
+{
+	if (pSubject == m_pLevelManagerComponent->TileChanged.get())
+		m_pLevelManagerComponent = nullptr;
 }
 
 void dae::QbertComponent::Notify(bool roundFinished)

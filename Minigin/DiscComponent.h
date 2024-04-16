@@ -11,11 +11,11 @@
 //-----------------------------------------------------
 namespace dae
 {
-	enum class Characters;
+	enum class Character;
 	enum class MovementState;
 	enum class MovementDirection;
 	class QbertComponent;
-	class DiscComponent final : public BaseComponent, public Observer<Characters, MovementState, MovementDirection>
+	class DiscComponent final : public BaseComponent, public Observer<Character, MovementState, MovementDirection>
 	{
 	public:
 		DiscComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);
@@ -35,8 +35,8 @@ namespace dae
 		virtual void Init() override;
 		virtual void Update() override;
 
-		virtual void Notify(Characters character, MovementState movementState, MovementDirection movementDirection) override;
-		virtual void SubjectDestroyed(Subject<Characters, MovementState, MovementDirection>* pSubject) override;
+		virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
+		virtual void SubjectDestroyed(Subject<Character, MovementState, MovementDirection>* pSubject) override;
 
 
 	private:

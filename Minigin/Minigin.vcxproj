@@ -223,6 +223,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="GraphComponent.h" />
     <ClInclude Include="GraphicsComponent.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="LevelManagerComponent.h" />
     <ClInclude Include="LivesComponent.h" />
     <ClInclude Include="QbertComponent.h" />
     <ClInclude Include="InputManager.h" />
@@ -264,6 +265,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphComponent.cpp" />
     <ClCompile Include="GraphicsComponent.cpp" />
+    <ClCompile Include="LevelManagerComponent.cpp" />
     <ClCompile Include="LivesComponent.cpp" />
     <ClCompile Include="QbertComponent.cpp" />
     <ClCompile Include="InputManager.cpp" />

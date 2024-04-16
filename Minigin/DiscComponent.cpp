@@ -27,7 +27,7 @@ void dae::DiscComponent::Update()
 {
 }
 
-void dae::DiscComponent::Notify(Characters, MovementState movementState, MovementDirection)
+void dae::DiscComponent::Notify(Character, MovementState movementState, MovementDirection)
 {
 	if (movementState != MovementState::End)
 		return;
@@ -35,7 +35,7 @@ void dae::DiscComponent::Notify(Characters, MovementState movementState, Movemen
 
 }
 
-void dae::DiscComponent::SubjectDestroyed(Subject<Characters, MovementState, MovementDirection>* pSubject)
+void dae::DiscComponent::SubjectDestroyed(Subject<Character, MovementState, MovementDirection>* pSubject)
 {
 	if (pSubject == m_pQbertComponent->MoveStateChanged.get())
 		m_pQbertComponent = nullptr;

@@ -4,7 +4,6 @@
 // Include Files
 //-----------------------------------------------------
 #include "BaseComponent.h"
-#include "Observer.h"
 #include <vector>
 #include <unordered_map>
 
@@ -13,18 +12,13 @@
 //-----------------------------------------------------
 namespace dae
 {
-
-	static bool QbertMoving{ false };
-
-	enum class Characters;
-	enum class MovementState;
+	enum class Character;
 	enum class MovementDirection;
-	class QbertComponent;
-	class TileComponent final : public BaseComponent, public Observer<Characters, MovementState, MovementDirection>, public Observer<bool>
+	class TileComponent final : public BaseComponent
 	{
 	public:
-		TileComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);	// Constructor
-		virtual ~TileComponent() override;				// Destructor
+		TileComponent(GameObject* pGameObject);				// Constructor
+		virtual ~TileComponent() override = default;		// Destructor
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
@@ -37,39 +31,29 @@ namespace dae
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-		virtual void Init() override;
-
-		virtual void Notify(Characters character, MovementState movementState, MovementDirection movementDirection) override;
-		virtual void SubjectDestroyed(Subject<Characters, MovementState, MovementDirection>* pSubject) override;
-
-		virtual void Notify(bool roundFinished) override;
-
-		void SetNeighboringTiles(const std::vector<std::vector<GameObject*>>& vTiles, size_t row, size_t col);
+		void SetNeighboringTiles(const std::vector<std::vector<TileComponent*>>& vTiles, size_t row, size_t col);
+		GameObject* GetNeighboringTile(MovementDirection direction) const { return m_vNeighboringTiles[static_cast<size_t>(direction)]; }
 		bool IsEdgeTile() const;
-		void MoveCharacterHere(const std::pair<Characters, GameObject*>& character);
 
-		static std::unique_ptr<Subject<bool>> TileChanged;
+		bool IsCharacterHere(Character character);
+		void GetCharacter(std::pair<dae::Character, dae::GameObject*>& character);
+		void MoveCharacterHere(const std::pair<Character, GameObject*>& character);
+
+		bool ChangeTile(int currentRound);
+		void Reset(int currentRound);
+
+		static int GetMaxTileStage() { return m_MaxTileStage; }
 	private:
-		//-------------------------------------------------
-		// Private member functions								
-		//-------------------------------------------------
-		bool AreAllTilesCovered() { return m_MaxTileStage * m_TileCount == m_TilesCovered; }
 
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
 		std::vector<GameObject*> m_vNeighboringTiles{};
-		std::unordered_map<Characters, GameObject*> m_CharactersHere;
-		QbertComponent* m_pQbertComponent{ nullptr };
-		//bool m_QbertIsHere{ false };
+		std::unordered_map<Character, GameObject*> m_CharactersHere;
 		int m_TileStage{ 0 };
-		int m_MaxTileStage{ 1 };
-		int m_CurrentRound{ 0 };
 		const int m_TileId;
+		static int m_MaxTileStage;
 		static int m_TileCount;
-		static int m_TilesCovered;
-
-		static std::pair<Characters, GameObject*> tempQbertHolder;
 	};
 }
 

@@ -13,11 +13,12 @@ namespace dae
 {
 	class TextComponent;
 	class QbertComponent;
+	class LevelManagerComponent;
 	enum class ScoreType;
 	class ScoreComponent final : public BaseComponent, public Observer<bool>
 	{
 	public:
-		ScoreComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);
+		ScoreComponent(GameObject* pGameObject, QbertComponent* pQbertComponent, LevelManagerComponent* pLevelManagerComponent);
 		virtual ~ScoreComponent() override;
 
 		// -------------------------
@@ -33,6 +34,7 @@ namespace dae
 		//-------------------------------------------------
 		virtual void Init() override;
 		virtual void Notify(bool roundFinished) override;
+		virtual void SubjectDestroyed(Subject<bool>* pSubject) override;
 
 		int GetScore() const { return m_Score; }
 
@@ -47,6 +49,7 @@ namespace dae
 		//-------------------------------------------------
 		int m_Score{ 0 };
 		QbertComponent* m_pQbertComponent{};
+		LevelManagerComponent* m_pLevelManagerComponent{};
 		TextComponent* m_pTextComponent{};
 	};
 }
