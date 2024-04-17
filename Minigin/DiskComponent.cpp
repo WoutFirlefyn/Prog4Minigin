@@ -1,33 +1,33 @@
 //---------------------------
 // Includes
 //---------------------------
-#include "DiscComponent.h"
+#include "DiskComponent.h"
 #include "QbertComponent.h"
 
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::DiscComponent::DiscComponent(GameObject* pGameObject, QbertComponent* pQbertComponent) : BaseComponent(pGameObject)
+dae::DiskComponent::DiskComponent(GameObject* pGameObject, QbertComponent* pQbertComponent) : BaseComponent(pGameObject)
 	, m_pQbertComponent{ pQbertComponent }
 {
 }
 
-dae::DiscComponent::~DiscComponent()
+dae::DiskComponent::~DiskComponent()
 {
 	if (m_pQbertComponent)
 		m_pQbertComponent->MoveStateChanged->RemoveObserver(this);
 }
 
-void dae::DiscComponent::Init()
+void dae::DiskComponent::Init()
 {
 	m_pQbertComponent->MoveStateChanged->AddObserver(this);
 }
 
-void dae::DiscComponent::Update()
+void dae::DiskComponent::Update()
 {
 }
 
-void dae::DiscComponent::Notify(Character, MovementState movementState, MovementDirection)
+void dae::DiskComponent::Notify(Character, MovementState movementState, MovementDirection)
 {
 	if (movementState != MovementState::End)
 		return;
@@ -35,7 +35,7 @@ void dae::DiscComponent::Notify(Character, MovementState movementState, Movement
 
 }
 
-void dae::DiscComponent::SubjectDestroyed(Subject<Character, MovementState, MovementDirection>* pSubject)
+void dae::DiskComponent::SubjectDestroyed(Subject<Character, MovementState, MovementDirection>* pSubject)
 {
 	if (pSubject == m_pQbertComponent->MoveStateChanged.get())
 		m_pQbertComponent = nullptr;

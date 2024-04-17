@@ -49,17 +49,17 @@ namespace dae
 		// Private member functions								
 		//-------------------------------------------------
 		bool AreAllTilesCovered() const;
-		TileComponent* FindCharacter(Character character) const;
+		GameObject* FindCharacter(Character character) const;
 
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
 		QbertComponent* m_pQbertComponent;
-		std::vector<TileComponent*> m_vTiles;
+		std::vector<GameObject*> m_vTiles;
 		int m_LevelLength{ 7 };
 		int m_TilesCovered{ 0 };
 		int m_CurrentRound{ 0 };
-
+		int m_AmountOfDisks{ 2 };
 	};
 }
 

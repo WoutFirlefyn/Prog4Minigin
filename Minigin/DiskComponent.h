@@ -15,19 +15,19 @@ namespace dae
 	enum class MovementState;
 	enum class MovementDirection;
 	class QbertComponent;
-	class DiscComponent final : public BaseComponent, public Observer<Character, MovementState, MovementDirection>
+	class DiskComponent final : public BaseComponent, public Observer<Character, MovementState, MovementDirection>
 	{
 	public:
-		DiscComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);
-		~DiscComponent();			
+		DiskComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);
+		~DiskComponent();			
 
 		// -------------------------
 		// Copy/move constructors and assignment operators
 		// -------------------------    
-		DiscComponent(const DiscComponent& other) = delete;
-		DiscComponent(DiscComponent&& other) noexcept = delete;
-		DiscComponent& operator=(const DiscComponent& other) = delete;
-		DiscComponent& operator=(DiscComponent&& other)	noexcept = delete;
+		DiskComponent(const DiskComponent& other) = delete;
+		DiskComponent(DiskComponent&& other) noexcept = delete;
+		DiskComponent& operator=(const DiskComponent& other) = delete;
+		DiskComponent& operator=(DiskComponent&& other)	noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						

@@ -40,11 +40,12 @@ bool dae::TileComponent::IsCharacterHere(Character character)
     return m_CharactersHere.contains(character);
 }
 
-void dae::TileComponent::GetCharacter(std::pair<dae::Character, dae::GameObject*>& character)
+std::pair<dae::Character, dae::GameObject*> dae::TileComponent::GetCharacter(Character character)
 {
-    auto characterNode = m_CharactersHere.extract(character.first);
+    auto characterNode = m_CharactersHere.extract(character);
     if (characterNode)
-        character.second = characterNode.mapped();
+        return std::make_pair(characterNode.key(), characterNode.mapped());
+    return std::make_pair(character, nullptr);
 }
 
 void dae::TileComponent::MoveCharacterHere(const std::pair<Character, GameObject*>& character)
@@ -66,6 +67,35 @@ void dae::TileComponent::Reset(int currentRound)
     m_TileStage = 0;
     GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(currentRound, m_TileStage);
     m_CharactersHere.clear();
+}
+
+void dae::TileComponent::AddDiskAsNeighbor(GameObject* pDisk)
+{
+    MovementDirection direction{};
+    if (std::count(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), nullptr) == 2)
+        direction = static_cast<MovementDirection>(rand() % 2);
+    else
+    {
+        auto it = std::find(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), nullptr);
+        direction = static_cast<MovementDirection>(std::distance(m_vNeighboringTiles.begin(), it));
+    }
+
+    glm::vec3 offset{};
+    switch (direction)
+    {
+    case MovementDirection::Up:
+        offset += glm::vec3{ 16, -24, 0 };
+        break;
+    case MovementDirection::Left:
+        offset += glm::vec3{ -16, -24, 0 };
+        break;
+    default:
+        return;
+    }
+    pDisk->SetParent(GetGameObject());
+    pDisk->SetPosition(pDisk->GetLocalPosition() + offset);
+
+    m_vNeighboringTiles[static_cast<size_t>(direction)] = pDisk;
 }
 
 
