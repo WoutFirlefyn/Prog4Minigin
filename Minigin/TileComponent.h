@@ -36,7 +36,7 @@ namespace dae
 		bool IsEdgeTile() const;
 
 		bool IsCharacterHere(Character character);
-		std::pair<dae::Character, dae::GameObject*> GetCharacter(Character character);
+		std::pair<Character, GameObject*> GetCharacter(Character character);
 		void MoveCharacterHere(const std::pair<Character, GameObject*>& character);
 
 		bool ChangeTile(int currentRound);

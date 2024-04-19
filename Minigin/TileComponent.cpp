@@ -94,6 +94,7 @@ void dae::TileComponent::AddDiskAsNeighbor(GameObject* pDisk)
     }
     pDisk->SetParent(GetGameObject());
     pDisk->SetPosition(pDisk->GetLocalPosition() + offset);
+    pDisk->SetParent(nullptr, true);
 
     m_vNeighboringTiles[static_cast<size_t>(direction)] = pDisk;
 }

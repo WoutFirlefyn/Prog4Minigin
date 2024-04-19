@@ -3,44 +3,53 @@
 //---------------------------
 #include "DiskComponent.h"
 #include "QbertComponent.h"
+#include "GameObject.h"
+#include "Time.h"
 
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::DiskComponent::DiskComponent(GameObject* pGameObject, QbertComponent* pQbertComponent) : BaseComponent(pGameObject)
-	, m_pQbertComponent{ pQbertComponent }
+dae::DiskComponent::DiskComponent(GameObject* pGameObject, GameObject* pTopTile) : BaseComponent(pGameObject)
+	, m_pTopTile{ pTopTile }
 {
 }
 
 dae::DiskComponent::~DiskComponent()
 {
-	if (m_pQbertComponent)
-		m_pQbertComponent->MoveStateChanged->RemoveObserver(this);
 }
 
 void dae::DiskComponent::Init()
 {
-	m_pQbertComponent->MoveStateChanged->AddObserver(this);
 }
 
 void dae::DiskComponent::Update()
 {
-}
-
-void dae::DiskComponent::Notify(Character, MovementState movementState, MovementDirection)
-{
-	if (movementState != MovementState::End)
+	if (m_pCharacter.second == nullptr)
 		return;
 
+	m_AccumSec += Time::GetInstance().GetDeltaTime();
 
+	float t = m_AccumSec / m_TimeToReachTop;
+
+	glm::vec3 endPos = m_pTopTile->GetWorldPosition();
+
+	GetGameObject()->SetPosition(m_StartPos + (endPos - m_StartPos) * t);
+
+	if (t >= 1)
+		m_pCharacter.second = nullptr;
 }
 
-void dae::DiskComponent::SubjectDestroyed(Subject<Character, MovementState, MovementDirection>* pSubject)
+std::pair<dae::Character, dae::GameObject*> dae::DiskComponent::GetCharacter() const
 {
-	if (pSubject == m_pQbertComponent->MoveStateChanged.get())
-		m_pQbertComponent = nullptr;
+	return m_pCharacter;
 }
 
+void dae::DiskComponent::MoveCharacterHere(const std::pair<Character, GameObject*>& character)
+{
+	m_StartPos = GetGameObject()->GetWorldPosition();
+	m_pCharacter = character;
+	character.second->SetParent(GetGameObject(), true);
+}
 
 
 

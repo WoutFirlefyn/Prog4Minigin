@@ -62,7 +62,7 @@ dae::LevelManagerComponent::LevelManagerComponent(GameObject* pGameObject, Qbert
         auto disk = std::make_unique<GameObject>();
         disk->AddComponent<GraphicsComponent>("Disk Spritesheet.png");
         disk->AddComponent<SpritesheetComponent>(30, 1);
-        disk->AddComponent<DiskComponent>(m_pQbertComponent);
+        disk->AddComponent<DiskComponent>(m_vTiles[0]);
         disk->SetPosition(8, 14);
        
         vEdgeTiles[i]->AddDiskAsNeighbor(scene.Add(std::move(disk)));
@@ -87,7 +87,10 @@ void dae::LevelManagerComponent::Init()
 void dae::LevelManagerComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
 {
     auto pCurrentTile = FindCharacter(character);
-    assert(pCurrentTile && "LevelManagerComponent: Character not found");
+
+    if (!pCurrentTile)
+        return;
+    //assert(pCurrentTile && "LevelManagerComponent: Character not found");
 
     switch (movementState)
     {
@@ -100,9 +103,9 @@ void dae::LevelManagerComponent::Notify(Character character, MovementState movem
 
             if (pNextTile->HasComponent<TileComponent>())
                 pNextTile->GetComponent<TileComponent>()->MoveCharacterHere(characterObject);
-            else
+            else if (pNextTile->HasComponent<DiskComponent>())
             {
-                // disc code
+                pNextTile->GetComponent<DiskComponent>()->MoveCharacterHere(characterObject);
             }
         }
         else

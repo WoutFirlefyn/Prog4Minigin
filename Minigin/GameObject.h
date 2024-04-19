@@ -36,6 +36,7 @@ namespace dae
 		glm::vec3 GetLocalPosition() { return m_LocalTransform.GetPosition(); }
 		const Transform& GetLocalTransform() { return m_LocalTransform; }
 		const Transform& GetWorldTransform();
+		glm::vec3 GetWorldPosition() { return GetWorldTransform().GetPosition(); }
 		void UpdateWorldTransform();
 
 		void MarkAsDestroyed() { m_IsDestroyed = true; }

@@ -5,6 +5,7 @@
 //-----------------------------------------------------
 #include "BaseComponent.h"
 #include "Observer.h"
+#include "glm/glm.hpp"
 
 //-----------------------------------------------------
 // DiscComponent Class									
@@ -15,10 +16,10 @@ namespace dae
 	enum class MovementState;
 	enum class MovementDirection;
 	class QbertComponent;
-	class DiskComponent final : public BaseComponent, public Observer<Character, MovementState, MovementDirection>
+	class DiskComponent final : public BaseComponent
 	{
 	public:
-		DiskComponent(GameObject* pGameObject, QbertComponent* pQbertComponent);
+		DiskComponent(GameObject* pGameObject, GameObject* pTopTile);
 		~DiskComponent();			
 
 		// -------------------------
@@ -35,20 +36,21 @@ namespace dae
 		virtual void Init() override;
 		virtual void Update() override;
 
-		virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
-		virtual void SubjectDestroyed(Subject<Character, MovementState, MovementDirection>* pSubject) override;
-
-
+		std::pair<Character, GameObject*> GetCharacter() const;
+		void MoveCharacterHere(const std::pair<Character, GameObject*>& character);
 	private:
 		//-------------------------------------------------
 		// Private member functions								
 		//-------------------------------------------------
 
-
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		QbertComponent* m_pQbertComponent;
+		GameObject* m_pTopTile;
+		std::pair<Character, GameObject*> m_pCharacter;
+		glm::vec3 m_StartPos{};
+		float m_AccumSec{};
+		float m_TimeToReachTop{ 5.f };
 	};
 }
 
