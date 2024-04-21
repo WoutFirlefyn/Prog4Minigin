@@ -4,30 +4,30 @@
 #define _USE_MATH_DEFINES
 #include "RotateComponent.h"
 #include "GameObject.h"
-#include "Time.h"
+#include "GameTime.h"
 #include <cmath>
 
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::RotateComponent::RotateComponent(GameObject* pGameObject) : BaseComponent(pGameObject)
+RotateComponent::RotateComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
 {
 }
 
-dae::RotateComponent::RotateComponent(GameObject* pGameObject, float speed, float distance) : BaseComponent(pGameObject)
+RotateComponent::RotateComponent(dae::GameObject* pGameObject, float speed, float distance) : BaseComponent(pGameObject)
 	, m_Speed{ speed }
 	, m_Distance{ distance }
 {
 }
 
-void dae::RotateComponent::Init()
+void RotateComponent::Init()
 {
 	m_Center = GetGameObject()->GetLocalPosition();
 }
 
-void dae::RotateComponent::Update()
+void RotateComponent::Update()
 {
-	m_CurrentAngle += m_Speed * Time::GetInstance().GetDeltaTime();
+	m_CurrentAngle += m_Speed * dae::GameTime::GetInstance().GetDeltaTime();
 	
 	m_CurrentAngle = std::fmod(m_CurrentAngle, 2 * static_cast<float>(M_PI));
 

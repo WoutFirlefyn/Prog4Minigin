@@ -1,6 +1,6 @@
 #pragma once
 #include "Windows.h"
-#include <SDL_scancode.h>
+//#include <SDL_scancode.h>
 #include <memory>
 #include <vector>
 #include "Singleton.h"

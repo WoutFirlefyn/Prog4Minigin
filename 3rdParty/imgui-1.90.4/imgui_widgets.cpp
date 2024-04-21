@@ -6702,7 +6702,7 @@ ImGuiTypingSelectRequest* ImGui::GetTypingSelectRequest(ImGuiTypingSelectFlags f
     {
         bool clear_buffer = false;
         clear_buffer |= (g.NavFocusScopeId != data->FocusScope);
-        clear_buffer |= (data->LastRequestTime + TYPING_SELECT_RESET_TIMER < g.Time);
+        clear_buffer |= (data->LastRequestTime + TYPING_SELECT_RESET_TIMER < g.GameTime);
         clear_buffer |= g.NavAnyRequest;
         clear_buffer |= g.ActiveId != 0 && g.NavActivateId == 0; // Allow temporary SPACE activation to not interfere
         clear_buffer |= IsKeyPressed(ImGuiKey_Escape) || IsKeyPressed(ImGuiKey_Enter);
@@ -6754,7 +6754,7 @@ ImGuiTypingSelectRequest* ImGui::GetTypingSelectRequest(ImGuiTypingSelectFlags f
     {
         data->FocusScope = g.NavFocusScopeId;
         data->LastRequestFrame = g.FrameCount;
-        data->LastRequestTime = (float)g.Time;
+        data->LastRequestTime = (float)g.GameTime;
     }
     out_request->Flags = flags;
     out_request->SearchBufferLen = buffer_len;

@@ -6,12 +6,12 @@
 #include "FPSComponent.h"
 #include "TextComponent.h"
 #include "GameObject.h"
-#include "Time.h"
+#include "GameTime.h"
 
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::FPSComponent::FPSComponent(GameObject* pGameObject) : BaseComponent(pGameObject)
+FPSComponent::FPSComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
 {
 }
 
@@ -19,15 +19,15 @@ dae::FPSComponent::FPSComponent(GameObject* pGameObject) : BaseComponent(pGameOb
 // Member functions
 //---------------------------
 
-void dae::FPSComponent::Init()
+void FPSComponent::Init()
 {
-	m_pTextComponent = GetGameObject()->GetComponent<TextComponent>();
+	m_pTextComponent = GetGameObject()->GetComponent<dae::TextComponent>();
 }
 
-void dae::FPSComponent::Update()
+void FPSComponent::Update()
 {
 	++m_Count;
-	m_Delay += Time::GetInstance().GetDeltaTime();
+	m_Delay += dae::GameTime::GetInstance().GetDeltaTime();
 
 	if (m_Delay >= m_MaxDelay)
 	{

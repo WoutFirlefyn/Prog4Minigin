@@ -10,7 +10,7 @@
 //-----------------------------------------------------
 namespace dae
 {
-	class Time final : public Singleton<Time>
+	class GameTime final : public Singleton<GameTime>
 	{
 	public:
 		void SetFPSCap(float maxFPS) { m_MsPerFrame = 1000.f / maxFPS; }
@@ -28,8 +28,8 @@ namespace dae
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		friend class Singleton<Time>;
-		Time() = default;
+		friend class Singleton<GameTime>;
+		GameTime() = default;
 		float m_DeltaTime{};
 		float m_MsPerFrame{ 1000.f / 60.f };
 		float m_FixedTimeStep{ 0.02f };

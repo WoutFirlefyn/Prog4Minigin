@@ -11,14 +11,14 @@
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::ScoreComponent::ScoreComponent(GameObject* pGameObject, QbertComponent* pQbertComponent, LevelManagerComponent* pLevelManagerComponent)
+ScoreComponent::ScoreComponent(dae::GameObject* pGameObject, QbertComponent* pQbertComponent, LevelManagerComponent* pLevelManagerComponent)
 	: BaseComponent(pGameObject)
 	, m_pQbertComponent{ pQbertComponent }
 	, m_pLevelManagerComponent{ pLevelManagerComponent }
 {
 }
 
-dae::ScoreComponent::~ScoreComponent()
+ScoreComponent::~ScoreComponent()
 {
 	if(m_pLevelManagerComponent)
 		m_pLevelManagerComponent->TileChanged->RemoveObserver(this);
@@ -28,14 +28,14 @@ dae::ScoreComponent::~ScoreComponent()
 // Member functions
 //---------------------------
 
-void dae::ScoreComponent::Init()
+void ScoreComponent::Init()
 {
 	m_pLevelManagerComponent->TileChanged->AddObserver(this);
-	m_pTextComponent = GetGameObject()->GetComponent<TextComponent>();
+	m_pTextComponent = GetGameObject()->GetComponent<dae::TextComponent>();
 	UpdateText();
 }
 
-void dae::ScoreComponent::Notify(bool roundFinished)
+void ScoreComponent::Notify(bool roundFinished)
 {
 	m_Score += 25;
 	if (roundFinished)
@@ -43,13 +43,13 @@ void dae::ScoreComponent::Notify(bool roundFinished)
 	UpdateText();
 }
 
-void dae::ScoreComponent::SubjectDestroyed(Subject<bool>* pSubject)
+void ScoreComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
 {
 	if (pSubject == m_pLevelManagerComponent->TileChanged.get())
 		m_pLevelManagerComponent = nullptr;
 }
 
-void dae::ScoreComponent::UpdateText()
+void ScoreComponent::UpdateText()
 {
 	if (m_pTextComponent)
 		m_pTextComponent->SetText("Score: " + std::to_string(m_Score));

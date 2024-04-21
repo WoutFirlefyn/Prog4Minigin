@@ -10,11 +10,11 @@
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::GraphComponent::GraphComponent(GameObject* pGameObject) : BaseComponent(pGameObject)
+GraphComponent::GraphComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
 {
 }
 
-void dae::GraphComponent::RenderGUI()
+void GraphComponent::RenderGUI()
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();

@@ -106,7 +106,7 @@ struct ImGui_ImplSDL2_Data
 {
     SDL_Window*             Window;
     SDL_Renderer*           Renderer;
-    Uint64                  Time;
+    Uint64                  GameTime;
     char*                   ClipboardTextData;
 
     // Mouse handling
@@ -725,10 +725,10 @@ void ImGui_ImplSDL2_NewFrame()
     // (Accept SDL_GetPerformanceCounter() not returning a monotonically increasing value. Happens in VMs and Emscripten, see #6189, #6114, #3644)
     static Uint64 frequency = SDL_GetPerformanceFrequency();
     Uint64 current_time = SDL_GetPerformanceCounter();
-    if (current_time <= bd->Time)
-        current_time = bd->Time + 1;
-    io.DeltaTime = bd->Time > 0 ? (float)((double)(current_time - bd->Time) / frequency) : (float)(1.0f / 60.0f);
-    bd->Time = current_time;
+    if (current_time <= bd->GameTime)
+        current_time = bd->GameTime + 1;
+    io.DeltaTime = bd->GameTime > 0 ? (float)((double)(current_time - bd->GameTime) / frequency) : (float)(1.0f / 60.0f);
+    bd->GameTime = current_time;
 
     if (bd->MouseLastLeaveFrame && bd->MouseLastLeaveFrame >= ImGui::GetFrameCount() && bd->MouseButtonsDown == 0)
     {

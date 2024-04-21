@@ -9,17 +9,17 @@
 #include <iostream>
 #include <optional>
 
-int dae::TileComponent::m_MaxTileStage{ 1 };
-int dae::TileComponent::m_TileCount{ 0 };
+int TileComponent::m_MaxTileStage{ 1 };
+int TileComponent::m_TileCount{ 0 };
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::TileComponent::TileComponent(GameObject* pGameObject) : BaseComponent(pGameObject)
+TileComponent::TileComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
     , m_TileId{ m_TileCount++ }
 {
 }
 
-void dae::TileComponent::SetNeighboringTiles(const std::vector<std::vector<TileComponent*>>& vTiles, size_t row, size_t col)
+void TileComponent::SetNeighboringTiles(const std::vector<std::vector<TileComponent*>>& vTiles, size_t row, size_t col)
 {
     m_vNeighboringTiles.push_back((row > 0) ? vTiles[row - 1][col]->GetGameObject() : nullptr);
     m_vNeighboringTiles.push_back((col > 0) ? vTiles[row][col - 1]->GetGameObject() : nullptr);
@@ -27,7 +27,7 @@ void dae::TileComponent::SetNeighboringTiles(const std::vector<std::vector<TileC
     m_vNeighboringTiles.push_back((col < 7 - (row + 1)) ? vTiles[row + 1][col]->GetGameObject() : nullptr);
 }
 
-bool dae::TileComponent::IsEdgeTile() const
+bool TileComponent::IsEdgeTile() const
 {
     return std::any_of(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), [](auto pTile)
         {
@@ -35,12 +35,12 @@ bool dae::TileComponent::IsEdgeTile() const
         });
 }
 
-bool dae::TileComponent::IsCharacterHere(Character character)
+bool TileComponent::IsCharacterHere(Character character)
 {
     return m_CharactersHere.contains(character);
 }
 
-std::pair<dae::Character, dae::GameObject*> dae::TileComponent::GetCharacter(Character character)
+std::pair<Character, dae::GameObject*> TileComponent::GetCharacter(Character character)
 {
     auto characterNode = m_CharactersHere.extract(character);
     if (characterNode)
@@ -48,28 +48,28 @@ std::pair<dae::Character, dae::GameObject*> dae::TileComponent::GetCharacter(Cha
     return std::make_pair(character, nullptr);
 }
 
-void dae::TileComponent::MoveCharacterHere(const std::pair<Character, GameObject*>& character)
+void TileComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character)
 {
     m_CharactersHere.insert(character);
 }
 
-bool dae::TileComponent::ChangeTile(int currentRound)
+bool TileComponent::ChangeTile(int currentRound)
 {
     if (m_TileStage == m_MaxTileStage)
         return false;
 
-    GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(currentRound, ++m_TileStage);
+    GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(currentRound, ++m_TileStage);
     return true; 
 }
 
-void dae::TileComponent::Reset(int currentRound)
+void TileComponent::Reset(int currentRound)
 {
     m_TileStage = 0;
-    GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(currentRound, m_TileStage);
+    GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(currentRound, m_TileStage);
     m_CharactersHere.clear();
 }
 
-void dae::TileComponent::AddDiskAsNeighbor(GameObject* pDisk)
+void TileComponent::AddDiskAsNeighbor(dae::GameObject* pDisk)
 {
     MovementDirection direction{};
     if (std::count(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), nullptr) == 2)

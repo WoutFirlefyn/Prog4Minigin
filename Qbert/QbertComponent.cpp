@@ -3,7 +3,7 @@
 //---------------------------
 #include "QbertComponent.h"
 #include "GameObject.h"
-#include "Time.h"
+#include "GameTime.h"
 #include "SpritesheetComponent.h"
 #include "TileComponent.h"
 #include "LevelManagerComponent.h"
@@ -11,27 +11,27 @@
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::QbertComponent::QbertComponent(GameObject* pGameObject) 
+QbertComponent::QbertComponent(dae::GameObject* pGameObject)
 	: BaseComponent(pGameObject)
 {
-	PlayerDied = std::make_unique<Subject<>>();
-	MoveStateChanged = std::make_unique<Subject<Character, MovementState, MovementDirection>>();
+	PlayerDied = std::make_unique<dae::Subject<>>();
+	MoveStateChanged = std::make_unique<dae::Subject<Character, MovementState, MovementDirection>>();
 }
 
-dae::QbertComponent::~QbertComponent()
+QbertComponent::~QbertComponent()
 {
 	if (m_pLevelManagerComponent)
 		m_pLevelManagerComponent->TileChanged->RemoveObserver(this);
 }
 
-void dae::QbertComponent::Init()
+void QbertComponent::Init()
 {
 	MoveStateChanged->AddObserver(this);
 	m_pLevelManagerComponent->TileChanged->AddObserver(this);
-	GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
 }
 
-void dae::QbertComponent::Update()
+void QbertComponent::Update()
 {
 	if (m_MovementDirection == MovementDirection::None)
 		return;
@@ -62,7 +62,7 @@ void dae::QbertComponent::Update()
 	else
 		control += (endPos - m_StartPos) * glm::vec3{ 1.f, 0.1f, 0.f };
 
-	m_AccumSec += Time::GetInstance().GetDeltaTime();
+	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
 	float t = std::min(m_AccumSec / m_JumpDuration, 1.f);
 
 	glm::vec3 currentPos = (1 - t) * (1 - t) * m_StartPos + 2 * (1 - t) * t * control + t * t * endPos;
@@ -76,19 +76,19 @@ void dae::QbertComponent::Update()
 	}
 }
 
-void dae::QbertComponent::AddObserver(BaseComponent* pBaseComponent)
+void QbertComponent::AddObserver(BaseComponent* pBaseComponent)
 {
 	if (auto pComponent = dynamic_cast<LevelManagerComponent*>(pBaseComponent))
 		m_pLevelManagerComponent = pComponent;
 }
 
-void dae::QbertComponent::Notify(Character, MovementState movementState, MovementDirection movementDirection)
+void QbertComponent::Notify(Character, MovementState movementState, MovementDirection movementDirection)
 {
 	switch (movementState)
 	{
 	case MovementState::Start:
 		m_MovementDirection = movementDirection;
-		GetGameObject()->GetComponent<SpritesheetComponent>()->MoveSourceRect(static_cast<int>(m_MovementDirection), 0);
+		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(m_MovementDirection), 0);
 		m_AccumSec = 0.f;
 		m_StartPos = GetGameObject()->GetLocalPosition();
 		break;
@@ -104,19 +104,19 @@ void dae::QbertComponent::Notify(Character, MovementState movementState, Movemen
 	}
 }
 
-void dae::QbertComponent::SubjectDestroyed(Subject<bool>* pSubject)
+void QbertComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
 {
 	if (pSubject == m_pLevelManagerComponent->TileChanged.get())
 		m_pLevelManagerComponent = nullptr;
 }
 
-void dae::QbertComponent::Notify(bool roundFinished)
+void QbertComponent::Notify(bool roundFinished)
 {
 	if (roundFinished)
 		GetGameObject()->SetPosition(308, 193);
 }
 
-void dae::QbertComponent::Die()
+void QbertComponent::Die()
 {
 	--m_Lives;
 	PlayerDied->NotifyObservers();

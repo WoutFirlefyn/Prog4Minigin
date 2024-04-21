@@ -1,17 +1,15 @@
-#include "Command.h"
+#include "CommandImplementation.h"
 #include "GameObject.h"
 #include "QbertComponent.h"
-#include "ScoreComponent.h"
-#include "Time.h"
 
-dae::MoveCommand::MoveCommand(GameObject* pGameObject, MovementDirection movementDirection)
+MoveCommand::MoveCommand(dae::GameObject* pGameObject, MovementDirection movementDirection)
 	: GameObjectCommand{ pGameObject }
-	, m_pQbertComponent{ pGameObject->GetComponent<dae::QbertComponent>() }
+	, m_pQbertComponent{ pGameObject->GetComponent<QbertComponent>() }
 	, m_Direction{ movementDirection }
 {
 }
 
-void dae::MoveCommand::Execute()
+void MoveCommand::Execute()
 {
 	if (!m_pQbertComponent->IsMoving())
 		m_pQbertComponent->MoveStateChanged->NotifyObservers(Character::Qbert1, MovementState::Start, m_Direction);
