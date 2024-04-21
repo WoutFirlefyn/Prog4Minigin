@@ -84,7 +84,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Minigin;$(SolutionDir)3rdParty\imgui;$(SolutionDir)3rdParty\steamworks\public\steam;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Minigin;$(SolutionDir)3rdParty\imgui-1.90.4;$(SolutionDir)3rdParty\steamworks\public\steam;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -112,7 +112,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\*.dll" "$(OutputPat
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Minigin;$(SolutionDir)3rdParty\imgui;$(SolutionDir)3rdParty\steamworks\public\steam;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Minigin;$(SolutionDir)3rdParty\imgui-1.90.4;$(SolutionDir)3rdParty\steamworks\public\steam;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -140,7 +140,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\*.dll" "$(OutputPat
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Minigin;$(SolutionDir)3rdParty\imgui;$(SolutionDir)3rdParty\steamworks\public\steam;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Minigin;$(SolutionDir)3rdParty\imgui-1.90.4;$(SolutionDir)3rdParty\steamworks\public\steam;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -168,7 +168,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Minigin;$(SolutionDir)3rdParty\imgui;$(SolutionDir)3rdParty\steamworks\public\steam;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Minigin;$(SolutionDir)3rdParty\imgui-1.90.4;$(SolutionDir)3rdParty\steamworks\public\steam;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -191,7 +191,31 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CommandImplementation.cpp" />
+    <ClCompile Include="DiskComponent.cpp" />
+    <ClCompile Include="FPSComponent.cpp" />
+    <ClCompile Include="GraphComponent.cpp" />
+    <ClCompile Include="LevelManagerComponent.cpp" />
+    <ClCompile Include="LivesComponent.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="QbertComponent.cpp" />
+    <ClCompile Include="QbertCurseComponent.cpp" />
+    <ClCompile Include="RotateComponent.cpp" />
+    <ClCompile Include="ScoreComponent.cpp" />
+    <ClCompile Include="TileComponent.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CommandImplementation.h" />
+    <ClInclude Include="DiskComponent.h" />
+    <ClInclude Include="FPSComponent.h" />
+    <ClInclude Include="GraphComponent.h" />
+    <ClInclude Include="LevelManagerComponent.h" />
+    <ClInclude Include="LivesComponent.h" />
+    <ClInclude Include="QbertComponent.h" />
+    <ClInclude Include="QbertCurseComponent.h" />
+    <ClInclude Include="RotateComponent.h" />
+    <ClInclude Include="ScoreComponent.h" />
+    <ClInclude Include="TileComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

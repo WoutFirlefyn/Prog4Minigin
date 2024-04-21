@@ -51,9 +51,6 @@
     <ClInclude Include="SceneManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TextObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -64,12 +61,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BaseComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="FPSComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="RotateComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="TextComponent.h">
@@ -111,37 +102,13 @@
     <ClInclude Include="Controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Observer.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QbertComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="ScoreComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="LivesComponent.h">
-      <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TileComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="SpritesheetComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="QbertCurseComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DiskComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelManagerComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
@@ -170,9 +137,6 @@
     <ClCompile Include="SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TextObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -182,13 +146,7 @@
     <ClCompile Include="BaseComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="FPSComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="GraphicsComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="RotateComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="TextComponent.cpp">
@@ -218,37 +176,10 @@
     <ClCompile Include="..\3rdParty\imgui-1.90.4\imgui_plot.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Command.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Controller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="QbertComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="ScoreComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="LivesComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="TileComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="SpritesheetComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="QbertCurseComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DiskComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelManagerComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>

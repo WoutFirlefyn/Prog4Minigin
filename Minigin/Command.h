@@ -1,9 +1,6 @@
 #pragma once
-
 namespace dae
 {
-	enum class MovementDirection;
-	class QbertComponent;
 	class Command
 	{
 	public:
@@ -31,17 +28,5 @@ namespace dae
 	private:
 		GameObject* m_pGameObject;
 	};	 
-
-	class MoveCommand : public GameObjectCommand
-	{
-	public:
-		MoveCommand(GameObject* pGameObject, MovementDirection movementDirection);
-
-		virtual void Execute() override;
-	private:
-		// added m_pQbertComponent to avoid having to get it every time MoveCommand is executed (which could be a lot if the player is holding down the movementkey)
-		QbertComponent* m_pQbertComponent{ nullptr };
-		MovementDirection m_Direction{};
-	};
 }
 

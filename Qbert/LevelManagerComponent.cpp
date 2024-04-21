@@ -16,10 +16,10 @@
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-dae::LevelManagerComponent::LevelManagerComponent(GameObject* pGameObject, QbertComponent* pQbertComponent, Scene& scene) : BaseComponent(pGameObject)
+LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, QbertComponent* pQbertComponent, dae::Scene& scene) : BaseComponent(pGameObject)
     , m_pQbertComponent{ pQbertComponent }
 {
-    TileChanged = std::make_unique<Subject<bool>>();
+    TileChanged = std::make_unique<dae::Subject<bool>>();
 
     glm::vec3 startPos{ 300, 200, 0 };
     std::vector<std::vector<TileComponent*>> v2DTiles{};
@@ -30,8 +30,8 @@ dae::LevelManagerComponent::LevelManagerComponent(GameObject* pGameObject, Qbert
         for (int j{}; j < m_LevelLength - i; ++j)
         {
             auto tile = std::make_unique<dae::GameObject>();
-            tile->AddComponent<GraphicsComponent>("Qbert Cubes.png");
-            tile->AddComponent<SpritesheetComponent>(6, 3);
+            tile->AddComponent<dae::GraphicsComponent>("Qbert Cubes.png");
+            tile->AddComponent<dae::SpritesheetComponent>(6, 3);
             tile->AddComponent<TileComponent>();
             vNewTiles.emplace_back(tile->GetComponent<TileComponent>());
 
@@ -59,9 +59,9 @@ dae::LevelManagerComponent::LevelManagerComponent(GameObject* pGameObject, Qbert
 
     for (int i{}; i < m_AmountOfDisks; ++i)
     {
-        auto disk = std::make_unique<GameObject>();
-        disk->AddComponent<GraphicsComponent>("Disk Spritesheet.png");
-        disk->AddComponent<SpritesheetComponent>(30, 1);
+        auto disk = std::make_unique<dae::GameObject>();
+        disk->AddComponent<dae::GraphicsComponent>("Disk Spritesheet.png");
+        disk->AddComponent<dae::SpritesheetComponent>(30, 1);
         disk->AddComponent<DiskComponent>(m_vTiles[0]);
         disk->SetPosition(8, 14);
        
@@ -69,14 +69,14 @@ dae::LevelManagerComponent::LevelManagerComponent(GameObject* pGameObject, Qbert
     }
 }
 
-dae::LevelManagerComponent::~LevelManagerComponent()
+LevelManagerComponent::~LevelManagerComponent()
 {
     if (m_pQbertComponent)
         m_pQbertComponent->MoveStateChanged->RemoveObserver(this);
     TileChanged->RemoveObserver(this);
 }
 
-void dae::LevelManagerComponent::Init()
+void LevelManagerComponent::Init()
 {
     m_pQbertComponent->MoveStateChanged->AddObserver(this);
     TileChanged->AddObserver(this);
@@ -84,7 +84,7 @@ void dae::LevelManagerComponent::Init()
     m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(Character::Qbert1, m_pQbertComponent->GetGameObject()));
 }
 
-void dae::LevelManagerComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
+void LevelManagerComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
 {
     auto pCurrentTile = FindCharacter(character);
 
@@ -126,13 +126,13 @@ void dae::LevelManagerComponent::Notify(Character character, MovementState movem
     }
 }
 
-void dae::LevelManagerComponent::SubjectDestroyed(Subject<Character, MovementState, MovementDirection>* pSubject)
+void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character, MovementState, MovementDirection>* pSubject)
 {
     if (pSubject == m_pQbertComponent->MoveStateChanged.get())
         m_pQbertComponent = nullptr;
 }
 
-void dae::LevelManagerComponent::Notify(bool roundFinished)
+void LevelManagerComponent::Notify(bool roundFinished)
 {
     if (roundFinished)
     {
@@ -152,14 +152,14 @@ void dae::LevelManagerComponent::Notify(bool roundFinished)
     }
 }
 
-bool dae::LevelManagerComponent::AreAllTilesCovered() const
+bool LevelManagerComponent::AreAllTilesCovered() const
 { 
     return TileComponent::GetMaxTileStage() * static_cast<int>(m_vTiles.size()) == m_TilesCovered;
 }
 
-dae::GameObject* dae::LevelManagerComponent::FindCharacter(Character character) const
+dae::GameObject* LevelManagerComponent::FindCharacter(Character character) const
 {
-    auto it = std::find_if(std::execution::par_unseq, m_vTiles.begin(), m_vTiles.end(), [&character](GameObject* pTile)
+    auto it = std::find_if(std::execution::par_unseq, m_vTiles.begin(), m_vTiles.end(), [&character](dae::GameObject* pTile)
         {
             return pTile->GetComponent<TileComponent>()->IsCharacterHere(character);
         });
