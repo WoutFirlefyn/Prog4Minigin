@@ -10,6 +10,10 @@
 //-----------------------------------------------------
 // DiscComponent Class									
 //-----------------------------------------------------
+namespace dae
+{
+	class SpritesheetComponent;
+}
 enum class Character;
 enum class MovementState;
 enum class MovementDirection;
@@ -18,7 +22,7 @@ class DiskComponent final : public dae::BaseComponent
 {
 public:
 	DiskComponent(dae::GameObject* pGameObject, dae::GameObject* pTopTile);
-	~DiskComponent();			
+	~DiskComponent() = default;			
 
 	// -------------------------
 	// Copy/move constructors and assignment operators
@@ -31,6 +35,7 @@ public:
 	//-------------------------------------------------
 	// Member functions						
 	//-------------------------------------------------
+	virtual void Init() override;
 	virtual void Update() override;
 
 	std::pair<Character, dae::GameObject*> GetCharacter() const;
@@ -45,9 +50,12 @@ private:
 	//-------------------------------------------------
 	dae::GameObject* m_pTopTile;
 	std::pair<Character, dae::GameObject*> m_pCharacter;
+	dae::SpritesheetComponent* m_pSpritesheetComponent;
 	glm::vec3 m_StartPos{};
-	float m_AccumSec{};
+	float m_PlatformLerpValue{ 0.f };
 	float m_TimeToReachTop{ 2.5f };
+	float m_AccumSec{};
+	float m_Fps{ 12.f };
 };
 
  

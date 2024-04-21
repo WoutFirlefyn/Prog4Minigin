@@ -12,17 +12,16 @@
 //---------------------------
 int LivesComponent::m_CurrentId{ 0 };
 
-LivesComponent::LivesComponent(dae::GameObject* pGameObject, QbertComponent* pQbertComponent)
+LivesComponent::LivesComponent(dae::GameObject* pGameObject)
 	: BaseComponent(pGameObject)
-	, m_pQbertComponent{ pQbertComponent }
 	, m_HeartId{ m_CurrentId++ }
 {
 }
 
 LivesComponent::~LivesComponent()
 {
-	if (m_pQbertComponent)
-		m_pQbertComponent->PlayerDied->RemoveObserver(this);
+	if (m_pPlayerDiedSubject)
+		m_pPlayerDiedSubject->RemoveObserver(this);
 }
 
 //---------------------------
@@ -31,17 +30,22 @@ LivesComponent::~LivesComponent()
 
 void LivesComponent::Init()
 {
-	m_pQbertComponent->PlayerDied->AddObserver(this);
+	m_pPlayerDiedSubject->AddObserver(this);
 }
 
-void LivesComponent::Notify()
+void LivesComponent::AddObserver(dae::Subject<int>* pPlayerDiedSubject)
 {
-	if (m_pQbertComponent->GetLives() == m_HeartId)
+	m_pPlayerDiedSubject = pPlayerDiedSubject;
+}
+
+void LivesComponent::Notify(int currentLives)
+{
+	if (currentLives == m_HeartId)
 		GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
 }
 
-void LivesComponent::SubjectDestroyed(dae::Subject<>* pSubject)
+void LivesComponent::SubjectDestroyed(dae::Subject<int>* pSubject)
 {
-	if (pSubject == m_pQbertComponent->PlayerDied.get())
-		m_pQbertComponent = nullptr;
+	if (pSubject == m_pPlayerDiedSubject)
+		m_pPlayerDiedSubject = nullptr;
 }

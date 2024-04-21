@@ -23,7 +23,7 @@ enum class MovementDirection;
 class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<bool>
 {
 public:
-	LevelManagerComponent(dae::GameObject* pGameObject, QbertComponent* pQbertComponent, dae::Scene& scene);				// Constructor
+	LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene);				// Constructor
 	~LevelManagerComponent();				// Destructor
 
 	// -------------------------
@@ -37,14 +37,18 @@ public:
 	//-------------------------------------------------
 	// Member functions						
 	//-------------------------------------------------
+	void SpawnQbert(dae::GameObject* pGameObject); // Remove this function, this should be temporary (or at least a bit better)
+
 	virtual void Init() override;
 
+	void AddObserver(dae::Subject<Character, MovementState, MovementDirection>* pMoveStateChanged);
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
 	virtual void SubjectDestroyed(dae::Subject<Character, MovementState, MovementDirection>* pSubject) override;
 
 	virtual void Notify(bool roundFinished) override;
 
 	std::unique_ptr<dae::Subject<bool>> TileChanged;
+	std::unique_ptr<dae::Subject<Character>> CharacterFell;
 private:
 	//-------------------------------------------------
 	// Private member functions								
@@ -55,7 +59,7 @@ private:
 	//-------------------------------------------------
 	// Datamembers								
 	//-------------------------------------------------
-	QbertComponent* m_pQbertComponent;
+	dae::Subject<Character, MovementState, MovementDirection>* m_pMoveStateChangedSubject;
 	std::vector<dae::GameObject*> m_vTiles;
 	int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };

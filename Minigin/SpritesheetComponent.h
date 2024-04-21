@@ -24,13 +24,16 @@ namespace dae
 		SpritesheetComponent(const SpritesheetComponent& other) = delete;
 		SpritesheetComponent(SpritesheetComponent&& other) noexcept = delete;
 		SpritesheetComponent& operator=(const SpritesheetComponent& other) = delete;
-		SpritesheetComponent& operator=(SpritesheetComponent&& other)	noexcept = delete;
+		SpritesheetComponent& operator=(SpritesheetComponent&& other) noexcept = delete;
 
 		//-------------------------------------------------
 		// Member functions						
 		//-------------------------------------------------
-
 		void MoveSourceRect(int cols, int rows);
+		int GetRowCount() const { return m_SpriteRows; } 
+		int GetColCount() const { return m_SpriteCols; } 
+		int GetCurrRow() const { return m_CurrRow; } 
+		int GetCurrCol() const { return m_CurrCol; } 
 
 	protected:
 		//-------------------------------------------------
@@ -41,12 +44,13 @@ namespace dae
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		//GraphicsComponent* m_pGraphicsComponent{ nullptr };
 		Texture2D* m_pTexture{ nullptr };
 		int m_SpriteWidth{};
 		int m_SpriteHeight{};
 		int m_SpriteRows{};
 		int m_SpriteCols{};
+		int m_CurrRow{ 0 };
+		int m_CurrCol{ 0 };
 	};
 }
 

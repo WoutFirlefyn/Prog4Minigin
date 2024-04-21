@@ -15,8 +15,7 @@ enum class MovementState
 {
 	Start,
 	Moving,
-	End,
-	Falling
+	End
 };
 
 enum class MovementDirection
@@ -40,7 +39,7 @@ enum class Character
 };
 
 class LevelManagerComponent;
-class QbertComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<bool>
+class QbertComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<bool>, public dae::Observer<Character>
 {
 public:
 	QbertComponent(dae::GameObject* pGameObject);				// Constructor
@@ -60,8 +59,10 @@ public:
 	virtual void Init() override;
 	virtual void Update() override;
 
-	void AddObserver(dae::BaseComponent* pBaseComponent);
+	void AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>* pCharacterFellSubject);
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
+	virtual void Notify(Character character) override;
+	void SubjectDestroyed(dae::Subject<Character>* pSubject);
 	virtual void Notify(bool roundFinished) override;
 	void SubjectDestroyed(dae::Subject<bool>* pSubject);
 
@@ -69,11 +70,11 @@ public:
 	void Die();
 	int GetLives() const { return m_Lives; }
 
-	std::unique_ptr<dae::Subject<>> PlayerDied;
+	std::unique_ptr<dae::Subject<int>> PlayerDied;
 	std::unique_ptr<dae::Subject<Character, MovementState, MovementDirection>> MoveStateChanged;
-	bool m_IsFalling{ false };
 private:
-	LevelManagerComponent* m_pLevelManagerComponent;
+	dae::Subject<bool>* m_pTileChangedSubject{ nullptr };
+	dae::Subject<Character>* m_pCharacterFellSubject{ nullptr };
 	int m_Lives{ 3 };
 	float m_AccumSec{ 0 };
 	float m_JumpDuration{ 0.4f };

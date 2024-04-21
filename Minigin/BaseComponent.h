@@ -32,9 +32,9 @@ namespace dae
 		virtual void Update() {};
 		virtual void FixedUpdate() {};
 		virtual void RenderGUI() {};
-		GameObject* GetGameObject() const;
 	protected:
 		BaseComponent(GameObject* pGameObject);			// Constructor
+		GameObject* GetGameObject() const;
 	private:
 		//-------------------------------------------------
 		// Datamembers								

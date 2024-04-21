@@ -19,7 +19,7 @@ enum class ScoreType;
 class ScoreComponent final : public dae::BaseComponent, public dae::Observer<bool>
 {
 public:
-	ScoreComponent(dae::GameObject* pGameObject, QbertComponent* pQbertComponent, LevelManagerComponent* pLevelManagerComponent);
+	ScoreComponent(dae::GameObject* pGameObject);
 	virtual ~ScoreComponent() override;
 
 	// -------------------------
@@ -34,6 +34,8 @@ public:
 	// Member functions						
 	//-------------------------------------------------
 	virtual void Init() override;
+
+	void AddObserver(dae::Subject<bool>* pTileChangedSubject);
 	virtual void Notify(bool roundFinished) override;
 	virtual void SubjectDestroyed(dae::Subject<bool>* pSubject) override;
 
@@ -48,10 +50,9 @@ private:
 	//-------------------------------------------------
 	// Datamembers								
 	//-------------------------------------------------
+	dae::Subject<bool>* m_pTileChangedSubject{ nullptr };
+	dae::TextComponent* m_pTextComponent{ nullptr };
 	int m_Score{ 0 };
-	QbertComponent* m_pQbertComponent{};
-	LevelManagerComponent* m_pLevelManagerComponent{};
-	dae::TextComponent* m_pTextComponent{};
 };
 
 

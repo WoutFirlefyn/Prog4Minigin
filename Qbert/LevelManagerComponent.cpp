@@ -16,14 +16,16 @@
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, QbertComponent* pQbertComponent, dae::Scene& scene) : BaseComponent(pGameObject)
-    , m_pQbertComponent{ pQbertComponent }
+LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene) : BaseComponent(pGameObject)
 {
+    // Subjects
     TileChanged = std::make_unique<dae::Subject<bool>>();
+    CharacterFell = std::make_unique<dae::Subject<Character>>();
 
     glm::vec3 startPos{ 300, 200, 0 };
     std::vector<std::vector<TileComponent*>> v2DTiles{};
 
+    // Creating and placing the tiles
     for (int i{}; i < m_LevelLength; ++i)
     {
         std::vector<TileComponent*> vNewTiles{};
@@ -41,10 +43,12 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, Qbert
         v2DTiles.emplace_back(vNewTiles);
     }
 
+    // Use the 2D vector to easily set the neighboring tiles
     for (size_t i{}; i < v2DTiles.size(); ++i)
         for (size_t j{}; j < v2DTiles[i].size(); ++j)
             v2DTiles[i][j]->SetNeighboringTiles(v2DTiles, i, j);
 
+    // Get all edge tiles were a disk can spawn next to
     std::vector<TileComponent*> vEdgeTiles{};
     std::copy(v2DTiles[0].begin(), v2DTiles[0].end(), std::back_inserter(vEdgeTiles));
     std::transform(v2DTiles.begin(), v2DTiles.end(), std::back_inserter(vEdgeTiles),
@@ -53,17 +57,19 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, Qbert
             return row[0]; 
         });
 
+    // Shuffle to randomise disk locations
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(vEdgeTiles.begin(), vEdgeTiles.end(), g);
 
+    // Create disks
     for (int i{}; i < m_AmountOfDisks; ++i)
     {
         auto disk = std::make_unique<dae::GameObject>();
         disk->AddComponent<dae::GraphicsComponent>("Disk Spritesheet.png");
         disk->AddComponent<dae::SpritesheetComponent>(30, 1);
         disk->AddComponent<DiskComponent>(m_vTiles[0]);
-        disk->SetPosition(8, 14);
+        disk->SetPosition(8, 5);
        
         vEdgeTiles[i]->AddDiskAsNeighbor(scene.Add(std::move(disk)));
     }
@@ -71,17 +77,25 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, Qbert
 
 LevelManagerComponent::~LevelManagerComponent()
 {
-    if (m_pQbertComponent)
-        m_pQbertComponent->MoveStateChanged->RemoveObserver(this);
+    if (m_pMoveStateChangedSubject)
+        m_pMoveStateChangedSubject->RemoveObserver(this);
     TileChanged->RemoveObserver(this);
+}
+
+void LevelManagerComponent::SpawnQbert(dae::GameObject* pGameObject)
+{
+    m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(Character::Qbert1, pGameObject));
 }
 
 void LevelManagerComponent::Init()
 {
-    m_pQbertComponent->MoveStateChanged->AddObserver(this);
+    m_pMoveStateChangedSubject->AddObserver(this);
     TileChanged->AddObserver(this);
+}
 
-    m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(Character::Qbert1, m_pQbertComponent->GetGameObject()));
+void LevelManagerComponent::AddObserver(dae::Subject<Character, MovementState, MovementDirection>* pMoveStateChanged)
+{
+    m_pMoveStateChangedSubject = pMoveStateChanged;
 }
 
 void LevelManagerComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
@@ -96,29 +110,32 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
     {
     case MovementState::Start:
     {
+        // maybe in some cases (e.g. enemy ai) check where they're jumping towards when they start jumping
+        break;
+    }
+    case MovementState::End:
+    {
         auto pNextTile = pCurrentTile->GetComponent<TileComponent>()->GetNeighboringTile(movementDirection);
         if (pNextTile)
         {
             auto characterObject = pCurrentTile->GetComponent<TileComponent>()->GetCharacter(character);
-
             if (pNextTile->HasComponent<TileComponent>())
-                pNextTile->GetComponent<TileComponent>()->MoveCharacterHere(characterObject);
+            {
+                auto pNextTileComponent = pNextTile->GetComponent<TileComponent>();
+                pNextTileComponent->MoveCharacterHere(characterObject);
+                if (pNextTileComponent->ChangeTile(m_CurrentRound))
+                {
+                    ++m_TilesCovered;
+                    TileChanged->NotifyObservers(AreAllTilesCovered());
+                }
+            }
             else if (pNextTile->HasComponent<DiskComponent>())
             {
                 pNextTile->GetComponent<DiskComponent>()->MoveCharacterHere(characterObject);
             }
         }
         else
-            m_pQbertComponent->m_IsFalling = true; // replace this with falling obvserver
-        break;
-    }
-    case MovementState::End:
-    {
-        if (pCurrentTile->GetComponent<TileComponent>()->ChangeTile(m_CurrentRound))
-        {
-            ++m_TilesCovered;
-            TileChanged->NotifyObservers(AreAllTilesCovered());
-        }
+            CharacterFell->NotifyObservers(character);
         break;
     }
     default:
@@ -128,8 +145,8 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
 
 void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character, MovementState, MovementDirection>* pSubject)
 {
-    if (pSubject == m_pQbertComponent->MoveStateChanged.get())
-        m_pQbertComponent = nullptr;
+    if (pSubject == m_pMoveStateChangedSubject)
+        m_pMoveStateChangedSubject = nullptr;
 }
 
 void LevelManagerComponent::Notify(bool roundFinished)

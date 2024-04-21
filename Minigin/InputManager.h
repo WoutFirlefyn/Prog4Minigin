@@ -21,7 +21,6 @@ namespace dae
 		std::vector<InputAction> m_vKeyboardInputAction{};
 		std::vector<std::unique_ptr<Controller>> m_vControllers{};
 		static constexpr int m_MaxControllers = 4;
-		//std::vector<InputAction> m_vControllerInputAction{};
 	};
 
 }

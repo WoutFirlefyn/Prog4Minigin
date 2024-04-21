@@ -13,10 +13,10 @@ enum class MovementState;
 enum class MovementDirection;
 enum class Character;
 class QbertComponent;
-class QbertCurseComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>
+class QbertCurseComponent final : public dae::BaseComponent, public dae::Observer<Character>
 {
 public:
-	QbertCurseComponent(dae::GameObject* pGameObject, QbertComponent* pQbertComponent);				// Constructor
+	QbertCurseComponent(dae::GameObject* pGameObject, dae::Subject<Character>* pSubject);				// Constructor
 	~QbertCurseComponent();				// Destructor
 
 	// -------------------------
@@ -33,8 +33,8 @@ public:
 	virtual void Init() override;
 	virtual void Update() override;
 
-	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
-	virtual void SubjectDestroyed(dae::Subject<Character, MovementState, MovementDirection>* pSubject) override;
+	virtual void Notify(Character character) override;
+	virtual void SubjectDestroyed(dae::Subject<Character>* pSubject) override;
 
 
 private:
@@ -46,7 +46,7 @@ private:
 	//-------------------------------------------------
 	// Datamembers								
 	//-------------------------------------------------
-	QbertComponent* m_pQbertComponent;
+	dae::Subject<Character>* m_pCharacterFellSubject;
 	float m_AccumSec{ 0.f };
 	float m_CurseDuration{ 1.f };
 

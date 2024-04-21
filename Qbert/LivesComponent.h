@@ -10,10 +10,10 @@
 // QbertComponent Class									
 //-----------------------------------------------------
 class QbertComponent;
-class LivesComponent final : public dae::BaseComponent, public dae::Observer<>
+class LivesComponent final : public dae::BaseComponent, public dae::Observer<int>
 {
 public:
-	LivesComponent(dae::GameObject* pGameObject, QbertComponent* pQbertComponent);				// Constructor
+	LivesComponent(dae::GameObject* pGameObject);				// Constructor
 	virtual ~LivesComponent() override;			// Destructor
 
 	// -------------------------
@@ -28,8 +28,11 @@ public:
 	// Member functions						
 	//-------------------------------------------------
 	virtual void Init() override;
-	virtual void Notify() override;
-	virtual void SubjectDestroyed(dae::Subject<>* pSubject) override;
+
+	void AddObserver(dae::Subject<int>* pPlayerDiedSubject);
+
+	virtual void Notify(int currentLives) override;
+	virtual void SubjectDestroyed(dae::Subject<int>* pSubject) override;
 
 private:
 	//-------------------------------------------------
@@ -39,7 +42,7 @@ private:
 	//-------------------------------------------------
 	// Datamembers								
 	//-------------------------------------------------
-	QbertComponent* m_pQbertComponent{};
+	dae::Subject<int>* m_pPlayerDiedSubject{ nullptr };
 	static int m_CurrentId;
 	const int m_HeartId;
 };
