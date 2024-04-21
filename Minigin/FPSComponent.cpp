@@ -6,7 +6,7 @@
 #include "FPSComponent.h"
 #include "TextComponent.h"
 #include "GameObject.h"
-#include "Time.h"
+#include "GameTime.h"
 
 //---------------------------
 // Constructor & Destructor
@@ -27,7 +27,7 @@ void dae::FPSComponent::Init()
 void dae::FPSComponent::Update()
 {
 	++m_Count;
-	m_Delay += Time::GetInstance().GetDeltaTime();
+	m_Delay += GameTime::GetInstance().GetDeltaTime();
 
 	if (m_Delay >= m_MaxDelay)
 	{

@@ -4,7 +4,7 @@
 #define _USE_MATH_DEFINES
 #include "RotateComponent.h"
 #include "GameObject.h"
-#include "Time.h"
+#include "GameTime.h"
 #include <cmath>
 
 //---------------------------
@@ -27,7 +27,7 @@ void dae::RotateComponent::Init()
 
 void dae::RotateComponent::Update()
 {
-	m_CurrentAngle += m_Speed * Time::GetInstance().GetDeltaTime();
+	m_CurrentAngle += m_Speed * GameTime::GetInstance().GetDeltaTime();
 	
 	m_CurrentAngle = std::fmod(m_CurrentAngle, 2 * static_cast<float>(M_PI));
 

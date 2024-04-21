@@ -50,7 +50,7 @@ namespace dae
 		std::pair<Character, GameObject*> m_pCharacter;
 		glm::vec3 m_StartPos{};
 		float m_AccumSec{};
-		float m_TimeToReachTop{ 5.f };
+		float m_TimeToReachTop{ 2.5f };
 	};
 }
 

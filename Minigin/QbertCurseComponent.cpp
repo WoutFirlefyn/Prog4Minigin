@@ -4,7 +4,7 @@
 #include "QbertCurseComponent.h"
 #include "QbertComponent.h"
 #include "GraphicsComponent.h"
-#include "Time.h"
+#include "GameTime.h"
 #include "GameObject.h"
 
 //---------------------------
@@ -30,7 +30,7 @@ void dae::QbertCurseComponent::Update()
 {
 	if (m_AccumSec < m_CurseDuration)
 	{
-		m_AccumSec += Time::GetInstance().GetDeltaTime();
+		m_AccumSec += GameTime::GetInstance().GetDeltaTime();
 		if (m_AccumSec >= m_CurseDuration)
 			GetGameObject()->GetComponent<GraphicsComponent>()->ToggleRendering(false);
 	}

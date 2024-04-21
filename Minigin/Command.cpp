@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "QbertComponent.h"
 #include "ScoreComponent.h"
-#include "Time.h"
+#include "GameTime.h"
 
 dae::MoveCommand::MoveCommand(GameObject* pGameObject, MovementDirection movementDirection)
 	: GameObjectCommand{ pGameObject }

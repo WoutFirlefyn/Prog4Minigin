@@ -4,7 +4,7 @@
 #include "DiskComponent.h"
 #include "QbertComponent.h"
 #include "GameObject.h"
-#include "Time.h"
+#include "GameTime.h"
 
 //---------------------------
 // Constructor & Destructor
@@ -27,7 +27,7 @@ void dae::DiskComponent::Update()
 	if (m_pCharacter.second == nullptr)
 		return;
 
-	m_AccumSec += Time::GetInstance().GetDeltaTime();
+	m_AccumSec += GameTime::GetInstance().GetDeltaTime();
 
 	float t = m_AccumSec / m_TimeToReachTop;
 

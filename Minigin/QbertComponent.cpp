@@ -3,7 +3,7 @@
 //---------------------------
 #include "QbertComponent.h"
 #include "GameObject.h"
-#include "Time.h"
+#include "GameTime.h"
 #include "SpritesheetComponent.h"
 #include "TileComponent.h"
 #include "LevelManagerComponent.h"
@@ -62,7 +62,7 @@ void dae::QbertComponent::Update()
 	else
 		control += (endPos - m_StartPos) * glm::vec3{ 1.f, 0.1f, 0.f };
 
-	m_AccumSec += Time::GetInstance().GetDeltaTime();
+	m_AccumSec += GameTime::GetInstance().GetDeltaTime();
 	float t = std::min(m_AccumSec / m_JumpDuration, 1.f);
 
 	glm::vec3 currentPos = (1 - t) * (1 - t) * m_StartPos + 2 * (1 - t) * t * control + t * t * endPos;
