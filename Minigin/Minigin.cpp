@@ -11,8 +11,8 @@
 #include "ResourceManager.h"
 #include "Time.h"
 
-#ifdef STEAM
 #define WIN32_LEAN_AND_MEAN 
+#ifdef STEAM
 #pragma warning (push)
 #pragma warning (disable: 4996)
 #include "steam_api.h"
