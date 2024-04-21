@@ -41,8 +41,8 @@ dae::LevelManagerComponent::LevelManagerComponent(GameObject* pGameObject, Qbert
         v2DTiles.emplace_back(vNewTiles);
     }
 
-    for (int i{}; i < v2DTiles.size(); ++i)
-        for (int j{}; j < v2DTiles[i].size(); ++j)
+    for (size_t i{}; i < v2DTiles.size(); ++i)
+        for (size_t j{}; j < v2DTiles[i].size(); ++j)
             v2DTiles[i][j]->SetNeighboringTiles(v2DTiles, i, j);
 
     std::vector<TileComponent*> vEdgeTiles{};
@@ -154,7 +154,7 @@ void dae::LevelManagerComponent::Notify(bool roundFinished)
 
 bool dae::LevelManagerComponent::AreAllTilesCovered() const
 { 
-    return TileComponent::GetMaxTileStage() * m_vTiles.size() == m_TilesCovered;
+    return TileComponent::GetMaxTileStage() * static_cast<int>(m_vTiles.size()) == m_TilesCovered;
 }
 
 dae::GameObject* dae::LevelManagerComponent::FindCharacter(Character character) const
