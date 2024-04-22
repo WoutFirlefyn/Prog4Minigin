@@ -36,14 +36,6 @@ namespace dae
 		int GetCurrCol() const { return m_CurrCol; } 
 
 	protected:
-		//-------------------------------------------------
-		// Private member functions								
-		//-------------------------------------------------
-
-
-		//-------------------------------------------------
-		// Datamembers								
-		//-------------------------------------------------
 		Texture2D* m_pTexture{ nullptr };
 		int m_SpriteWidth{};
 		int m_SpriteHeight{};

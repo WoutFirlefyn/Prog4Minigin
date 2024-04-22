@@ -76,7 +76,7 @@ private:
 	dae::Subject<Character>* m_pCharacterFellSubject{ nullptr };
 	int m_Lives{ 3 };
 	float m_AccumSec{ 0 };
-	float m_JumpDuration{ 0.4f };
+	float m_JumpDuration{ 0.5f };
 	MovementDirection m_MovementDirection{ MovementDirection::None };
 	glm::vec3 m_StartPos{};
 };
