@@ -16,7 +16,6 @@ namespace dae
 	class Scene;
 }
 class TileComponent;
-class QbertComponent;
 enum class Character;
 enum class MovementState;
 enum class MovementDirection;
@@ -37,7 +36,7 @@ public:
 	//-------------------------------------------------
 	// Member functions						
 	//-------------------------------------------------
-	void SpawnQbert(dae::GameObject* pGameObject); // Remove this function, this should be temporary (or at least a bit better)
+	void SpawnQbert(dae::GameObject* pGameObject); // Remove this function, this is be temporary (or at least improve it a bit)
 
 	virtual void Init() override;
 

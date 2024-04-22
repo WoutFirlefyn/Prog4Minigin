@@ -17,9 +17,9 @@ namespace dae
 	class GraphicsComponent final : public BaseComponent
 	{
 	public:
-		GraphicsComponent(GameObject* pGameObject, const std::string& name, bool renderingEnabled = true);				// Constructor
-		GraphicsComponent(GameObject* pGameObject);				// Constructor
-		virtual ~GraphicsComponent() override = default;		// Destructor
+		GraphicsComponent(GameObject* pGameObject, const std::string& name, bool renderingEnabled = true);
+		GraphicsComponent(GameObject* pGameObject);		
+		virtual ~GraphicsComponent() override = default;
 
 		// -------------------------
 		// Copy/move constructors and assignment operators

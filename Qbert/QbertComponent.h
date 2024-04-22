@@ -38,12 +38,11 @@ enum class Character
 	Sam
 };
 
-class LevelManagerComponent;
 class QbertComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<bool>, public dae::Observer<Character>
 {
 public:
-	QbertComponent(dae::GameObject* pGameObject);				// Constructor
-	virtual ~QbertComponent() override;			// Destructor
+	QbertComponent(dae::GameObject* pGameObject);	// Constructor
+	virtual ~QbertComponent() override;				// Destructor
 
 	// -------------------------
 	// Copy/move constructors and assignment operators

@@ -25,8 +25,6 @@ void dae::SpritesheetComponent::MoveSourceRect(int cols, int rows)
 {
 	if (m_pTexture)
 	{
-		cols %= m_SpriteCols;
-		rows %= m_SpriteRows;
 		auto srcRectSize = m_pTexture->GetSourceRectSize();
 		m_pTexture->SetSourceRect(srcRectSize.x * cols, srcRectSize.y * rows);
 		m_CurrCol = cols;

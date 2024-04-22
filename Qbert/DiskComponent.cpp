@@ -30,7 +30,7 @@ void DiskComponent::Update()
 	if (m_AccumSec > secondsPerFrame)
 	{
 		m_AccumSec -= secondsPerFrame;
-		m_pSpritesheetComponent->MoveSourceRect(m_pSpritesheetComponent->GetCurrCol() + 1, 0);
+		m_pSpritesheetComponent->MoveSourceRect((m_pSpritesheetComponent->GetCurrCol() + 1) % 4, 0);
 	}
 
 	if (m_pCharacter.second == nullptr)
