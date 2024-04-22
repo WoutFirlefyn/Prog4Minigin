@@ -118,7 +118,6 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		SteamAPI_RunCallbacks();
 #endif // Steam
 
-
 		doContinue = input.ProcessInput();
 		while (lag >= FIXED_TIME_STEP)
 		{

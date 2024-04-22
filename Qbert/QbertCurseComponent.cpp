@@ -6,6 +6,8 @@
 #include "GraphicsComponent.h"
 #include "GameTime.h"
 #include "GameObject.h"
+#include "ServiceLocator.h"
+#include "SDLSoundSystem.h"
 
 //---------------------------
 // Constructor & Destructor
@@ -40,6 +42,9 @@ void QbertCurseComponent::Notify(Character character)
 {
 	if (character != Character::Qbert1)
 		return;
+
+	dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::Swearing));
+
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
 	m_AccumSec = 0.f;
 }

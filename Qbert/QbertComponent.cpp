@@ -7,6 +7,8 @@
 #include "SpritesheetComponent.h"
 #include "TileComponent.h"
 #include "LevelManagerComponent.h"
+#include "ServiceLocator.h"
+#include "SDLSoundSystem.h"
 
 //---------------------------
 // Constructor & Destructor
@@ -95,6 +97,8 @@ void QbertComponent::Notify(Character, MovementState movementState, MovementDire
 		m_AccumSec = 0.f;
 		m_StartPos = GetGameObject()->GetLocalPosition();
 		break;
+	case MovementState::End:
+		dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::QbertJump));
 	default:
 		break;
 	}
