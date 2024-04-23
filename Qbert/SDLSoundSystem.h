@@ -26,7 +26,6 @@ public:
 	SDLSoundSystem();
 	virtual ~SDLSoundSystem() override;
 	virtual void Play(const dae::SoundId id, const float volume) override;
-	virtual void Update() override;
 
 private:
 	class SDLSoundSystemImpl;

@@ -89,11 +89,11 @@ SDLSoundSystem::SDLSoundSystemImpl::~SDLSoundSystemImpl()
 
 void SDLSoundSystem::SDLSoundSystemImpl::Play(const dae::SoundId id, const float volume)
 {
-	assert((m_Tail + 1) % MAX_PENDING != m_Head);
-	assert(m_Tail >= 0);
+	assert((m_Tail + 1) % MAX_PENDING != m_Head && m_Tail >= 0);
 
 	for (int i{ m_Head }; i != m_Tail; i = ++i % MAX_PENDING)
 	{
+		assert(i >= 0 && i < MAX_PENDING);
 		if (m_Queue[i].id == id)
 		{
 			if (volume > m_Queue[i].volume)
@@ -155,9 +155,4 @@ SDLSoundSystem::~SDLSoundSystem() = default;
 void SDLSoundSystem::Play(const dae::SoundId id, const float volume)
 {
 	m_pSDLSoundSystemImpl->Play(id, volume);
-}
-
-void SDLSoundSystem::Update()
-{
-	m_pSDLSoundSystemImpl->Update();
 }
