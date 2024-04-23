@@ -38,7 +38,7 @@ void QbertComponent::Init()
 
 void QbertComponent::Update()
 {
-	if (m_MovementDirection == MovementDirection::None)
+	if (!IsMoving())
 		return;
 
 	glm::vec3 endPos{ m_StartPos };
@@ -75,10 +75,7 @@ void QbertComponent::Update()
 	GetGameObject()->SetPosition(currentPos);
 
 	if (t >= 1.f)
-	{
 		MoveStateChanged->NotifyObservers(Character::Qbert1, MovementState::End, m_MovementDirection);
-		m_MovementDirection = MovementDirection::None;
-	}
 }
 
 void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>* pCharacterFellSubject)
@@ -98,7 +95,9 @@ void QbertComponent::Notify(Character, MovementState movementState, MovementDire
 		m_StartPos = GetGameObject()->GetLocalPosition();
 		break;
 	case MovementState::End:
-		dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::QbertJump));
+		dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::QbertJump), 0.2f);
+		m_MovementDirection = MovementDirection::None;
+		break;
 	default:
 		break;
 	}

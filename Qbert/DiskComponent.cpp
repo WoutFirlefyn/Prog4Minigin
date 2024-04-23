@@ -5,6 +5,8 @@
 #include "SpritesheetComponent.h"
 #include "GameObject.h"
 #include "GameTime.h"
+#include "ServiceLocator.h"
+#include "SDLSoundSystem.h"
 
 //---------------------------
 // Constructor & Destructor
@@ -43,7 +45,10 @@ void DiskComponent::Update()
 	GetGameObject()->SetPosition(m_StartPos + (endPos - m_StartPos) * m_PlatformLerpValue);
 
 	if (1.f - m_PlatformLerpValue < FLT_EPSILON)
+	{
+		dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::DiskLand));
 		m_pCharacter.second = nullptr;
+	}
 }
 
 std::pair<Character, dae::GameObject*> DiskComponent::GetCharacter() const
@@ -53,6 +58,7 @@ std::pair<Character, dae::GameObject*> DiskComponent::GetCharacter() const
 
 void DiskComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character)
 {
+	dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::DiskLift));
 	m_AccumSec = 0.f;
 	m_StartPos = GetGameObject()->GetWorldPosition();
 	m_pCharacter = character;

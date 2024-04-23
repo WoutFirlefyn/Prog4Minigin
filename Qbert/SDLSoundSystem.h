@@ -17,9 +17,7 @@ enum class Sounds : dae::SoundId
 	QbertJump,
 	RoundCompleteTune,
 	SlickSamCaught,
-	Swearing,
-
-	MaxAmountOfSounds
+	Swearing
 };
 
 class SDLSoundSystem final : public dae::SoundSystem

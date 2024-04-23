@@ -14,7 +14,6 @@
 enum class MovementState
 {
 	Start,
-	Moving,
 	End
 };
 

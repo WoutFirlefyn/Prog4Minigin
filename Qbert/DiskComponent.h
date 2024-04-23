@@ -53,7 +53,7 @@ private:
 	dae::SpritesheetComponent* m_pSpritesheetComponent;
 	glm::vec3 m_StartPos{};
 	float m_PlatformLerpValue{ 0.f };
-	float m_TimeToReachTop{ 2.5f };
+	const float m_TimeToReachTop{ 2.5f };
 	float m_AccumSec{};
 	float m_Fps{ 12.f };
 };

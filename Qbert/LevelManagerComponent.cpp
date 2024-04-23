@@ -9,6 +9,8 @@
 #include "SpritesheetComponent.h"
 #include "TileComponent.h"
 #include "DiskComponent.h"
+#include "ServiceLocator.h"
+#include "SDLSoundSystem.h"
 #include <algorithm>
 #include <iterator>
 #include <random>
@@ -155,6 +157,8 @@ void LevelManagerComponent::Notify(bool roundFinished)
     {
         ++m_CurrentRound;
         m_TilesCovered = 0;
+
+        dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::RoundCompleteTune));
 
         auto pCurrentTile = FindCharacter(Character::Qbert1);
 
