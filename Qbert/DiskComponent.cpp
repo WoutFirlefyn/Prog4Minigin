@@ -3,6 +3,8 @@
 //---------------------------
 #include "DiskComponent.h"
 #include "SpritesheetComponent.h"
+#include "GraphicsComponent.h"
+#include "TileComponent.h"
 #include "GameObject.h"
 #include "GameTime.h"
 #include "ServiceLocator.h"
@@ -21,6 +23,7 @@ void DiskComponent::Init()
 {
 	m_pSpritesheetComponent = GetGameObject()->GetComponent<dae::SpritesheetComponent>();
 	assert(m_pSpritesheetComponent);
+	m_StartPos = GetGameObject()->GetWorldPosition();
 }
 
 void DiskComponent::Update()
@@ -47,7 +50,12 @@ void DiskComponent::Update()
 	if (1.f - m_PlatformLerpValue < FLT_EPSILON)
 	{
 		dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::DiskLand));
+
+		m_pCharacter.second->SetParent(nullptr);
+		m_pCharacter.second->SetPosition(308, 193);
+		m_pTopTile->GetComponent<TileComponent>()->MoveCharacterHere(m_pCharacter);
 		m_pCharacter.second = nullptr;
+		GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
 	}
 }
 
@@ -59,8 +67,6 @@ std::pair<Character, dae::GameObject*> DiskComponent::GetCharacter() const
 void DiskComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character)
 {
 	dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::DiskLift));
-	m_AccumSec = 0.f;
-	m_StartPos = GetGameObject()->GetWorldPosition();
 	m_pCharacter = character;
 	character.second->SetParent(GetGameObject(), true);
 }

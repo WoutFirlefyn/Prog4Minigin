@@ -35,7 +35,7 @@ private:
 
 	struct DeleteSound
 	{
-		void operator()(Mix_Chunk* ptr) { Mix_FreeChunk(ptr); }
+		void operator()(Mix_Chunk* pSound) { Mix_FreeChunk(pSound); }
 	};
 	std::map<dae::SoundId, std::unique_ptr<Mix_Chunk, DeleteSound>> m_vSounds;
 
@@ -45,8 +45,8 @@ private:
 	static const int MAX_PENDING{ 16 };
 	std::array<SoundMessage, MAX_PENDING> m_Queue{};
 
-	std::future<void> m_SoundThread;
-	std::condition_variable m_WaitForNewSound;
+	std::jthread m_SoundThread{};
+	std::condition_variable m_WaitForNewSound{};
 	std::mutex m_Mutex{};
 };
 
@@ -77,13 +77,12 @@ SDLSoundSystem::SDLSoundSystemImpl::SDLSoundSystemImpl()
 	LoadSound("SlickSam Caught.wav",		Sounds::SlickSamCaught);
 	LoadSound("Swearing.wav",				Sounds::Swearing);
 
-	m_SoundThread = std::async(&SDLSoundSystem::SDLSoundSystemImpl::Update, this);
+	m_SoundThread = std::jthread(&SDLSoundSystem::SDLSoundSystemImpl::Update, this);
 }
 
 SDLSoundSystem::SDLSoundSystemImpl::~SDLSoundSystemImpl()
 {
 	Play(dae::SoundId(std::numeric_limits<dae::SoundId>().max()), 0);
-	m_SoundThread.get();
 	Mix_Quit();
 }
 

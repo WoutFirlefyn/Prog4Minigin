@@ -203,6 +203,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CharacterComponent.cpp" />
     <ClCompile Include="CommandImplementation.cpp" />
     <ClCompile Include="DiskComponent.cpp" />
     <ClCompile Include="FPSComponent.cpp" />
@@ -218,6 +219,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClCompile Include="TileComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CharacterComponent.h" />
     <ClInclude Include="CommandImplementation.h" />
     <ClInclude Include="DiskComponent.h" />
     <ClInclude Include="FPSComponent.h" />

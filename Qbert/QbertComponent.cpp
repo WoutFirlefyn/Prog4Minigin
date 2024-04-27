@@ -14,10 +14,9 @@
 // Constructor & Destructor
 //---------------------------
 QbertComponent::QbertComponent(dae::GameObject* pGameObject)
-	: BaseComponent(pGameObject)
+	: CharacterComponent(pGameObject)
 {
 	PlayerDied = std::make_unique<dae::Subject<int>>();
-	MoveStateChanged = std::make_unique<dae::Subject<Character, MovementState, MovementDirection>>();
 }
 
 QbertComponent::~QbertComponent()
@@ -30,52 +29,10 @@ QbertComponent::~QbertComponent()
 
 void QbertComponent::Init()
 {
-	MoveStateChanged->AddObserver(this);
+	CharacterComponent::Init();
 	m_pTileChangedSubject->AddObserver(this);
 	m_pCharacterFellSubject->AddObserver(this);
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
-}
-
-void QbertComponent::Update()
-{
-	if (!IsMoving())
-		return;
-
-	glm::vec3 endPos{ m_StartPos };
-	switch (m_MovementDirection)
-	{
-	case MovementDirection::Up:
-		endPos += glm::vec3{ 16, -24, 0 };
-		break;
-	case MovementDirection::Down:
-		endPos += glm::vec3{ -16, 24, 0 };
-		break;
-	case MovementDirection::Left:
-		endPos += glm::vec3{ -16, -24, 0 };
-		break;
-	case MovementDirection::Right:
-		endPos += glm::vec3{ 16, 24, 0 };
-		break;
-	default:
-		return;
-	}
-
-	glm::vec3 control { m_StartPos };
-
-	if (static_cast<int>(m_MovementDirection) < 2)
-		control += (endPos - m_StartPos) * glm::vec3( 0.1f, 1.f, 0.f );
-	else
-		control += (endPos - m_StartPos) * glm::vec3{ 1.f, 0.1f, 0.f };
-
-	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
-	float t = std::min(m_AccumSec / m_JumpDuration, 1.f);
-
-	glm::vec3 currentPos = (1 - t) * (1 - t) * m_StartPos + 2 * (1 - t) * t * control + t * t * endPos;
-
-	GetGameObject()->SetPosition(currentPos);
-
-	if (t >= 1.f)
-		MoveStateChanged->NotifyObservers(Character::Qbert1, MovementState::End, m_MovementDirection);
 }
 
 void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>* pCharacterFellSubject)

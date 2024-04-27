@@ -69,7 +69,7 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
     {
         auto disk = std::make_unique<dae::GameObject>();
         disk->AddComponent<dae::GraphicsComponent>("Disk Spritesheet.png");
-        disk->AddComponent<dae::SpritesheetComponent>(30, 1);
+        disk->AddComponent<dae::SpritesheetComponent>(4, 6); 
         disk->AddComponent<DiskComponent>(m_vTiles[0]);
         disk->SetPosition(8, 5);
        
