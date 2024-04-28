@@ -120,7 +120,7 @@ void SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds()
 	{
 		std::unique_lock lock(m_Mutex);
 		if (m_Head == m_Tail)
-			m_WaitForNewSound.wait(lock, [this] { return m_Head != m_Tail || m_StopProcessing; });
+			m_WaitForNewSound.wait(lock);
 
 		if (m_StopProcessing)
 			break;

@@ -24,5 +24,9 @@ namespace dae
 		std::unique_ptr<SoundSystem> m_pSoundSystem;
 	};
 
+	class NullSoundSystem final : public SoundSystem
+	{
+		virtual void Play(const SoundId, const float) override {}
+	};
 }
 
