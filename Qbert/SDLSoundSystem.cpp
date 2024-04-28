@@ -29,7 +29,7 @@ public:
 	SDLSoundSystemImpl& operator=(SDLSoundSystemImpl&& other) noexcept = delete;
 
 	void Play(const dae::SoundId id, const float volume = 1.f);
-	void Update();
+	void ProcessSounds();
 private:
 	void LoadSound(const std::string& fileName, Sounds sound);
 
@@ -48,6 +48,8 @@ private:
 	std::jthread m_SoundThread{};
 	std::condition_variable m_WaitForNewSound{};
 	std::mutex m_Mutex{};
+
+	bool m_StopProcessing{ false };
 };
 
 SDLSoundSystem::SDLSoundSystemImpl::SDLSoundSystemImpl()
@@ -77,12 +79,13 @@ SDLSoundSystem::SDLSoundSystemImpl::SDLSoundSystemImpl()
 	LoadSound("SlickSam Caught.wav",		Sounds::SlickSamCaught);
 	LoadSound("Swearing.wav",				Sounds::Swearing);
 
-	m_SoundThread = std::jthread(&SDLSoundSystem::SDLSoundSystemImpl::Update, this);
+	m_SoundThread = std::jthread(&SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds, this);
 }
 
 SDLSoundSystem::SDLSoundSystemImpl::~SDLSoundSystemImpl()
 {
-	Play(dae::SoundId(std::numeric_limits<dae::SoundId>().max()), 0);
+	m_StopProcessing = true;
+	m_WaitForNewSound.notify_all();
 	Mix_Quit();
 }
 
@@ -111,15 +114,15 @@ void SDLSoundSystem::SDLSoundSystemImpl::Play(const dae::SoundId id, const float
 	m_WaitForNewSound.notify_all();
 }
 
-void SDLSoundSystem::SDLSoundSystemImpl::Update()
+void SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds()
 {
 	while (true)
 	{
 		std::unique_lock lock(m_Mutex);
 		if (m_Head == m_Tail)
-			m_WaitForNewSound.wait(lock);
+			m_WaitForNewSound.wait(lock, [this] { return m_Head != m_Tail || m_StopProcessing; });
 
-		if (m_Queue[m_Head].id == std::numeric_limits<dae::SoundId>().max())
+		if (m_StopProcessing)
 			break;
 
 		Mix_Volume(-1, static_cast<int>(roundf(m_Queue[m_Head].volume * MIX_MAX_VOLUME)));

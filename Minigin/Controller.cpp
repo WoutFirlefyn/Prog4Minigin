@@ -8,6 +8,7 @@
 #include "Input.h"
 #include "Command.h"
 #include "Controller.h"
+
 class dae::Controller::ControllerImpl
 {
 public:
@@ -116,9 +117,9 @@ void dae::Controller::ProcessInput()
 	m_pControllerImpl->ProcessInput();
 }
 
-void dae::Controller::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType)
+void dae::Controller::BindCommand(std::unique_ptr<Command>&& pCommand, ControllerButton button, InputType triggerType)
 {
-	m_pControllerImpl->BindCommand(std::move(pCommand), button, triggerType);
+	m_pControllerImpl->BindCommand(std::move(pCommand), static_cast<unsigned int>(button), triggerType);
 }
 
 bool dae::Controller::IsPressedThisFrame(unsigned int button) const

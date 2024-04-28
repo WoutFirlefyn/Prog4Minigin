@@ -44,9 +44,9 @@ void CharacterComponent::Update()
 	glm::vec3 control{ m_StartPos };
 
 	if (static_cast<int>(m_MovementDirection) < 2)
-		control += (endPos - m_StartPos) * glm::vec3(0.1f, 1.f, 0.f);
+		control += (endPos - m_StartPos) * glm::vec3(0.2f, 1.f, 0.f);
 	else
-		control += (endPos - m_StartPos) * glm::vec3{ 1.f, 0.1f, 0.f };
+		control += (endPos - m_StartPos) * glm::vec3{ 1.f, 0.2f, 0.f };
 
 	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
 	float t = std::min(m_AccumSec / m_JumpDuration, 1.f);
