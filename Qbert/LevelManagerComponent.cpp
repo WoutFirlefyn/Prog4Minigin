@@ -10,7 +10,7 @@
 #include "TileComponent.h"
 #include "DiskComponent.h"
 #include "ServiceLocator.h"
-#include "SDLSoundSystem.h"
+#include "Sounds.h"
 #include <algorithm>
 #include <iterator>
 #include <random>

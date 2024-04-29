@@ -11,16 +11,13 @@
 #include <memory>
 #include <condition_variable>
 
-namespace dae
+struct SoundMessage
 {
-	struct SoundMessage
-	{
-		dae::SoundId id;
-		float volume;
-	};
-}
+	dae::SoundId id;
+	float volume;
+};
 
-class dae::SDLSoundSystem::SDLSoundSystemImpl final
+class SDLSoundSystem::SDLSoundSystemImpl final
 {
 public:
 	SDLSoundSystemImpl();
@@ -33,8 +30,9 @@ public:
 
 	void Play(const dae::SoundId id, const float volume = 1.f);
 	void ProcessSounds();
-	void LoadSound(const std::string& fileName, dae::SoundId soundId);
 private:
+	void LoadSound(const std::string& fileName, Sounds sound);
+
 	struct DeleteSound
 	{
 		void operator()(Mix_Chunk* pSound) { Mix_FreeChunk(pSound); }
@@ -54,7 +52,7 @@ private:
 	bool m_StopProcessing{ false };
 };
 
-dae::SDLSoundSystem::SDLSoundSystemImpl::SDLSoundSystemImpl()
+SDLSoundSystem::SDLSoundSystemImpl::SDLSoundSystemImpl()
 {
 	Mix_Init(MIX_INIT_WAVPACK);
 	SDL_Init(SDL_INIT_AUDIO);
@@ -65,19 +63,34 @@ dae::SDLSoundSystem::SDLSoundSystemImpl::SDLSoundSystemImpl()
 		return;
 	}
 
+	LoadSound("Change Selection.wav",		Sounds::ChangeSelection);
+	LoadSound("Clear Disks.wav",			Sounds::ClearDisks);
+	LoadSound("Coily Egg Jump.wav",			Sounds::CoilyEggJump);
+	LoadSound("Coily Fall.wav",				Sounds::CoilyFall);
+	LoadSound("Coily Snake Jump.wav",		Sounds::CoilySnakeJump);
+	LoadSound("Disk Land.wav",				Sounds::DiskLand);
+	LoadSound("Disk Lift.wav",				Sounds::DiskLift);
+	LoadSound("Level Screen Tune.wav",		Sounds::LevelScreenTune);
+	LoadSound("Other Foes Jump.wav",		Sounds::OtherFoesJump);
+	LoadSound("QBert Fall.wav",				Sounds::QbertFall);
+	LoadSound("QBert Hit.wav",				Sounds::QbertHit);
+	LoadSound("QBert Jump.wav",				Sounds::QbertJump);
+	LoadSound("Round Complete Tune.wav",	Sounds::RoundCompleteTune);
+	LoadSound("SlickSam Caught.wav",		Sounds::SlickSamCaught);
+	LoadSound("Swearing.wav",				Sounds::Swearing);
+
 	m_SoundThread = std::jthread(&SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds, this);
 }
 
-dae::SDLSoundSystem::SDLSoundSystemImpl::~SDLSoundSystemImpl()
+SDLSoundSystem::SDLSoundSystemImpl::~SDLSoundSystemImpl()
 {
 	m_StopProcessing = true;
 	m_WaitForNewSound.notify_all();
 	Mix_Quit();
 }
 
-void dae::SDLSoundSystem::SDLSoundSystemImpl::Play(const dae::SoundId id, const float volume)
+void SDLSoundSystem::SDLSoundSystemImpl::Play(const dae::SoundId id, const float volume)
 {
-	std::lock_guard lock(m_Mutex);
 	assert((m_Tail + 1) % MAX_PENDING != m_Head && m_Tail >= 0);
 
 	for (int i{ m_Head }; i != m_Tail; i = ++i % MAX_PENDING)
@@ -86,38 +99,28 @@ void dae::SDLSoundSystem::SDLSoundSystemImpl::Play(const dae::SoundId id, const 
 		if (m_Queue[i].id == id)
 		{
 			if (volume > m_Queue[i].volume)
+			{
+				std::lock_guard lock(m_Mutex);
 				m_Queue[i].volume = volume;
+			}
 			return;
 		}
 	}
 
+	std::lock_guard lock(m_Mutex);
 	m_Queue[m_Tail].id = id;
 	m_Queue[m_Tail].volume = volume;
 	m_Tail = ++m_Tail % MAX_PENDING;
 	m_WaitForNewSound.notify_all();
 }
 
-void dae::SDLSoundSystem::SDLSoundSystemImpl::LoadSound(const std::string& fileName, dae::SoundId soundId)
-{
-	Mix_Chunk* m = NULL;
-	std::string fullPath{ std::string("../Data/Sounds/") + fileName };
-	m = Mix_LoadWAV(fullPath.c_str());
-
-	if (m == NULL) 
-	{
-		printf("Failed to load sound. SDL_Mixer error: %s\n", Mix_GetError());
-		return;;
-	}
-	
-	m_vSounds.emplace(soundId, std::unique_ptr<Mix_Chunk, DeleteSound>(m, DeleteSound()));
-}
-
-void dae::SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds()
+void SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds()
 {
 	while (true)
 	{
 		std::unique_lock lock(m_Mutex);
-		m_WaitForNewSound.wait(lock, [&]() { return m_Head != m_Tail || m_StopProcessing; });
+		if (m_Head == m_Tail)
+			m_WaitForNewSound.wait(lock);
 
 		if (m_StopProcessing)
 			break;
@@ -129,19 +132,29 @@ void dae::SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds()
 	}
 }
 
-dae::SDLSoundSystem::SDLSoundSystem()
+void SDLSoundSystem::SDLSoundSystemImpl::LoadSound(const std::string& fileName, Sounds sound)
+{
+	Mix_Chunk* m = NULL;
+	std::string fullPath{ std::string("../Data/Sounds/") + fileName };
+	m = Mix_LoadWAV(fullPath.c_str());
+
+	if (m == NULL) 
+	{
+		printf("Failed to load sound. SDL_Mixer error: %s\n", Mix_GetError());
+		return;;
+	}
+
+	m_vSounds.emplace(static_cast<dae::SoundId>(sound), std::unique_ptr<Mix_Chunk, DeleteSound>(m, DeleteSound()));
+}
+
+SDLSoundSystem::SDLSoundSystem()
 	: m_pSDLSoundSystemImpl{ std::make_unique<SDLSoundSystemImpl>() }
 {
 }
 
-dae::SDLSoundSystem::~SDLSoundSystem() = default;
+SDLSoundSystem::~SDLSoundSystem() = default;
 
-void dae::SDLSoundSystem::Play(const dae::SoundId id, const float volume)
+void SDLSoundSystem::Play(const dae::SoundId id, const float volume)
 {
 	m_pSDLSoundSystemImpl->Play(id, volume);
-}
-
-void dae::SDLSoundSystem::LoadSound(const std::string& fileName, dae::SoundId soundId)
-{
-	m_pSDLSoundSystemImpl->LoadSound(fileName, soundId);
 }

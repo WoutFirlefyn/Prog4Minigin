@@ -7,7 +7,7 @@
 #include "GameTime.h"
 #include "GameObject.h"
 #include "ServiceLocator.h"
-#include "SDLSoundSystem.h"
+#include "Sounds.h"
 
 //---------------------------
 // Constructor & Destructor

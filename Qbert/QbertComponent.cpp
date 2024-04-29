@@ -8,7 +8,7 @@
 #include "TileComponent.h"
 #include "LevelManagerComponent.h"
 #include "ServiceLocator.h"
-#include "SDLSoundSystem.h"
+#include "Sounds.h"
 
 //---------------------------
 // Constructor & Destructor
