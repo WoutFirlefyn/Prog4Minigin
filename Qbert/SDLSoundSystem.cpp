@@ -31,7 +31,7 @@ public:
 	void Play(const dae::SoundId id, const float volume = 1.f);
 	void ProcessSounds();
 private:
-	void LoadSound(const std::string& fileName, Sounds sound);
+	void LoadSound(const std::string& fileName, dae::SoundId soundId);
 
 	struct DeleteSound
 	{
@@ -63,21 +63,21 @@ SDLSoundSystem::SDLSoundSystemImpl::SDLSoundSystemImpl()
 		return;
 	}
 
-	LoadSound("Change Selection.wav",		Sounds::ChangeSelection);
-	LoadSound("Clear Disks.wav",			Sounds::ClearDisks);
-	LoadSound("Coily Egg Jump.wav",			Sounds::CoilyEggJump);
-	LoadSound("Coily Fall.wav",				Sounds::CoilyFall);
-	LoadSound("Coily Snake Jump.wav",		Sounds::CoilySnakeJump);
-	LoadSound("Disk Land.wav",				Sounds::DiskLand);
-	LoadSound("Disk Lift.wav",				Sounds::DiskLift);
-	LoadSound("Level Screen Tune.wav",		Sounds::LevelScreenTune);
-	LoadSound("Other Foes Jump.wav",		Sounds::OtherFoesJump);
-	LoadSound("QBert Fall.wav",				Sounds::QbertFall);
-	LoadSound("QBert Hit.wav",				Sounds::QbertHit);
-	LoadSound("QBert Jump.wav",				Sounds::QbertJump);
-	LoadSound("Round Complete Tune.wav",	Sounds::RoundCompleteTune);
-	LoadSound("SlickSam Caught.wav",		Sounds::SlickSamCaught);
-	LoadSound("Swearing.wav",				Sounds::Swearing);
+	LoadSound("Change Selection.wav",		static_cast<dae::SoundId>(Sounds::ChangeSelection));
+	LoadSound("Clear Disks.wav",			static_cast<dae::SoundId>(Sounds::ClearDisks));
+	LoadSound("Coily Egg Jump.wav",			static_cast<dae::SoundId>(Sounds::CoilyEggJump));
+	LoadSound("Coily Fall.wav",				static_cast<dae::SoundId>(Sounds::CoilyFall));
+	LoadSound("Coily Snake Jump.wav",		static_cast<dae::SoundId>(Sounds::CoilySnakeJump));
+	LoadSound("Disk Land.wav",				static_cast<dae::SoundId>(Sounds::DiskLand));
+	LoadSound("Disk Lift.wav",				static_cast<dae::SoundId>(Sounds::DiskLift));
+	LoadSound("Level Screen Tune.wav",		static_cast<dae::SoundId>(Sounds::LevelScreenTune));
+	LoadSound("Other Foes Jump.wav",		static_cast<dae::SoundId>(Sounds::OtherFoesJump));
+	LoadSound("QBert Fall.wav",				static_cast<dae::SoundId>(Sounds::QbertFall));
+	LoadSound("QBert Hit.wav",				static_cast<dae::SoundId>(Sounds::QbertHit));
+	LoadSound("QBert Jump.wav",				static_cast<dae::SoundId>(Sounds::QbertJump));
+	LoadSound("Round Complete Tune.wav",	static_cast<dae::SoundId>(Sounds::RoundCompleteTune));
+	LoadSound("SlickSam Caught.wav",		static_cast<dae::SoundId>(Sounds::SlickSamCaught));
+	LoadSound("Swearing.wav",				static_cast<dae::SoundId>(Sounds::Swearing));
 
 	m_SoundThread = std::jthread(&SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds, this);
 }
@@ -91,6 +91,7 @@ SDLSoundSystem::SDLSoundSystemImpl::~SDLSoundSystemImpl()
 
 void SDLSoundSystem::SDLSoundSystemImpl::Play(const dae::SoundId id, const float volume)
 {
+	std::lock_guard lock(m_Mutex);
 	assert((m_Tail + 1) % MAX_PENDING != m_Head && m_Tail >= 0);
 
 	for (int i{ m_Head }; i != m_Tail; i = ++i % MAX_PENDING)
@@ -99,15 +100,11 @@ void SDLSoundSystem::SDLSoundSystemImpl::Play(const dae::SoundId id, const float
 		if (m_Queue[i].id == id)
 		{
 			if (volume > m_Queue[i].volume)
-			{
-				std::lock_guard lock(m_Mutex);
 				m_Queue[i].volume = volume;
-			}
 			return;
 		}
 	}
 
-	std::lock_guard lock(m_Mutex);
 	m_Queue[m_Tail].id = id;
 	m_Queue[m_Tail].volume = volume;
 	m_Tail = ++m_Tail % MAX_PENDING;
@@ -119,8 +116,7 @@ void SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds()
 	while (true)
 	{
 		std::unique_lock lock(m_Mutex);
-		if (m_Head == m_Tail)
-			m_WaitForNewSound.wait(lock);
+		m_WaitForNewSound.wait(lock, [&]() { return m_Head != m_Tail || m_StopProcessing; });
 
 		if (m_StopProcessing)
 			break;
@@ -132,7 +128,7 @@ void SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds()
 	}
 }
 
-void SDLSoundSystem::SDLSoundSystemImpl::LoadSound(const std::string& fileName, Sounds sound)
+void SDLSoundSystem::SDLSoundSystemImpl::LoadSound(const std::string& fileName, dae::SoundId soundId)
 {
 	Mix_Chunk* m = NULL;
 	std::string fullPath{ std::string("../Data/Sounds/") + fileName };
@@ -143,8 +139,8 @@ void SDLSoundSystem::SDLSoundSystemImpl::LoadSound(const std::string& fileName, 
 		printf("Failed to load sound. SDL_Mixer error: %s\n", Mix_GetError());
 		return;;
 	}
-
-	m_vSounds.emplace(static_cast<dae::SoundId>(sound), std::unique_ptr<Mix_Chunk, DeleteSound>(m, DeleteSound()));
+	
+	m_vSounds.emplace(soundId, std::unique_ptr<Mix_Chunk, DeleteSound>(m, DeleteSound()));
 }
 
 SDLSoundSystem::SDLSoundSystem()
