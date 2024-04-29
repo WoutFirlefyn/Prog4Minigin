@@ -229,6 +229,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="QbertCurseComponent.h" />
     <ClInclude Include="RotateComponent.h" />
     <ClInclude Include="ScoreComponent.h" />
+    <ClInclude Include="Sounds.h" />
     <ClInclude Include="TileComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

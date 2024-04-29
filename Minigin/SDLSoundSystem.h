@@ -1,34 +1,19 @@
 #pragma once
 #include "SoundSystem.h"
 
-enum class Sounds : dae::SoundId
+namespace dae
 {
-	ChangeSelection,
-	ClearDisks,
-	CoilyEggJump,
-	CoilyFall,
-	CoilySnakeJump,
-	DiskLand,
-	DiskLift,
-	LevelScreenTune,
-	OtherFoesJump,
-	QbertFall,
-	QbertHit,
-	QbertJump,
-	RoundCompleteTune,
-	SlickSamCaught,
-	Swearing
-};
+	class SDLSoundSystem final : public dae::SoundSystem
+	{
+	public:
+		SDLSoundSystem();
+		virtual ~SDLSoundSystem() override;
+		virtual void Play(const dae::SoundId id, const float volume) override;
+		virtual void LoadSound(const std::string& fileName, dae::SoundId soundId) override;
 
-class SDLSoundSystem final : public dae::SoundSystem
-{
-public:
-	SDLSoundSystem();
-	virtual ~SDLSoundSystem() override;
-	virtual void Play(const dae::SoundId id, const float volume) override;
-
-private:
-	class SDLSoundSystemImpl;
-	std::unique_ptr<SDLSoundSystemImpl> m_pSDLSoundSystemImpl;
-};
+	private:
+		class SDLSoundSystemImpl;
+		std::unique_ptr<SDLSoundSystemImpl> m_pSDLSoundSystemImpl;
+	};
+}
 
