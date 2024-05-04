@@ -1,6 +1,7 @@
 //---------------------------
 // Includes
 //---------------------------
+#include <glm/glm.hpp>
 #include "SpritesheetComponent.h"
 #include "GameObject.h"
 #include "GraphicsComponent.h"
@@ -11,25 +12,20 @@
 // Constructor & Destructor
 //---------------------------
 dae::SpritesheetComponent::SpritesheetComponent(GameObject* pGameObject, int spriteCols, int spriteRows) : BaseComponent(pGameObject)
-	, m_SpriteCols{ spriteCols }
-	, m_SpriteRows{ spriteRows }
 {
-	m_pTexture = GetGameObject()->GetComponent<GraphicsComponent>()->GetTexture();
-	auto size = m_pTexture->GetSize();
-	m_SpriteWidth = size.x / m_SpriteCols;
-	m_SpriteHeight = size.y / m_SpriteRows;
-	m_pTexture->SetSourceRect(0, 0, m_SpriteWidth, m_SpriteHeight);
+	m_pGraphicsComponent = GetGameObject()->GetComponent<GraphicsComponent>();
+	auto size = m_pGraphicsComponent->GetTexture()->GetSize();
+	m_SpriteWidth = size.x / spriteCols;
+	m_SpriteHeight = size.y / spriteRows;
+	m_pGraphicsComponent->ToggleSourceRect(true);
+	m_pGraphicsComponent->SetSourceRect({ 0, 0, m_SpriteWidth, m_SpriteHeight });
 }
 
 void dae::SpritesheetComponent::MoveSourceRect(int cols, int rows)
 {
-	if (m_pTexture)
-	{
-		auto srcRectSize = m_pTexture->GetSourceRectSize();
-		m_pTexture->SetSourceRect(srcRectSize.x * cols, srcRectSize.y * rows);
-		m_CurrCol = cols;
-		m_CurrRow = rows;
-	}
+	m_pGraphicsComponent->SetSourceRect({ static_cast<float>(m_SpriteWidth * cols), static_cast<float>(m_SpriteHeight * rows), m_SpriteWidth, m_SpriteHeight });
+	m_CurrCol = cols;
+	m_CurrRow = rows;
 }
 
 

@@ -158,7 +158,7 @@ void LevelManagerComponent::Notify(bool roundFinished)
         ++m_CurrentRound;
         m_TilesCovered = 0;
 
-        dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::RoundCompleteTune));
+        dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::RoundCompleteTune);
 
         auto pCurrentTile = FindCharacter(Character::Qbert1);
 

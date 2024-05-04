@@ -43,8 +43,8 @@ void QbertCurseComponent::Notify(Character character)
 	if (character != Character::Qbert1)
 		return;
 
-	dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::Swearing));
-	dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::QbertFall));
+	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::Swearing);
+	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertFall);
 
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
 	m_AccumSec = 0.f;

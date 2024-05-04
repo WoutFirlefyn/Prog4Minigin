@@ -5,6 +5,7 @@
 //-----------------------------------------------------
 #include <memory>
 #include <string>
+#include <glm/glm.hpp>
 #include "BaseComponent.h"
 
 namespace dae
@@ -35,19 +36,18 @@ namespace dae
 		virtual void Render() const override;
 		void ToggleRendering(bool isEnabled) { m_RenderingEnabled = isEnabled; }
 		void SetTexture(const std::string& filename);
-		void SetTexture(const std::shared_ptr<Texture2D>& pTexture);
-		Texture2D* GetTexture() const { return m_pTexture.get(); }
+		void SetTexture(Texture2D* pTexture);
+		Texture2D* GetTexture() const { return m_pTexture; }
+		void ToggleSourceRect(bool useSourceRect) { m_UseSourceRect = useSourceRect; }
+		void SetSourceRect(const glm::vec4& srcRect) { m_SrcRect = srcRect; }
 	private:
-		//-------------------------------------------------
-		// Private member functions								
-		//-------------------------------------------------
-
-
 		//-------------------------------------------------
 		// Datamembers								
 		//-------------------------------------------------
-		std::shared_ptr<Texture2D> m_pTexture{};
+		Texture2D* m_pTexture{};
+		glm::vec4 m_SrcRect{};
 		bool m_RenderingEnabled{ true };
+		bool m_UseSourceRect{ false };
 	};
 }
  

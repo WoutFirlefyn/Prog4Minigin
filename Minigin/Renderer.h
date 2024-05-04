@@ -1,13 +1,11 @@
 #pragma once
 #include <SDL.h>
+#include <glm/glm.hpp>
 #include "Singleton.h"
 
 namespace dae
 {
 	class Texture2D;
-	/**
-	 * Simple RAII wrapper for the SDL renderer
-	 */
 	class Renderer final : public Singleton<Renderer>
 	{
 		SDL_Renderer* m_renderer{};
@@ -19,7 +17,9 @@ namespace dae
 		void Destroy();
 
 		void RenderTexture(const Texture2D& texture, float x, float y) const;
+		void RenderTexture(const Texture2D& texture, float x, float y, const glm::vec4& srcRect) const;
 		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
+		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height, const glm::vec4& srcRect) const;
 
 		SDL_Renderer* GetSDLRenderer() const;
 

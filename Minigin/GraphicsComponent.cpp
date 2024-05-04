@@ -25,7 +25,10 @@ void dae::GraphicsComponent::Render() const
 	if (m_pTexture != nullptr && m_RenderingEnabled)
 	{
 		const auto& pos = GetGameObject()->GetWorldTransform().GetPosition();
-		Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
+		if (m_UseSourceRect)
+			Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y, m_SrcRect);
+		else
+			Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
 	}
 }
 
@@ -34,7 +37,7 @@ void dae::GraphicsComponent::SetTexture(const std::string& filename)
 	m_pTexture = ResourceManager::GetInstance().LoadTexture(filename);
 }
 
-void dae::GraphicsComponent::SetTexture(const std::shared_ptr<Texture2D>& pTexture)
+void dae::GraphicsComponent::SetTexture(Texture2D* pTexture)
 {
 	m_pTexture = pTexture;
 }

@@ -15,7 +15,7 @@ namespace dae
 {
 	struct SoundMessage
 	{
-		dae::SoundId id;
+		dae::Sounds id;
 		float volume;
 	};
 }
@@ -31,15 +31,15 @@ public:
 	SDLSoundSystemImpl& operator=(const SDLSoundSystemImpl& other) = delete;
 	SDLSoundSystemImpl& operator=(SDLSoundSystemImpl&& other) noexcept = delete;
 
-	void Play(const dae::SoundId id, const float volume = 1.f);
+	void Play(const dae::Sounds id, const float volume = 1.f);
 	void ProcessSounds();
-	void LoadSound(const std::string& fileName, dae::SoundId soundId);
+	void LoadSound(const std::string& fileName, dae::Sounds soundId);
 private:
 	struct DeleteSound
 	{
 		void operator()(Mix_Chunk* pSound) { Mix_FreeChunk(pSound); }
 	};
-	std::map<dae::SoundId, std::unique_ptr<Mix_Chunk, DeleteSound>> m_vSounds;
+	std::map<dae::Sounds, std::unique_ptr<Mix_Chunk, DeleteSound>> m_vSounds;
 
 	int m_Head{ 0 };
 	int m_Tail{ 0 };
@@ -75,7 +75,7 @@ dae::SDLSoundSystem::SDLSoundSystemImpl::~SDLSoundSystemImpl()
 	Mix_Quit();
 }
 
-void dae::SDLSoundSystem::SDLSoundSystemImpl::Play(const dae::SoundId id, const float volume)
+void dae::SDLSoundSystem::SDLSoundSystemImpl::Play(const dae::Sounds soundId, const float volume)
 {
 	std::lock_guard lock(m_Mutex);
 	assert((m_Tail + 1) % MAX_PENDING != m_Head && m_Tail >= 0);
@@ -83,7 +83,7 @@ void dae::SDLSoundSystem::SDLSoundSystemImpl::Play(const dae::SoundId id, const 
 	for (int i{ m_Head }; i != m_Tail; i = ++i % MAX_PENDING)
 	{
 		assert(i >= 0 && i < MAX_PENDING);
-		if (m_Queue[i].id == id)
+		if (m_Queue[i].id == soundId)
 		{
 			if (volume > m_Queue[i].volume)
 				m_Queue[i].volume = volume;
@@ -91,13 +91,13 @@ void dae::SDLSoundSystem::SDLSoundSystemImpl::Play(const dae::SoundId id, const 
 		}
 	}
 
-	m_Queue[m_Tail].id = id;
+	m_Queue[m_Tail].id = soundId;
 	m_Queue[m_Tail].volume = volume;
 	m_Tail = ++m_Tail % MAX_PENDING;
 	m_WaitForNewSound.notify_all();
 }
 
-void dae::SDLSoundSystem::SDLSoundSystemImpl::LoadSound(const std::string& fileName, dae::SoundId soundId)
+void dae::SDLSoundSystem::SDLSoundSystemImpl::LoadSound(const std::string& fileName, dae::Sounds soundId)
 {
 	Mix_Chunk* m = NULL;
 	std::string fullPath{ std::string("../Data/Sounds/") + fileName };
@@ -136,12 +136,12 @@ dae::SDLSoundSystem::SDLSoundSystem()
 
 dae::SDLSoundSystem::~SDLSoundSystem() = default;
 
-void dae::SDLSoundSystem::Play(const dae::SoundId id, const float volume)
+void dae::SDLSoundSystem::Play(const dae::Sounds soundId, const float volume)
 {
-	m_pSDLSoundSystemImpl->Play(id, volume);
+	m_pSDLSoundSystemImpl->Play(soundId, volume);
 }
 
-void dae::SDLSoundSystem::LoadSound(const std::string& fileName, dae::SoundId soundId)
+void dae::SDLSoundSystem::LoadSound(const std::string& fileName, dae::Sounds soundId)
 {
 	m_pSDLSoundSystemImpl->LoadSound(fileName, soundId);
 }

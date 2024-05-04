@@ -49,7 +49,7 @@ void DiskComponent::Update()
 
 	if (1.f - m_PlatformLerpValue < FLT_EPSILON)
 	{
-		dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::DiskLand));
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLand);
 
 		m_pCharacter.second->SetParent(nullptr);
 		m_pCharacter.second->SetPosition(308, 193);
@@ -66,7 +66,7 @@ std::pair<Character, dae::GameObject*> DiskComponent::GetCharacter() const
 
 void DiskComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character)
 {
-	dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::DiskLift));
+	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLift);
 	m_pCharacter = character;
 	character.second->SetParent(GetGameObject(), true);
 }

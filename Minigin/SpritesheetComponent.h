@@ -12,7 +12,7 @@ namespace dae
 {
 	class Texture2D;
 	class GraphicsComponent;
-	class SpritesheetComponent : public BaseComponent
+	class SpritesheetComponent final : public BaseComponent
 	{
 	public:
 		SpritesheetComponent(GameObject* pGameObject, int spriteCols, int spriteRows);
@@ -30,17 +30,13 @@ namespace dae
 		// Member functions						
 		//-------------------------------------------------
 		void MoveSourceRect(int cols, int rows);
-		int GetRowCount() const { return m_SpriteRows; } 
-		int GetColCount() const { return m_SpriteCols; } 
 		int GetCurrRow() const { return m_CurrRow; } 
 		int GetCurrCol() const { return m_CurrCol; } 
 
-	protected:
-		Texture2D* m_pTexture{ nullptr };
+	private:
+		GraphicsComponent* m_pGraphicsComponent{ nullptr };
 		int m_SpriteWidth{};
 		int m_SpriteHeight{};
-		int m_SpriteRows{};
-		int m_SpriteCols{};
 		int m_CurrRow{ 0 };
 		int m_CurrCol{ 0 };
 	};

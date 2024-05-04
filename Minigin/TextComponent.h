@@ -5,6 +5,7 @@
 //-----------------------------------------------------
 #include <memory>
 #include <string>
+#include <glm/glm.hpp>
 #include "BaseComponent.h"
 
 //-----------------------------------------------------
@@ -42,8 +43,9 @@ namespace dae
 		//-------------------------------------------------
 		bool m_NeedsUpdate;
 		std::string m_Text;
+		std::unique_ptr<Texture2D> m_pTexture;
 		std::shared_ptr<Font> m_pFont;
-
+		glm::vec4 m_Color{ 255, 255, 255, 255 };
 	};
 }
 

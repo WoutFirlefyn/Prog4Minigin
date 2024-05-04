@@ -52,7 +52,7 @@ void QbertComponent::Notify(Character, MovementState movementState, MovementDire
 		m_StartPos = GetGameObject()->GetLocalPosition();
 		break;
 	case MovementState::End:
-		dae::ServiceLocator::GetSoundSystem().Play(static_cast<dae::SoundId>(Sounds::QbertJump), 0.2f);
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertJump, 0.2f);
 		m_MovementDirection = MovementDirection::None;
 		break;
 	default:
