@@ -9,6 +9,7 @@
 #include "Font.h"
 #include "Texture2D.h"
 #include "ResourceManager.h"
+#include "ServiceLocator.h"
 //---------------------------
 // Constructor & Destructor
 //---------------------------
@@ -31,7 +32,7 @@ void dae::TextComponent::Update()
 {
 	if (m_NeedsUpdate)
 	{
-		m_pTexture = ResourceManager::GetInstance().LoadTexture(m_pFont.get(), m_Color, m_Text);
+		m_pTexture = ServiceLocator::GetResourceManager().LoadTexture(m_pFont.get(), m_Color, m_Text);
 		GetGameObject()->GetComponent<GraphicsComponent>()->SetTexture(m_pTexture.get());
 		m_NeedsUpdate = false;
 	}

@@ -8,7 +8,7 @@ namespace dae
 	{
 	public:
 		virtual ~SoundSystem() = default;
-		virtual void Play(const Sounds id, const float volume = 1.f) = 0;
+		virtual void Play(const Sounds soundId, const float volume = 1.f) = 0;
 		virtual void LoadSound(const std::string& fileName, Sounds soundId) = 0;
 	};
 

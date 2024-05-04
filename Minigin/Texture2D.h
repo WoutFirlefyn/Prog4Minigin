@@ -11,7 +11,7 @@ namespace dae
 		explicit Texture2D(SDL_Texture* texture);
 		~Texture2D() = default;
 
-		SDL_Texture* GetSDLTexture() const { return m_texture; };
+		SDL_Texture* GetSDLTexture() const { return m_texture.get(); };
 		glm::ivec2 GetSize() const;
 
 		Texture2D(const Texture2D &) = delete;
@@ -19,6 +19,10 @@ namespace dae
 		Texture2D & operator= (const Texture2D &) = delete;
 		Texture2D & operator= (const Texture2D &&) = delete;
 	private:
-		SDL_Texture* m_texture;
+		struct DeleteTexture
+		{
+			void operator()(SDL_Texture* pTexture);
+		};
+		std::unique_ptr<SDL_Texture, DeleteTexture> m_texture;
 	};
 }

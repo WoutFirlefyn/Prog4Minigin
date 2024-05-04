@@ -2,19 +2,15 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <SDL.h>
+#include <iostream>
 #include "ResourceManager.h"
 #include "Renderer.h"
-#include "Texture2D.h"
 #include "Font.h"
 
-void dae::ResourceManager::Init(const std::string& dataPath)
+dae::ResourceManager::ResourceManager()
 {
-	m_dataPath = dataPath;
-
 	if (TTF_Init() != 0)
-	{
 		throw std::runtime_error(std::string("Failed to load support for fonts: ") + SDL_GetError());
-	}
 }
 
 dae::Texture2D* dae::ResourceManager::LoadTexture(const std::string& file)
@@ -55,4 +51,21 @@ std::unique_ptr<dae::Texture2D> dae::ResourceManager::LoadTexture(Font* pFont, c
 std::shared_ptr<dae::Font> dae::ResourceManager::LoadFont(const std::string& file, unsigned int size) const
 {
 	return std::make_shared<Font>(m_dataPath + file, size);
+}
+
+dae::Texture2D* dae::LoggingResourceManager::LoadTexture(const std::string& file)
+{
+	std::cout << "Loading texture with name: " << file << std::endl;
+	return m_pResourceManager->LoadTexture(file);
+}
+
+std::unique_ptr<dae::Texture2D> dae::LoggingResourceManager::LoadTexture(Font* font, const glm::vec4& color, const std::string& text)
+{
+	return m_pResourceManager->LoadTexture(font, color, text);
+}
+
+std::shared_ptr<dae::Font> dae::LoggingResourceManager::LoadFont(const std::string& file, unsigned int size) const
+{
+	std::cout << "Loading font with name: " << file << " and fontsize: " << size << std::endl;
+	return m_pResourceManager->LoadFont(file, size);
 }

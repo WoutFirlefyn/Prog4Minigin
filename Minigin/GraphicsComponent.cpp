@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "GameObject.h"
 #include "Texture2D.h"
+#include "ServiceLocator.h"
 
 //---------------------------
 // Constructor & Destructor
@@ -34,7 +35,7 @@ void dae::GraphicsComponent::Render() const
 
 void dae::GraphicsComponent::SetTexture(const std::string& filename)
 {
-	m_pTexture = ResourceManager::GetInstance().LoadTexture(filename);
+	m_pTexture = ServiceLocator::GetResourceManager().LoadTexture(filename);
 }
 
 void dae::GraphicsComponent::SetTexture(Texture2D* pTexture)
