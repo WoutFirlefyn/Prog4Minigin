@@ -17,7 +17,7 @@ dae::Texture2D* dae::ResourceManager::LoadTexture(const std::string& file)
 {
 	if (!m_mTextures.contains(file))
 	{
-		const auto fullPath = m_dataPath + file;
+		const auto fullPath = m_DataPath + file;
 		SDL_Texture* texture = IMG_LoadTexture(Renderer::GetInstance().GetSDLRenderer(), fullPath.c_str());
 		if (texture == nullptr)
 			throw std::runtime_error(std::string("Failed to load texture: ") + SDL_GetError());
@@ -50,7 +50,7 @@ std::unique_ptr<dae::Texture2D> dae::ResourceManager::LoadTexture(Font* pFont, c
 
 std::shared_ptr<dae::Font> dae::ResourceManager::LoadFont(const std::string& file, unsigned int size) const
 {
-	return std::make_shared<Font>(m_dataPath + file, size);
+	return std::make_shared<Font>(m_DataPath + file, size);
 }
 
 dae::Texture2D* dae::LoggingResourceManager::LoadTexture(const std::string& file)

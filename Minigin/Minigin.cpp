@@ -53,6 +53,7 @@ void PrintSDLVersion()
 
 dae::Minigin::Minigin()
 {
+	srand(static_cast<unsigned int>(time(NULL)));
 	PrintSDLVersion();
 	
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) 

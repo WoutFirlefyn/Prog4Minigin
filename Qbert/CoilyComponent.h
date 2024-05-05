@@ -30,8 +30,12 @@ public:
 	//-------------------------------------------------
 	virtual void Init() override;
 	virtual void Update() override;
+
+	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
 private:
-	void Move();
+	float m_TimeBetweenJumps{ 1.f };
+	float m_AccumSec{};
+	bool m_IsEgg{ true };
 };
 
 

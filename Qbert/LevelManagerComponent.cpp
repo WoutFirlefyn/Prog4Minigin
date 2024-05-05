@@ -104,17 +104,12 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
 {
     auto pCurrentTile = FindCharacter(character);
 
+    assert(pCurrentTile && "LevelManagerComponent: Character not found");
     if (!pCurrentTile)
         return;
-    //assert(pCurrentTile && "LevelManagerComponent: Character not found");
 
     switch (movementState)
     {
-    case MovementState::Start:
-    {
-        // maybe in some cases (e.g. enemy ai) check where they're jumping towards when they start jumping
-        break;
-    }
     case MovementState::End:
     {
         auto pNextTile = pCurrentTile->GetComponent<TileComponent>()->GetNeighboringTile(movementDirection);
@@ -132,9 +127,7 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
                 }
             }
             else if (pNextTile->HasComponent<DiskComponent>())
-            {
                 pNextTile->GetComponent<DiskComponent>()->MoveCharacterHere(characterObject);
-            }
         }
         else
             CharacterFell->NotifyObservers(character);

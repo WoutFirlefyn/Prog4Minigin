@@ -26,7 +26,8 @@ enum class Character
 	Ugg,
 	Wrongway,
 	Slick,
-	Sam
+	Sam,
+	None
 };
 
 class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>
@@ -43,15 +44,16 @@ public:
 	virtual void Init() override;
 	virtual void Update() override;
 
-	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
+	virtual void Notify(Character, MovementState movementState, MovementDirection movementDirection) = 0;
 
 	bool IsMoving() const { return m_MovementDirection != MovementDirection::None; }
 
 	std::unique_ptr<dae::Subject<Character, MovementState, MovementDirection>> MoveStateChanged;
 protected:
+	Character m_Character{ Character::None };
 	MovementDirection m_MovementDirection{ MovementDirection::None };
 	glm::vec3 m_StartPos{};
-	float m_AccumSec{ 0 };
-	float m_JumpDuration{ 0.5f };
+	float m_JumpLerpValue{ 0 };
+	float m_JumpDuration{ 0.4f };
 };
 

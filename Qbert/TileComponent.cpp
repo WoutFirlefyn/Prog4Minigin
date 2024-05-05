@@ -44,7 +44,7 @@ std::pair<Character, dae::GameObject*> TileComponent::GetCharacter(Character cha
 {
     auto characterNode = m_CharactersHere.extract(character);
     if (characterNode)
-        return std::make_pair(characterNode.key(), characterNode.mapped());
+        return std::make_pair(character, characterNode.mapped());
     return std::make_pair(character, nullptr);
 }
 
@@ -72,7 +72,6 @@ void TileComponent::Reset(int currentRound)
 void TileComponent::AddDiskAsNeighbor(dae::GameObject* pDisk)
 {
     MovementDirection direction{};
-    
     if (std::count(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), nullptr) == 2)
         direction = static_cast<MovementDirection>(rand() % 2);
     else

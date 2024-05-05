@@ -37,8 +37,7 @@ namespace dae
 		virtual std::unique_ptr<Texture2D> LoadTexture(Font* pFont, const glm::vec4& color, const std::string& text) override;
 		virtual std::shared_ptr<Font> LoadFont(const std::string& file, unsigned int size) const override;
 	private:
-		std::string m_dataPath{ "../Data/" };
-
+		std::string m_DataPath{ "../Data/" };
 		std::unordered_map<std::string, std::unique_ptr<Texture2D>> m_mTextures;
 	};
 

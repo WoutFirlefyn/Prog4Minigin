@@ -33,6 +33,7 @@ void QbertComponent::Init()
 	m_pTileChangedSubject->AddObserver(this);
 	m_pCharacterFellSubject->AddObserver(this);
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
+	m_Character = Character::Qbert1;
 }
 
 void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>* pCharacterFellSubject)
@@ -48,7 +49,7 @@ void QbertComponent::Notify(Character, MovementState movementState, MovementDire
 	case MovementState::Start:
 		m_MovementDirection = movementDirection;
 		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(m_MovementDirection), 0);
-		m_AccumSec = 0.f;
+		m_JumpLerpValue = 0.f;
 		m_StartPos = GetGameObject()->GetLocalPosition();
 		break;
 	case MovementState::End:

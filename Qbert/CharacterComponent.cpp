@@ -48,17 +48,13 @@ void CharacterComponent::Update()
 	else
 		control += (endPos - m_StartPos) * glm::vec3{ 1.f, 0.2f, 0.f };
 
-	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
-	float t = std::min(m_AccumSec / m_JumpDuration, 1.f);
+	m_JumpLerpValue += dae::GameTime::GetInstance().GetDeltaTime() / m_JumpDuration;
+	float t = std::min(m_JumpLerpValue, 1.f);
 
 	glm::vec3 currentPos = (1 - t) * (1 - t) * m_StartPos + 2 * (1 - t) * t * control + t * t * endPos;
 
 	GetGameObject()->SetPosition(currentPos);
 
 	if (t >= 1.f)
-		MoveStateChanged->NotifyObservers(Character::Qbert1, MovementState::End, m_MovementDirection);
-}
-
-void CharacterComponent::Notify(Character , MovementState , MovementDirection )
-{
+		MoveStateChanged->NotifyObservers(m_Character, MovementState::End, m_MovementDirection);
 }
