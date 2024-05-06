@@ -31,6 +31,7 @@ namespace dae
 		virtual void Render() const {};
 		virtual void Update() {};
 		virtual void FixedUpdate() {};
+		virtual void LateUpdate() {};
 		virtual void RenderGUI() {};
 	protected:
 		BaseComponent(GameObject* pGameObject);			// Constructor

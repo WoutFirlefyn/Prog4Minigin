@@ -34,7 +34,7 @@ class CharacterComponent : public dae::BaseComponent, public dae::Observer<Chara
 {
 public:
 	CharacterComponent(dae::GameObject* pGameObject);	// Constructor
-	virtual ~CharacterComponent() override;				// Destructor
+	virtual ~CharacterComponent() override = default;				// Destructor
 
 	CharacterComponent(const CharacterComponent& other) = delete;
 	CharacterComponent(CharacterComponent&& other) noexcept = delete;

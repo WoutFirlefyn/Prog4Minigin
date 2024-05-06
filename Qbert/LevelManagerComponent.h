@@ -60,7 +60,7 @@ private:
 	//-------------------------------------------------
 	dae::Subject<Character, MovementState, MovementDirection>* m_pMoveStateChangedSubject;
 	std::vector<dae::GameObject*> m_vTiles;
-	int m_LevelLength{ 7 };
+	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };
 	int m_CurrentRound{ 0 };
 	int m_AmountOfDisks{ 2 };

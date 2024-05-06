@@ -1,7 +1,7 @@
 #pragma once
 #include "Command.h"
 
-class QbertComponent;
+class CharacterComponent;
 enum class MovementDirection;
 class MoveCommand : public dae::GameObjectCommand
 {
@@ -10,8 +10,8 @@ public:
 
 	virtual void Execute() override;
 private:
-	// added m_pQbertComponent to avoid having to get it every time MoveCommand is executed (which could be a lot if the player is holding down the movementkey)
-	QbertComponent* m_pQbertComponent{ nullptr };
+	// added m_pCharacterComponent to avoid having to get it every time MoveCommand is executed (which could be a lot if the player is holding down the movementkey)
+	CharacterComponent* m_pCharacterComponent{ nullptr };
 	MovementDirection m_Direction{};
 };
 

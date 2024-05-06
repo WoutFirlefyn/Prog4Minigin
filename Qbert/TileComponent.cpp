@@ -21,10 +21,12 @@ TileComponent::TileComponent(dae::GameObject* pGameObject) : BaseComponent(pGame
 
 void TileComponent::SetNeighboringTiles(const std::vector<std::vector<TileComponent*>>& vTiles, size_t row, size_t col)
 {
+    const size_t levelLength = vTiles.size();
+
     m_vNeighboringTiles.push_back((row > 0) ? vTiles[row - 1][col]->GetGameObject() : nullptr);
     m_vNeighboringTiles.push_back((col > 0) ? vTiles[row][col - 1]->GetGameObject() : nullptr);
-    m_vNeighboringTiles.push_back((row < 7 - (col + 1)) ? vTiles[row][col + 1]->GetGameObject() : nullptr);
-    m_vNeighboringTiles.push_back((col < 7 - (row + 1)) ? vTiles[row + 1][col]->GetGameObject() : nullptr);
+    m_vNeighboringTiles.push_back((row < levelLength - (col + 1)) ? vTiles[row][col + 1]->GetGameObject() : nullptr);
+    m_vNeighboringTiles.push_back((col < levelLength - (row + 1)) ? vTiles[row + 1][col]->GetGameObject() : nullptr);
 }
 
 bool TileComponent::IsEdgeTile() const

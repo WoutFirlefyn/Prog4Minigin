@@ -15,6 +15,7 @@ namespace dae
 		void Init();
 		void Update();
 		void FixedUpdate();
+		void LateUpdate();
 		void Render() const;
 		void RenderGUI();
 

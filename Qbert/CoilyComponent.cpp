@@ -37,11 +37,8 @@ void CoilyComponent::Update()
 }
 
 
-void CoilyComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
+void CoilyComponent::Notify(Character, MovementState movementState, MovementDirection movementDirection)
 { 
-	if (character != Character::Coily)
-		return;
-
 	int spritesheetCol = (m_IsEgg ? 4 : static_cast<int>(m_MovementDirection));
 
 	switch (movementState)
