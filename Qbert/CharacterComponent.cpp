@@ -13,6 +13,11 @@ void CharacterComponent::Init()
 	MoveStateChanged->AddObserver(this);
 }
 
+void CharacterComponent::AddObserver(dae::Subject<Character>* pCharacterGoingToFallSubject)
+{
+	m_pCharacterGoingToFallSubject = pCharacterGoingToFallSubject;
+}
+
 void CharacterComponent::Update()
 {
 	if (!IsMoving())
@@ -53,4 +58,26 @@ void CharacterComponent::Update()
 
 	if (t >= 1.f)
 		MoveStateChanged->NotifyObservers(m_Character, MovementState::End, m_MovementDirection);
+}
+
+void CharacterComponent::Notify(Character character)
+{
+	if (character == m_Character)
+		m_GoingToFall = true;
+}
+
+void CharacterComponent::SubjectDestroyed(dae::Subject<Character>* pSubject)
+{
+	if (pSubject == m_pCharacterGoingToFallSubject)
+		m_pCharacterGoingToFallSubject = nullptr;
+}
+
+glm::vec3 CharacterComponent::GetPosition() const
+{
+	return GetGameObject()->GetLocalPosition();
+}
+
+void CharacterComponent::SetPosition(const glm::vec3& pos)
+{
+	GetGameObject()->SetPosition(pos);
 }

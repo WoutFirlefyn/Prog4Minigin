@@ -14,19 +14,13 @@ namespace dae
 	class BaseComponent
 	{
 	public:
-		virtual ~BaseComponent() = default;				// Destructor
+		virtual ~BaseComponent() = default;
 
-		// -------------------------
-		// Copy/move constructors and assignment operators
-		// -------------------------    
 		BaseComponent(const BaseComponent& other) = delete;
 		BaseComponent(BaseComponent&& other) noexcept = delete;
 		BaseComponent& operator=(const BaseComponent& other) = delete;
 		BaseComponent& operator=(BaseComponent&& other)	noexcept = delete;
 
-		//-------------------------------------------------
-		// Member functions						
-		//-------------------------------------------------
 		virtual void Init() {};
 		virtual void Render() const {};
 		virtual void Update() {};
@@ -34,12 +28,9 @@ namespace dae
 		virtual void LateUpdate() {};
 		virtual void RenderGUI() {};
 	protected:
-		BaseComponent(GameObject* pGameObject);			// Constructor
+		BaseComponent(GameObject* pGameObject);
 		GameObject* GetGameObject() const;
 	private:
-		//-------------------------------------------------
-		// Datamembers								
-		//-------------------------------------------------
 		GameObject* m_pGameObject;
 
 	};

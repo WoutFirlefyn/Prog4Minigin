@@ -31,15 +31,15 @@ void QbertComponent::Init()
 {
 	CharacterComponent::Init();
 	m_pTileChangedSubject->AddObserver(this);
-	m_pCharacterFellSubject->AddObserver(this);
+	//m_pCharacterFellSubject->AddObserver(this);
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
 	m_Character = Character::Qbert1;
 }
 
-void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>* pCharacterFellSubject)
+void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>*)
 {
 	m_pTileChangedSubject = pTileChangedSubject;
-	m_pCharacterFellSubject = pCharacterFellSubject;
+	//m_pCharacterFellSubject = pCharacterFellSubject;
 }
 
 void QbertComponent::Notify(Character, MovementState movementState, MovementDirection movementDirection)
@@ -61,20 +61,20 @@ void QbertComponent::Notify(Character, MovementState movementState, MovementDire
 	}
 }
 
-void QbertComponent::Notify(Character character)
-{
-	if (character != Character::Qbert1)
-		return;
-
-	Die();
-	GetGameObject()->SetPosition(m_StartPos);
-}
-
-void QbertComponent::SubjectDestroyed(dae::Subject<Character>* pSubject)
-{
-	if (pSubject == m_pCharacterFellSubject)
-		m_pCharacterFellSubject = nullptr;
-}
+//void QbertComponent::Notify(Character character)
+//{
+//	//if (character != Character::Qbert1)
+//	//	return;
+//
+//	//Die();
+//	//GetGameObject()->SetPosition(m_StartPos);
+//}
+//
+//void QbertComponent::SubjectDestroyed(dae::Subject<Character>* pSubject)
+//{
+//	//if (pSubject == m_pCharacterFellSubject)
+//	//	m_pCharacterFellSubject = nullptr;
+//}
 
 void QbertComponent::Notify(bool roundFinished)
 {

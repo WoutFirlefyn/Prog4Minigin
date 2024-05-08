@@ -11,7 +11,7 @@
 //-----------------------------------------------------
 // QbertComponent Class									
 //-----------------------------------------------------
-class QbertComponent final : public CharacterComponent, public dae::Observer<bool>, public dae::Observer<Character>
+class QbertComponent final : public CharacterComponent, public dae::Observer<bool>
 {
 public:
 	QbertComponent(dae::GameObject* pGameObject);	// Constructor
@@ -33,8 +33,8 @@ public:
 
 	void AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>* pCharacterFellSubject);
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
-	virtual void Notify(Character character) override;
-	void SubjectDestroyed(dae::Subject<Character>* pSubject);
+	//virtual void Notify(Character character) override;
+	//void SubjectDestroyed(dae::Subject<Character>* pSubject);
 	virtual void Notify(bool roundFinished) override;
 	void SubjectDestroyed(dae::Subject<bool>* pSubject);
 

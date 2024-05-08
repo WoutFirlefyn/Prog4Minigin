@@ -23,6 +23,7 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
     // Subjects
     TileChanged = std::make_unique<dae::Subject<bool>>();
     CharacterFell = std::make_unique<dae::Subject<Character>>();
+    CharacterGoingToFall = std::make_unique<dae::Subject<Character>>();
 
     glm::vec3 startPos{ 300, 200, 0 };
     std::vector<std::vector<TileComponent*>> v2DTiles{};
@@ -108,11 +109,17 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
     if (!pCurrentTile)
         return;
 
+    auto pNextTile = pCurrentTile->GetComponent<TileComponent>()->GetNeighboringTile(movementDirection);
     switch (movementState)
     {
+    case MovementState::Start:
+    {
+        if (!pNextTile || !pNextTile->HasComponent<TileComponent>())
+            CharacterGoingToFall->NotifyObservers(character);
+        break;
+    }
     case MovementState::End:
     {
-        auto pNextTile = pCurrentTile->GetComponent<TileComponent>()->GetNeighboringTile(movementDirection);
         if (pNextTile)
         {
             auto characterObject = pCurrentTile->GetComponent<TileComponent>()->GetCharacter(character);
