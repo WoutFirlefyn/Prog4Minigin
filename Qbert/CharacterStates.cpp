@@ -5,36 +5,36 @@
 #include "ServiceLocator.h"
 #include "Sounds.h"
 
-std::unique_ptr<CharacterState> IdleState::HandleInput()
+CharacterState::CharacterState(CharacterComponent* pCharacter)
+	: m_pCharacter{ pCharacter }
 {
-	return std::make_unique<JumpState>();
 }
 
-std::unique_ptr<CharacterState> IdleState::Update(CharacterComponent* )
+std::unique_ptr<CharacterState> IdleState::Update()
 {
 	return nullptr;
 }
 
-void IdleState::OnEnter(CharacterComponent* pCharacter)
-{
-	switch (pCharacter->GetCharacter())
-	{
-	case Character::Qbert1:
-	case Character::Qbert2:
-		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertJump, 0.2f);
-		break;
-	case Character::Coily:
-		break;
-	default:
-		break;
-	}
-}
-
-void IdleState::OnExit(CharacterComponent*)
+void IdleState::OnEnter()
 {
 }
 
-std::unique_ptr<CharacterState> JumpState::Update(CharacterComponent* pCharacter)
+void IdleState::OnExit()
+{
+}
+
+void JumpState::OnEnter()
+{
+	m_StartPos = m_pCharacter->GetPosition(); 
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), MovementState::Start, m_MovementDirection);
+}
+
+void JumpState::OnExit()
+{
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), (m_pCharacter->IsGoingToFall() ? MovementState::Fall : MovementState::End), m_MovementDirection);
+}
+
+bool JumpState::Jump()
 {
 	glm::vec3 endPos{ m_StartPos };
 
@@ -54,7 +54,7 @@ std::unique_ptr<CharacterState> JumpState::Update(CharacterComponent* pCharacter
 		break;
 	default:
 		assert(false);
-		return nullptr;
+		return false;
 	}
 
 	glm::vec3 control{ m_StartPos };
@@ -69,18 +69,33 @@ std::unique_ptr<CharacterState> JumpState::Update(CharacterComponent* pCharacter
 
 	glm::vec3 currentPos = (1 - t) * (1 - t) * m_StartPos + 2 * (1 - t) * t * control + t * t * endPos;
 
-	pCharacter->SetPosition(currentPos);
+	m_pCharacter->SetPosition(currentPos);
 
-	if (t >= 1.f)
-		pCharacter->MoveStateChanged->NotifyObservers(pCharacter->GetCharacter(), MovementState::End, m_MovementDirection);
-	return nullptr;
+	return t >= 1.f;
 }
 
-void JumpState::OnEnter(CharacterComponent* pCharacter)
+std::unique_ptr<CharacterState> SpawnState::Update()
 {
-	m_StartPos = pCharacter->GetPosition();
+	return std::make_unique<IdleState>(m_pCharacter);
 }
 
-void JumpState::OnExit(CharacterComponent*)
+void SpawnState::OnEnter()
+{
+}
+
+void SpawnState::OnExit()
+{
+}
+
+std::unique_ptr<CharacterState> DeathState::Update()
+{
+	return nullptr; 
+}
+
+void DeathState::OnEnter()
+{
+}
+
+void DeathState::OnExit()
 {
 }

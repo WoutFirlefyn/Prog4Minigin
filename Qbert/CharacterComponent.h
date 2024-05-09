@@ -3,11 +3,11 @@
 #include "Observer.h"
 #include "glm/glm.hpp"
 #include "CharacterStates.h"
-
 enum class MovementState
 {
 	Start,
-	End
+	End,
+	Fall
 };
 
 enum class MovementDirection
@@ -31,6 +31,7 @@ enum class Character
 	None
 };
 
+class CharacterState;
 class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<Character>
 {
 public:
@@ -45,12 +46,13 @@ public:
 	virtual void Init() override;
 	virtual void Update() override;
 
-	void AddObserver(dae::Subject<Character>* pCharacterGoingToFallSubject);
-	virtual void Notify(Character, MovementState movementState, MovementDirection movementDirection) = 0;
+	virtual void Notify(Character, MovementState, MovementDirection) = 0;
 	virtual void Notify(Character character) override;
 	virtual void SubjectDestroyed(dae::Subject<Character>* pSubject) override;
 
+	void Move(MovementDirection movementDirection);
 	bool IsMoving() const { return m_MovementDirection != MovementDirection::None; }
+	bool IsGoingToFall() const { return m_IsGoingToFall; }
 
 	glm::vec3 GetPosition() const;
 	void SetPosition(const glm::vec3& pos);
@@ -62,9 +64,6 @@ protected:
 	dae::Subject<Character>* m_pCharacterGoingToFallSubject{ nullptr };
 	Character m_Character{ Character::None };
 	MovementDirection m_MovementDirection{ MovementDirection::None };
-	glm::vec3 m_StartPos{};
-	float m_JumpLerpValue{ 0 };
-	float m_JumpDuration{ 0.4f };
-	bool m_GoingToFall{ false };
+	bool m_IsGoingToFall{ false };
 };
 

@@ -13,63 +13,46 @@ void CharacterComponent::Init()
 	MoveStateChanged->AddObserver(this);
 }
 
-void CharacterComponent::AddObserver(dae::Subject<Character>* pCharacterGoingToFallSubject)
-{
-	m_pCharacterGoingToFallSubject = pCharacterGoingToFallSubject;
-}
+//void CharacterComponent::Notify(Character, MovementState movementState, MovementDirection movementDirection)
+//{
+//	if (movementState == MovementState::Start)
+//		m_MovementDirection = movementDirection;
+//	else
+//		m_MovementDirection = MovementDirection::None;
+//
+//}
 
 void CharacterComponent::Update()
 {
-	if (!IsMoving())
-		return;
-
-	glm::vec3 endPos{ m_StartPos };
-	switch (m_MovementDirection)
+	if (auto pNewState = m_pState->Update())
 	{
-	case MovementDirection::Up:
-		endPos += glm::vec3{ 16, -24, 0 };
-		break;
-	case MovementDirection::Down:
-		endPos += glm::vec3{ -16, 24, 0 };
-		break;
-	case MovementDirection::Left:
-		endPos += glm::vec3{ -16, -24, 0 };
-		break;
-	case MovementDirection::Right:
-		endPos += glm::vec3{ 16, 24, 0 };
-		break;
-	default:
-		return;
+		m_pState->OnExit();
+		m_pState = std::move(pNewState);
+		m_pState->OnEnter();
 	}
-
-	glm::vec3 control{ m_StartPos };
-
-	if (static_cast<int>(m_MovementDirection) < 2)
-		control += (endPos - m_StartPos) * glm::vec3{ 0.2f, 1.f, 0.f };
-	else
-		control += (endPos - m_StartPos) * glm::vec3{ 1.f, 0.2f, 0.f };
-
-	m_JumpLerpValue += dae::GameTime::GetInstance().GetDeltaTime() / m_JumpDuration;
-	const float t = std::min(m_JumpLerpValue, 1.f);
-
-	glm::vec3 currentPos = (1 - t) * (1 - t) * m_StartPos + 2 * (1 - t) * t * control + t * t * endPos;
-
-	GetGameObject()->SetPosition(currentPos);
-
-	if (t >= 1.f)
-		MoveStateChanged->NotifyObservers(m_Character, MovementState::End, m_MovementDirection);
 }
 
 void CharacterComponent::Notify(Character character)
 {
 	if (character == m_Character)
-		m_GoingToFall = true;
+		m_IsGoingToFall = true;
 }
 
 void CharacterComponent::SubjectDestroyed(dae::Subject<Character>* pSubject)
 {
 	if (pSubject == m_pCharacterGoingToFallSubject)
 		m_pCharacterGoingToFallSubject = nullptr;
+}
+
+void CharacterComponent::Move(MovementDirection movementDirection)
+{
+	if (auto pNewState = m_pState->HandleInput(movementDirection))
+	{
+		m_MovementDirection = movementDirection;
+		m_pState->OnExit();
+		m_pState = std::move(pNewState);
+		m_pState->OnEnter();
+	}
 }
 
 glm::vec3 CharacterComponent::GetPosition() const

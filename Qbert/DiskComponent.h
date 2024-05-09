@@ -40,20 +40,14 @@ public:
 
 	std::pair<Character, dae::GameObject*> GetCharacter() const;
 	void MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character);
-private:
-	//-------------------------------------------------
-	// Private member functions								
-	//-------------------------------------------------
 
-	//-------------------------------------------------
-	// Datamembers								
-	//-------------------------------------------------
+	inline static const float m_TimeToReachTop{ 2.5f };
+private:
 	dae::GameObject* m_pTopTile;
 	std::pair<Character, dae::GameObject*> m_pCharacter;
 	dae::SpritesheetComponent* m_pSpritesheetComponent;
 	glm::vec3 m_StartPos{};
 	float m_PlatformLerpValue{ 0.f };
-	const float m_TimeToReachTop{ 2.5f };
 	float m_AccumSec{};
 	float m_Fps{ 12.f };
 };

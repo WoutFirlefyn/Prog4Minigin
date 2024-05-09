@@ -9,6 +9,7 @@
 #include "LevelManagerComponent.h"
 #include "ServiceLocator.h"
 #include "Sounds.h"
+#include "QbertStates.h"
 
 //---------------------------
 // Constructor & Destructor
@@ -30,51 +31,43 @@ QbertComponent::~QbertComponent()
 void QbertComponent::Init()
 {
 	CharacterComponent::Init();
+
+	m_pCharacterGoingToFallSubject->AddObserver(this);
 	m_pTileChangedSubject->AddObserver(this);
-	//m_pCharacterFellSubject->AddObserver(this);
+
+	m_pState = std::make_unique<QbertIdleState>(this);
+	m_pState->OnEnter();
+
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
 	m_Character = Character::Qbert1;
 }
 
-void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>*)
+void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>*, dae::Subject<Character>* pCharacterGoingToFallSubject)
 {
 	m_pTileChangedSubject = pTileChangedSubject;
-	//m_pCharacterFellSubject = pCharacterFellSubject;
+	m_pCharacterGoingToFallSubject = pCharacterGoingToFallSubject;
 }
 
-void QbertComponent::Notify(Character, MovementState movementState, MovementDirection movementDirection)
+void QbertComponent::Notify(Character, MovementState movementState, MovementDirection)
 {
 	switch (movementState)
 	{
 	case MovementState::Start:
-		m_MovementDirection = movementDirection;
 		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(m_MovementDirection), 0);
-		m_JumpLerpValue = 0.f;
-		m_StartPos = GetGameObject()->GetLocalPosition();
 		break;
 	case MovementState::End:
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertJump, 0.2f);
 		m_MovementDirection = MovementDirection::None;
 		break;
+	case MovementState::Fall:
+		m_IsGoingToFall = false;
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertFall, 0.2f);
+		m_MovementDirection = MovementDirection::None;
+		PlayerDied->NotifyObservers(--m_Lives);
 	default:
 		break;
 	}
 }
-
-//void QbertComponent::Notify(Character character)
-//{
-//	//if (character != Character::Qbert1)
-//	//	return;
-//
-//	//Die();
-//	//GetGameObject()->SetPosition(m_StartPos);
-//}
-//
-//void QbertComponent::SubjectDestroyed(dae::Subject<Character>* pSubject)
-//{
-//	//if (pSubject == m_pCharacterFellSubject)
-//	//	m_pCharacterFellSubject = nullptr;
-//}
 
 void QbertComponent::Notify(bool roundFinished)
 {
@@ -86,9 +79,4 @@ void QbertComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
 {
 	if (pSubject == m_pTileChangedSubject)
 		m_pTileChangedSubject = nullptr;
-}
-
-void QbertComponent::Die()
-{
-	PlayerDied->NotifyObservers(--m_Lives);
 }

@@ -6,26 +6,23 @@
 #include "GraphicsComponent.h"
 #include "GameTime.h"
 #include "GameObject.h"
-#include "ServiceLocator.h"
-#include "Sounds.h"
 
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-QbertCurseComponent::QbertCurseComponent(dae::GameObject* pGameObject, dae::Subject<Character>* pSubject) : BaseComponent(pGameObject)
-	, m_pCharacterFellSubject{ pSubject }
+QbertCurseComponent::QbertCurseComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
 {
 }
 
 QbertCurseComponent::~QbertCurseComponent()
 {
-	if (m_pCharacterFellSubject)
-		m_pCharacterFellSubject->RemoveObserver(this);
+	if (m_pPlayerDied)
+		m_pPlayerDied->RemoveObserver(this);
 }
 
 void QbertCurseComponent::Init()
 {
-	m_pCharacterFellSubject->AddObserver(this);
+	m_pPlayerDied->AddObserver(this);
 }
 
 void QbertCurseComponent::Update()
@@ -38,22 +35,21 @@ void QbertCurseComponent::Update()
 	}
 }
 
-void QbertCurseComponent::Notify(Character character)
+void QbertCurseComponent::AddObserver(dae::Subject<int>* pPlayerDiedSubject)
 {
-	if (character != Character::Qbert1)
-		return;
+	m_pPlayerDied = pPlayerDiedSubject;
+}
 
-	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::Swearing);
-	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertFall);
-
+void QbertCurseComponent::Notify(int)
+{
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
 	m_AccumSec = 0.f;
 }
 
-void QbertCurseComponent::SubjectDestroyed(dae::Subject<Character>* pSubject)
+void QbertCurseComponent::SubjectDestroyed(dae::Subject<int>* pSubject)
 {
-	if (pSubject == m_pCharacterFellSubject)
-		m_pCharacterFellSubject = nullptr;
+	if (pSubject == m_pPlayerDied)
+		m_pPlayerDied = nullptr;
 }
 
 

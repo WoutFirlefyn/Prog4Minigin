@@ -29,13 +29,14 @@ public:
 	// Member functions						
 	//-------------------------------------------------
 	virtual void Init() override;
-	virtual void Update() override;
 
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
+
+	static bool IsEgg() { return m_IsEgg; }
 private:
 	float m_TimeBetweenJumps{ 1.f };
 	float m_AccumSec{};
-	bool m_IsEgg{ true };
+	static bool m_IsEgg;
 };
 
 

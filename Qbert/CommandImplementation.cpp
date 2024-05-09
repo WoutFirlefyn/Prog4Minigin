@@ -18,5 +18,5 @@ MoveCommand::MoveCommand(dae::GameObject* pGameObject, MovementDirection movemen
 void MoveCommand::Execute()
 {
 	if (!m_pCharacterComponent->IsMoving())
-		m_pCharacterComponent->MoveStateChanged->NotifyObservers(Character::Qbert1, MovementState::Start, m_Direction);
+		m_pCharacterComponent->Move(m_Direction);
 }
