@@ -42,27 +42,25 @@ void QbertComponent::Init()
 	m_Character = Character::Qbert1;
 }
 
-void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>*, dae::Subject<Character>* pCharacterGoingToFallSubject)
+void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>* pCharacterGoingToFallSubject)
 {
 	m_pTileChangedSubject = pTileChangedSubject;
 	m_pCharacterGoingToFallSubject = pCharacterGoingToFallSubject;
 }
 
-void QbertComponent::Notify(Character, MovementState movementState, MovementDirection)
+void QbertComponent::Notify(Character, MovementState movementState, MovementDirection movementDirection)
 {
 	switch (movementState)
 	{
 	case MovementState::Start:
-		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(m_MovementDirection), 0);
+		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(movementDirection), 0);
 		break;
 	case MovementState::End:
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertJump, 0.2f);
-		m_MovementDirection = MovementDirection::None;
 		break;
 	case MovementState::Fall:
 		m_IsGoingToFall = false;
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertFall, 0.2f);
-		m_MovementDirection = MovementDirection::None;
 		PlayerDied->NotifyObservers(--m_Lives);
 	default:
 		break;

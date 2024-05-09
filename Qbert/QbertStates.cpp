@@ -14,7 +14,7 @@ std::unique_ptr<CharacterState> QbertJumpState::Update()
 	{
 		// also disk state
 		if (m_pCharacter->IsGoingToFall())
-			return std::make_unique<QbertDeathState>(m_pCharacter, m_StartPos);
+			return std::make_unique<QbertDeathState>(m_pCharacter, m_StartPos); 
 		else
 			return std::make_unique<QbertIdleState>(m_pCharacter);
 	}

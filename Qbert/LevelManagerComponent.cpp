@@ -22,7 +22,6 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
 {
     // Subjects
     TileChanged = std::make_unique<dae::Subject<bool>>();
-    CharacterFell = std::make_unique<dae::Subject<Character>>();
     CharacterGoingToFall = std::make_unique<dae::Subject<Character>>();
 
     glm::vec3 startPos{ 300, 200, 0 };
@@ -103,6 +102,9 @@ void LevelManagerComponent::AddObserver(dae::Subject<Character, MovementState, M
 
 void LevelManagerComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
 {
+    if (movementDirection == MovementDirection::None)
+        return;
+
     auto pCurrentTile = FindCharacter(character);
 
     assert(pCurrentTile && "LevelManagerComponent: Character not found");
@@ -114,7 +116,7 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
     {
     case MovementState::Start:
     {
-        if (!pNextTile || !pNextTile->HasComponent<TileComponent>())
+        if (!pNextTile)
             CharacterGoingToFall->NotifyObservers(character);
         break;
     }
@@ -136,8 +138,6 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
             else if (pNextTile->HasComponent<DiskComponent>())
                 pNextTile->GetComponent<DiskComponent>()->MoveCharacterHere(characterObject);
         }
-        else
-            CharacterFell->NotifyObservers(character);
         break;
     }
     default:

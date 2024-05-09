@@ -30,7 +30,7 @@ public:
 	//-------------------------------------------------
 	virtual void Init() override;
 
-	void AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>* pCharacterFellSubject, dae::Subject<Character>* pCharacterGoingToFallSubject);
+	void AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>* pCharacterGoingToFallSubject);
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
 	virtual void Notify(bool roundFinished) override;
 	void SubjectDestroyed(dae::Subject<bool>* pSubject);

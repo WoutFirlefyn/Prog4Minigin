@@ -51,7 +51,7 @@ public:
 	virtual void SubjectDestroyed(dae::Subject<Character>* pSubject) override;
 
 	void Move(MovementDirection movementDirection);
-	bool IsMoving() const { return m_MovementDirection != MovementDirection::None; }
+	bool IsMoving() const { return m_pState->IsMoving(); }
 	bool IsGoingToFall() const { return m_IsGoingToFall; }
 
 	glm::vec3 GetPosition() const;
@@ -63,7 +63,6 @@ protected:
 	std::unique_ptr<CharacterState> m_pState{ nullptr };
 	dae::Subject<Character>* m_pCharacterGoingToFallSubject{ nullptr };
 	Character m_Character{ Character::None };
-	MovementDirection m_MovementDirection{ MovementDirection::None };
 	bool m_IsGoingToFall{ false };
 };
 

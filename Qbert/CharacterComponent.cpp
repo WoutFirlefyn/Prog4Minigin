@@ -1,6 +1,8 @@
 #include "CharacterComponent.h"
 #include "GameTime.h"
 #include "GameObject.h"
+#include "QbertStates.h"
+#include <iostream>
 
 CharacterComponent::CharacterComponent(dae::GameObject* pGameObject) 
 	: BaseComponent(pGameObject)
@@ -12,15 +14,6 @@ void CharacterComponent::Init()
 {
 	MoveStateChanged->AddObserver(this);
 }
-
-//void CharacterComponent::Notify(Character, MovementState movementState, MovementDirection movementDirection)
-//{
-//	if (movementState == MovementState::Start)
-//		m_MovementDirection = movementDirection;
-//	else
-//		m_MovementDirection = MovementDirection::None;
-//
-//}
 
 void CharacterComponent::Update()
 {
@@ -48,7 +41,6 @@ void CharacterComponent::Move(MovementDirection movementDirection)
 {
 	if (auto pNewState = m_pState->HandleInput(movementDirection))
 	{
-		m_MovementDirection = movementDirection;
 		m_pState->OnExit();
 		m_pState = std::move(pNewState);
 		m_pState->OnEnter();

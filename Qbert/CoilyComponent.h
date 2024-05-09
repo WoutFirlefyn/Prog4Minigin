@@ -15,7 +15,7 @@ class CoilyComponent final : public CharacterComponent
 {
 public:
 	CoilyComponent(dae::GameObject* pGameObject);	// Constructor
-	virtual ~CoilyComponent() override;				// Destructor
+	virtual ~CoilyComponent() override = default;				// Destructor
 
 	// -------------------------
 	// Copy/move constructors and assignment operators
@@ -34,8 +34,6 @@ public:
 
 	static bool IsEgg() { return m_IsEgg; }
 private:
-	float m_TimeBetweenJumps{ 1.f };
-	float m_AccumSec{};
 	static bool m_IsEgg;
 };
 

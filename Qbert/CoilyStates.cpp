@@ -25,3 +25,26 @@ std::unique_ptr<CharacterState> CoilyJumpState::Update()
 	}
 	return nullptr;
 }
+
+std::unique_ptr<CharacterState> CoilySpawnState::Update()
+{
+	m_FallLerpValue += dae::GameTime::GetInstance().GetDeltaTime() / m_FallDuration;
+	m_FallLerpValue = std::min(m_FallLerpValue, 1.f);
+	m_pCharacter->SetPosition(m_TargetPos -  glm::vec3{ 0.f, m_HeightOffset * (1.f - m_FallLerpValue), 0.f });
+
+	if (m_FallLerpValue >= 1.f)
+		return std::make_unique<CoilyIdleState>(m_pCharacter);
+
+	return nullptr;
+}
+
+void CoilySpawnState::OnEnter()
+{
+	m_TargetPos = m_pCharacter->GetPosition();
+	m_pCharacter->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
+}
+
+void CoilySpawnState::OnExit()
+{
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), MovementState::End, MovementDirection::None);
+}

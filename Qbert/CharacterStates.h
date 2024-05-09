@@ -12,6 +12,7 @@ public:
 	virtual std::unique_ptr<CharacterState> Update() = 0;
 	virtual void OnEnter() {}
 	virtual void OnExit() {}
+	virtual bool IsMoving() const { return true; }
 protected:
 	CharacterComponent* m_pCharacter{ nullptr };
 };
@@ -32,7 +33,7 @@ public:
 	virtual std::unique_ptr<CharacterState> Update() override;
 	virtual void OnEnter() override;
 	virtual void OnExit() override;
-private:
+	virtual bool IsMoving() const override { return false; }
 };
 
 class JumpState : public CharacterState

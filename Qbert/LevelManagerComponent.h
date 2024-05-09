@@ -47,7 +47,6 @@ public:
 	virtual void Notify(bool roundFinished) override;
 
 	std::unique_ptr<dae::Subject<bool>> TileChanged;
-	std::unique_ptr<dae::Subject<Character>> CharacterFell;
 	std::unique_ptr<dae::Subject<Character>> CharacterGoingToFall;
 private:
 	//-------------------------------------------------
