@@ -57,5 +57,10 @@ void CoilySpawnState::OnExit()
 
 std::unique_ptr<CharacterState> CoilyDeathState::Update()
 {
+	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
+
+	if (m_AccumSec >= m_RespawnDelay)
+		return std::make_unique<CoilySpawnState>(m_pCharacter);
+
 	return nullptr;
 }

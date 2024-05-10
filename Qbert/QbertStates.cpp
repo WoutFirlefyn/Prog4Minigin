@@ -52,10 +52,15 @@ std::unique_ptr<CharacterState> QbertDiskState::Update()
 		m_HasReachedTop = true;
 	}
 
-	// Falling after disk is at the end
+	// Todo: Falling after disk is at the end
 	if (m_HasReachedTop)
-	return std::make_unique<QbertIdleState>(m_pCharacter);
+		return std::make_unique<QbertIdleState>(m_pCharacter);
 
 	return nullptr; 
 
+}
+
+std::unique_ptr<CharacterState> QbertSpawnState::Update()
+{
+	return std::make_unique<QbertIdleState>(m_pCharacter);
 }

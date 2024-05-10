@@ -37,4 +37,7 @@ class CoilyDeathState : public DeathState
 public:
 	CoilyDeathState(CharacterComponent* pCharacter) : DeathState(pCharacter) {}
 	virtual std::unique_ptr<CharacterState> Update() override;
+private:
+	float m_AccumSec{};
+	float m_RespawnDelay{ 5.f };
 };

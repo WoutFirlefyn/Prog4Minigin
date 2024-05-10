@@ -17,7 +17,6 @@ CoilyComponent::CoilyComponent(dae::GameObject* pGameObject)
 void CoilyComponent::Init()
 {
 	CharacterComponent::Init();
-	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(4, 1);
 	m_Character = Character::Coily;
 	m_pState = std::make_unique<CoilySpawnState>(this);
 	m_pState->OnEnter();
@@ -55,9 +54,12 @@ void CoilyComponent::Notify(Character character, MovementState movementState, Mo
 	}
 }
 
-//void CoilyComponent::Notify(Character character)
-//{
-//	if (m_Character != character)
-//		return;
-//	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
-//}
+void CoilyComponent::Notify(Character character)
+{
+	if (m_Character != character)
+		return;
+
+	CharacterComponent::Notify(character);
+	m_IsEgg = true;
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(4, 1);
+}

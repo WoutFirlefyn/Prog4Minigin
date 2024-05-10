@@ -15,8 +15,9 @@ CharacterComponent::CharacterComponent(dae::GameObject* pGameObject)
 
 CharacterComponent::~CharacterComponent()
 {
-	MoveStateChanged->RemoveObserver(this);
 	m_pCharacterStartedJumping->RemoveObserver(this);
+	MoveStateChanged->RemoveObserver(this);
+	CharacterSpawned->RemoveObserver(this);
 }
 
 void CharacterComponent::Init()
@@ -24,6 +25,7 @@ void CharacterComponent::Init()
 	m_pCharacterStartedJumping = LevelManagerComponent::CharacterStartedJumping.get();
 	m_pCharacterStartedJumping->AddObserver(this);
 	MoveStateChanged->AddObserver(this);
+	CharacterSpawned->AddObserver(this);
 }
 
 void CharacterComponent::Update()

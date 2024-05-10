@@ -40,3 +40,10 @@ private:
 	float m_AccumSec{};
 	bool m_HasReachedTop{ false };
 };
+
+class QbertSpawnState : public SpawnState
+{
+public:
+	QbertSpawnState(CharacterComponent* pCharacter) : SpawnState(pCharacter) {}
+	virtual std::unique_ptr<CharacterState> Update() override;
+};

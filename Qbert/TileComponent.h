@@ -37,6 +37,7 @@ public:
 	bool IsCharacterHere(Character character);
 	std::pair<Character, dae::GameObject*> GetCharacter(Character character);
 	void MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character);
+	std::unordered_map<Character, dae::GameObject*> GetCharacters() const { return m_CharactersHere; }
 
 	bool ChangeTile(int currentRound, int& tilesCovered, int stageChange);
 	void Reset(int currentRound);

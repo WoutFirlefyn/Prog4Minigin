@@ -23,9 +23,9 @@ void SlickSamComponent::Init()
 	CharacterComponent::Init();
 	m_pState = std::make_unique<CoilySpawnState>(this);
 	m_pState->OnEnter();
-	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, static_cast<int>(m_Character) - static_cast<int>(Character::Slick));
 }
 
+// MoveStateChanged
 void SlickSamComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
 {
 	if (character != m_Character)
@@ -47,8 +47,12 @@ void SlickSamComponent::Notify(Character character, MovementState movementState,
 	}
 }
 
-//void SlickSamComponent::Notify(Character character)
-//{
-//	if (m_Character != character)
-//		return;
-//}
+// CharacterSpawned
+void SlickSamComponent::Notify(Character character)
+{
+	if (m_Character != character)
+		return;
+	CharacterComponent::Notify(character);
+
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, static_cast<int>(m_Character) - static_cast<int>(Character::Slick));
+}

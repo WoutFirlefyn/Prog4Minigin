@@ -24,6 +24,6 @@ public:
 	virtual void Init() override;
 
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
-	//virtual void Notify(Character character) override;
+	virtual void Notify(Character character) override;
 };
 

@@ -261,16 +261,19 @@ void LevelManagerComponent::Notify(bool roundFinished)
 
         dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::RoundCompleteTune);
 
-        auto pCurrentTile = FindCharacter(Character::Qbert1);
-
-        assert(pCurrentTile && "LevelManagerComponent: Character not found");
-
-        auto characterObject = pCurrentTile->GetComponent<TileComponent>()->GetCharacter(Character::Qbert1);
-        
         for (auto pTile : m_vTiles)
-            pTile->GetComponent<TileComponent>()->Reset(m_CurrentRound);
+        {
+            auto pTileComponent = pTile->GetComponent<TileComponent>();
+            m_InactiveCharacters.merge(pTileComponent->GetCharacters());
+            pTileComponent->Reset(m_CurrentRound);
+        }
+        //auto pCurrentTile = FindCharacter(Character::Qbert1);
 
-        m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(characterObject);
+        //assert(pCurrentTile && "LevelManagerComponent: Character not found");
+
+        //auto characterObject = pCurrentTile->GetComponent<TileComponent>()->GetCharacter(Character::Qbert1);
+
+        //m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(characterObject);
     }
 }
 
