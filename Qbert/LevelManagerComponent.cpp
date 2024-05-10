@@ -84,23 +84,29 @@ LevelManagerComponent::~LevelManagerComponent()
 {
     if (m_pMoveStateChangedSubject)
         m_pMoveStateChangedSubject->RemoveObserver(this);
+    if (m_pCharacterSpawnedSubject)
+        m_pCharacterSpawnedSubject->RemoveObserver(this);
     TileChanged->RemoveObserver(this);
-}
-
-void LevelManagerComponent::SpawnQbert(dae::GameObject* pGameObject)
-{
-    m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(Character::Qbert1, pGameObject));
-}
-
-void LevelManagerComponent::SpawnCoily(dae::GameObject* pGameObject)
-{
-    m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(Character::Coily, pGameObject));
 }
 
 void LevelManagerComponent::Init()
 {
+    m_pMoveStateChangedSubject = CharacterComponent::MoveStateChanged.get();
     m_pMoveStateChangedSubject->AddObserver(this);
-    TileChanged->AddObserver(this);
+    m_pCharacterSpawnedSubject = CharacterComponent::CharacterSpawned.get();
+    m_pCharacterSpawnedSubject->AddObserver(this);
+    TileChanged->AddObserver(this); 
+
+    // temp
+    //auto character = m_InactiveCharacters.extract(Character::Qbert1);
+    //if (!character.empty())
+    //    m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(character.key(), character.mapped()));
+    //character = m_InactiveCharacters.extract(Character::Coily);
+    //if (!character.empty())
+    //    m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(character.key(), character.mapped()));
+    //character = m_InactiveCharacters.extract(Character::Slick);
+    //if (!character.empty())
+    //    m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(character.key(), character.mapped()));
 }
 
 void LevelManagerComponent::LateUpdate()
@@ -108,9 +114,9 @@ void LevelManagerComponent::LateUpdate()
     // check for character collisions
 }
 
-void LevelManagerComponent::AddObserver(dae::Subject<Character, MovementState, MovementDirection>* pMoveStateChanged)
+void LevelManagerComponent::AddObserver(dae::Subject<Character, MovementState, MovementDirection>*)
 {
-    m_pMoveStateChangedSubject = pMoveStateChanged;
+    //m_pMoveStateChangedSubject = pMoveStateChanged;
 }
 
 void LevelManagerComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
@@ -153,7 +159,6 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
         pNextTileComponent->MoveCharacterHere(characterObject);
 
         int tileChange{};
-
         switch (character)
         {
         case Character::Qbert1:
@@ -172,9 +177,17 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
             TileChanged->NotifyObservers(AreAllTilesCovered());
         break;
     }
+    case MovementState::Fall:
+    {
+        if (character == Character::Qbert1 || character == Character::Qbert2)
+            return;
+
+        m_InactiveCharacters.insert(pCurrentTile->GetComponent<TileComponent>()->GetCharacter(character));
+        break;
+    }
     case MovementState::Disk:
     {
-        if (!pNextTile || !pNextTile->HasComponent<DiskComponent>())
+        if (!pNextTile || !pNextTile->HasComponent<DiskComponent>() || (character != Character::Qbert1 && character != Character::Qbert2))
         {
             assert(false);
             return;
@@ -186,6 +199,51 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
     default:
         return;
     }
+}
+
+void LevelManagerComponent::Notify(Character character)
+{
+    auto characterObject = m_InactiveCharacters.extract(character);
+    if (characterObject.empty())
+    {
+        assert(false && "Character doesn't exist or is already spawned");
+        return;
+    }
+    int tileIdx{};
+    glm::vec3 offset{};
+    switch (character)
+    {
+    case Character::Qbert1:
+        tileIdx = 0;
+        offset = glm::vec3{ 8, -6, 0 };
+        break;
+    case Character::Qbert2:
+        break;
+    case Character::Coily:
+        tileIdx = 1 + (rand() % 2) * 6;
+        offset = glm::vec3{ 8, -20, 0 };
+        break;
+    case Character::Slick:
+    case Character::Sam:
+        tileIdx = 1 + (rand() % 2) * 6;
+        offset = glm::vec3{ 8, -6, 0 };
+        break;
+    case Character::Ugg:
+        break;
+    case Character::Wrongway:
+        break;
+    default:
+        tileIdx = -1;
+        break;
+    }
+    characterObject.mapped()->SetPosition(m_vTiles[tileIdx]->GetWorldPosition() + offset);
+    m_vTiles[tileIdx]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(characterObject.key(), characterObject.mapped()));
+}
+
+void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character>* pSubject)
+{
+    if (pSubject == m_pCharacterSpawnedSubject)
+        m_pCharacterSpawnedSubject = nullptr;
 }
 
 void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character, MovementState, MovementDirection>* pSubject)

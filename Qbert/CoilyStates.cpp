@@ -10,7 +10,7 @@ std::unique_ptr<CharacterState> CoilyIdleState::Update()
 	if (m_AccumSec < m_TimeBetweenJumps)
 		return nullptr;
 
-	MovementDirection direction = static_cast<MovementDirection>(CoilyComponent::IsEgg() ? rand() % 2 + 2 : rand() % 4);
+	MovementDirection direction = static_cast<MovementDirection>((m_pCharacter->GetCharacter() == Character::Coily && CoilyComponent::IsEgg()) || (m_pCharacter->GetCharacter() == Character::Slick || m_pCharacter->GetCharacter() == Character::Sam) ? rand() % 2 + 2 : rand() % 4);
 
 	return std::make_unique<CoilyJumpState>(m_pCharacter, direction);
 }
@@ -44,7 +44,8 @@ std::unique_ptr<CharacterState> CoilySpawnState::Update()
 }
 
 void CoilySpawnState::OnEnter()
-{
+{ 
+	SpawnState::OnEnter();
 	m_TargetPos = m_pCharacter->GetPosition();
 	m_pCharacter->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
 }

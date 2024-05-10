@@ -58,7 +58,7 @@ void TileComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject
 bool TileComponent::ChangeTile(int currentRound, int& tilesCovered, int stageChange)
 {
     int newTileStage{ m_TileStage + stageChange };
-    if (newTileStage > m_MaxTileStage || newTileStage < 0 || stageChange == 0)
+    if (newTileStage > m_MaxTileStage || newTileStage < 0)
         return false;
 
     tilesCovered += stageChange;

@@ -37,14 +37,23 @@ void JumpState::OnExit()
 	switch (m_pCharacter->GetNextTileType())
 	{
 	case TileType::Tile:
+	{
 		movementState = MovementState::End;
 		break;
+	}
 	case TileType::Disk:
-		movementState = MovementState::Disk;
-		break;
+	{
+		if (m_pCharacter->GetCharacter() == Character::Qbert1 || m_pCharacter->GetCharacter() == Character::Qbert2)
+		{
+			movementState = MovementState::Disk;
+			break;
+		}
+	}
 	case TileType::None:
+	{
 		movementState = MovementState::Fall;
 		break;
+	}
 	}
 
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementState, m_MovementDirection);
@@ -97,6 +106,7 @@ std::unique_ptr<CharacterState> SpawnState::Update()
 
 void SpawnState::OnEnter()
 {
+	m_pCharacter->CharacterSpawned->NotifyObservers(m_pCharacter->GetCharacter());
 }
 
 void SpawnState::OnExit()

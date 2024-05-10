@@ -8,9 +8,6 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-//-----------------------------------------------------
-// CoilyComponent Class									
-//-----------------------------------------------------
 class CoilyComponent final : public CharacterComponent
 {
 public:
@@ -32,6 +29,7 @@ public:
 
 	void AddObserver(dae::Subject<Character, TileType>* pCharacterStartedJumpingSubject);
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
+	//virtual void Notify(Character character) override;
 
 	static bool IsEgg() { return m_IsEgg; }
 private:

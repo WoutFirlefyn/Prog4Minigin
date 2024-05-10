@@ -5,6 +5,7 @@
 //-----------------------------------------------------
 #include <vector>
 #include <memory>
+#include <unordered_map>
 #include "BaseComponent.h"
 #include "Observer.h"
 
@@ -27,11 +28,11 @@ enum class TileType
 	None
 };
 
-class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<bool>
+class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<bool>, public dae::Observer<Character>
 {
 public:
-	LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene);				// Constructor
-	~LevelManagerComponent();				// Destructor
+	LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene);
+	~LevelManagerComponent();
 
 	// -------------------------
 	// Copy/move constructors and assignment operators
@@ -44,8 +45,7 @@ public:
 	//-------------------------------------------------
 	// Member functions						
 	//-------------------------------------------------
-	void SpawnQbert(dae::GameObject* pGameObject); // Remove this function, this is be temporary (or at least improve it a bit)
-	void SpawnCoily(dae::GameObject* pGameObject); // Remove this function, this is be temporary (or at least improve it a bit)
+	void AddCharacters(const std::unordered_map<Character, dae::GameObject*>& characters) { m_InactiveCharacters = characters; }
 
 	virtual void Init() override;
 	virtual void LateUpdate() override;
@@ -54,21 +54,20 @@ public:
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
 	virtual void SubjectDestroyed(dae::Subject<Character, MovementState, MovementDirection>* pSubject) override;
 
+	virtual void Notify(Character character) override;
+	virtual void SubjectDestroyed(dae::Subject<Character>* pSubject) override;
+
 	virtual void Notify(bool roundFinished) override;
 
 	static std::unique_ptr<dae::Subject<Character, TileType>> CharacterStartedJumping;
 	std::unique_ptr<dae::Subject<bool>> TileChanged;
 private:
-	//-------------------------------------------------
-	// Private member functions								
-	//-------------------------------------------------
 	bool AreAllTilesCovered() const;
 	dae::GameObject* FindCharacter(Character character) const;
 
-	//-------------------------------------------------
-	// Datamembers								
-	//-------------------------------------------------
 	dae::Subject<Character, MovementState, MovementDirection>* m_pMoveStateChangedSubject{ nullptr };
+	dae::Subject<Character>* m_pCharacterSpawnedSubject{ nullptr };
+	std::unordered_map<Character, dae::GameObject*> m_InactiveCharacters;
 	std::vector<dae::GameObject*> m_vTiles;
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };

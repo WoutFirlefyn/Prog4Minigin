@@ -31,18 +31,17 @@ void QbertComponent::Init()
 	CharacterComponent::Init();
 
 	m_pTileChangedSubject->AddObserver(this);
-
 	m_pState = std::make_unique<QbertIdleState>(this);
 	m_pState->OnEnter();
 
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
 	m_Character = Character::Qbert1;
+	CharacterSpawned->NotifyObservers(m_Character);
 }
 
 void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character, TileType>*)
 {
 	m_pTileChangedSubject = pTileChangedSubject;
-	//m_pCharacterStartedJumping = pCharacterStartedJumpingSubject;
 }
 
 void QbertComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
@@ -69,6 +68,12 @@ void QbertComponent::Notify(Character character, MovementState movementState, Mo
 		break;
 	}
 }
+
+//void QbertComponent::Notify(Character character)
+//{
+//	if (m_Character != character)
+//		return;
+//}
 
 void QbertComponent::Notify(bool roundFinished)
 {

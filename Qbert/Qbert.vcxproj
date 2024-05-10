@@ -219,6 +219,8 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClCompile Include="QbertStates.cpp" />
     <ClCompile Include="RotateComponent.cpp" />
     <ClCompile Include="ScoreComponent.cpp" />
+    <ClCompile Include="SlickSamComponent.cpp" />
+    <ClCompile Include="SlickSamStates.cpp" />
     <ClCompile Include="TileComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -237,6 +239,8 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="QbertStates.h" />
     <ClInclude Include="RotateComponent.h" />
     <ClInclude Include="ScoreComponent.h" />
+    <ClInclude Include="SlickSamComponent.h" />
+    <ClInclude Include="SlickSamStates.h" />
     <ClInclude Include="Sounds.h" />
     <ClInclude Include="TileComponent.h" />
   </ItemGroup>

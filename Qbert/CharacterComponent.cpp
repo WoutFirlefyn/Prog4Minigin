@@ -3,8 +3,10 @@
 #include "GameObject.h"
 #include "QbertStates.h"
 #include "LevelManagerComponent.h"
+#include "GraphicsComponent.h"
 
 std::unique_ptr<dae::Subject<Character, MovementState, MovementDirection>> CharacterComponent::MoveStateChanged{ std::make_unique<dae::Subject<Character, MovementState, MovementDirection>>() };
+std::unique_ptr<dae::Subject<Character>> CharacterComponent::CharacterSpawned{ std::make_unique<dae::Subject<Character>>() };
 
 CharacterComponent::CharacterComponent(dae::GameObject* pGameObject) 
 	: BaseComponent(pGameObject)
@@ -32,6 +34,14 @@ void CharacterComponent::Update()
 		m_pState = std::move(pNewState);
 		m_pState->OnEnter();
 	}
+}
+
+void CharacterComponent::Notify(Character character)
+{
+	if (character != m_Character)
+		return;
+
+	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
 }
 
 void CharacterComponent::Notify(Character character, TileType tileType)

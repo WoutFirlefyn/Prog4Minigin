@@ -3,6 +3,7 @@
 #include "GameTime.h"
 #include "ServiceLocator.h"
 #include "SpritesheetComponent.h"
+#include "GraphicsComponent.h"
 #include "Sounds.h"
 #include "CoilyStates.h"
 
@@ -16,10 +17,10 @@ CoilyComponent::CoilyComponent(dae::GameObject* pGameObject)
 void CoilyComponent::Init()
 {
 	CharacterComponent::Init();
-	m_pState = std::make_unique<CoilySpawnState>(this);
-	m_pState->OnEnter();
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(4, 1);
 	m_Character = Character::Coily;
+	m_pState = std::make_unique<CoilySpawnState>(this);
+	m_pState->OnEnter();
 }
 
 void CoilyComponent::AddObserver(dae::Subject<Character, TileType>*)
@@ -42,13 +43,21 @@ void CoilyComponent::Notify(Character character, MovementState movementState, Mo
 	case MovementState::End:
 		dae::ServiceLocator::GetSoundSystem().Play((m_IsEgg ? dae::Sounds::CoilyEggJump : dae::Sounds::CoilySnakeJump), 0.2f);
 		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(spritesheetCol, 0);
-		if (++m_AmountOfJumps == 7)
+		if (++m_AmountOfJumps == 6)
 			m_IsEgg = false;
 		break;
 	case MovementState::Fall:
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::CoilyFall, 0.2f);
+		GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
 		break;
 	default:
 		break;
 	}
 }
+
+//void CoilyComponent::Notify(Character character)
+//{
+//	if (m_Character != character)
+//		return;
+//	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
+//}
