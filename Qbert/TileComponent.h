@@ -4,6 +4,7 @@
 // Include Files
 //-----------------------------------------------------
 #include "BaseComponent.h"
+#include "Observer.h"
 #include <vector>
 #include <unordered_map>
 
@@ -15,7 +16,7 @@ enum class MovementDirection;
 class TileComponent final : public dae::BaseComponent
 {
 public:
-	TileComponent(dae::GameObject* pGameObject);				// Constructor
+	TileComponent(dae::GameObject* pGameObject);		// Constructor
 	virtual ~TileComponent() override = default;		// Destructor
 
 	// -------------------------
@@ -27,7 +28,7 @@ public:
 	TileComponent& operator=(TileComponent&& other)	noexcept	= delete;
 
 	//-------------------------------------------------
-	// Member functions						
+	// Member functions								   
 	//-------------------------------------------------
 	void SetNeighboringTiles(const std::vector<std::vector<TileComponent*>>& vTiles, size_t row, size_t col);
 	dae::GameObject* GetNeighboringTile(MovementDirection direction) const { return m_vNeighboringTiles[static_cast<size_t>(direction)]; }
@@ -37,17 +38,14 @@ public:
 	std::pair<Character, dae::GameObject*> GetCharacter(Character character);
 	void MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character);
 
-	bool ChangeTile(int currentRound);
+	bool ChangeTile(int currentRound, int& tilesCovered, int stageChange);
 	void Reset(int currentRound);
 
 	static int GetMaxTileStage() { return m_MaxTileStage; }
 
 	void AddDiskAsNeighbor(dae::GameObject* pDisk);
-private:
 
-	//-------------------------------------------------
-	// Datamembers								
-	//-------------------------------------------------
+private:
 	std::vector<dae::GameObject*> m_vNeighboringTiles{};
 	std::unordered_map<Character, dae::GameObject*> m_CharactersHere;
 	int m_TileStage{ 0 };

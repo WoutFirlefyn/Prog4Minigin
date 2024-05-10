@@ -7,7 +7,8 @@ enum class MovementState
 {
 	Start,
 	End,
-	Fall
+	Fall,
+	Disk
 };
 
 enum class MovementDirection
@@ -31,12 +32,13 @@ enum class Character
 	None
 };
 
+enum class TileType;
 class CharacterState;
-class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<Character>
+class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<Character, TileType>
 {
 public:
 	CharacterComponent(dae::GameObject* pGameObject);	// Constructor
-	virtual ~CharacterComponent() override = default;				// Destructor
+	virtual ~CharacterComponent() override;				// Destructor
 
 	CharacterComponent(const CharacterComponent& other) = delete;
 	CharacterComponent(CharacterComponent&& other) noexcept = delete;
@@ -47,22 +49,23 @@ public:
 	virtual void Update() override;
 
 	virtual void Notify(Character, MovementState, MovementDirection) = 0;
-	virtual void Notify(Character character) override;
-	virtual void SubjectDestroyed(dae::Subject<Character>* pSubject) override;
+	virtual void Notify(Character character, TileType tileType) override;
+	virtual void SubjectDestroyed(dae::Subject<Character, TileType>* pSubject) override;
 
 	void Move(MovementDirection movementDirection);
 	bool IsMoving() const { return m_pState->IsMoving(); }
-	bool IsGoingToFall() const { return m_IsGoingToFall; }
+	TileType GetNextTileType() const { return m_NextTileType; }
 
 	glm::vec3 GetPosition() const;
 	void SetPosition(const glm::vec3& pos);
 	Character GetCharacter() const { return m_Character; }
 
-	std::unique_ptr<dae::Subject<Character, MovementState, MovementDirection>> MoveStateChanged;
+	static std::unique_ptr<dae::Subject<Character, MovementState, MovementDirection>> MoveStateChanged;
 protected:
 	std::unique_ptr<CharacterState> m_pState{ nullptr };
-	dae::Subject<Character>* m_pCharacterGoingToFallSubject{ nullptr };
 	Character m_Character{ Character::None };
-	bool m_IsGoingToFall{ false };
+private:
+	dae::Subject<Character, TileType>* m_pCharacterStartedJumping{ nullptr };
+	TileType m_NextTileType{};
 };
 

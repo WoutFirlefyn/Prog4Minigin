@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "ServiceLocator.h"
 #include "Sounds.h"
+#include "LevelManagerComponent.h"
 
 CharacterState::CharacterState(CharacterComponent* pCharacter)
 	: m_pCharacter{ pCharacter }
@@ -31,7 +32,22 @@ void JumpState::OnEnter()
 
 void JumpState::OnExit()
 {
-	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), (m_pCharacter->IsGoingToFall() ? MovementState::Fall : MovementState::End), m_MovementDirection);
+	MovementState movementState{};
+
+	switch (m_pCharacter->GetNextTileType())
+	{
+	case TileType::Tile:
+		movementState = MovementState::End;
+		break;
+	case TileType::Disk:
+		movementState = MovementState::Disk;
+		break;
+	case TileType::None:
+		movementState = MovementState::Fall;
+		break;
+	}
+
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementState, m_MovementDirection);
 }
 
 bool JumpState::Jump()

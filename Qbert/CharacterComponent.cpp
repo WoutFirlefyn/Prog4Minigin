@@ -2,16 +2,25 @@
 #include "GameTime.h"
 #include "GameObject.h"
 #include "QbertStates.h"
-#include <iostream>
+#include "LevelManagerComponent.h"
+
+std::unique_ptr<dae::Subject<Character, MovementState, MovementDirection>> CharacterComponent::MoveStateChanged{ std::make_unique<dae::Subject<Character, MovementState, MovementDirection>>() };
 
 CharacterComponent::CharacterComponent(dae::GameObject* pGameObject) 
 	: BaseComponent(pGameObject)
 {
-	MoveStateChanged = std::make_unique<dae::Subject<Character, MovementState, MovementDirection>>();
+}
+
+CharacterComponent::~CharacterComponent()
+{
+	MoveStateChanged->RemoveObserver(this);
+	m_pCharacterStartedJumping->RemoveObserver(this);
 }
 
 void CharacterComponent::Init()
 {
+	m_pCharacterStartedJumping = LevelManagerComponent::CharacterStartedJumping.get();
+	m_pCharacterStartedJumping->AddObserver(this);
 	MoveStateChanged->AddObserver(this);
 }
 
@@ -25,16 +34,16 @@ void CharacterComponent::Update()
 	}
 }
 
-void CharacterComponent::Notify(Character character)
+void CharacterComponent::Notify(Character character, TileType tileType)
 {
 	if (character == m_Character)
-		m_IsGoingToFall = true;
+		m_NextTileType = tileType;
 }
 
-void CharacterComponent::SubjectDestroyed(dae::Subject<Character>* pSubject)
+void CharacterComponent::SubjectDestroyed(dae::Subject<Character, TileType>* pSubject)
 {
-	if (pSubject == m_pCharacterGoingToFallSubject)
-		m_pCharacterGoingToFallSubject = nullptr;
+	if (pSubject == m_pCharacterStartedJumping)
+		m_pCharacterStartedJumping = nullptr;
 }
 
 void CharacterComponent::Move(MovementDirection movementDirection)

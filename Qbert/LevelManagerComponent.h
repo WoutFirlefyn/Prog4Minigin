@@ -19,6 +19,14 @@ class TileComponent;
 enum class Character;
 enum class MovementState;
 enum class MovementDirection;
+
+enum class TileType
+{
+	Tile,
+	Disk,
+	None
+};
+
 class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<bool>
 {
 public:
@@ -37,8 +45,10 @@ public:
 	// Member functions						
 	//-------------------------------------------------
 	void SpawnQbert(dae::GameObject* pGameObject); // Remove this function, this is be temporary (or at least improve it a bit)
+	void SpawnCoily(dae::GameObject* pGameObject); // Remove this function, this is be temporary (or at least improve it a bit)
 
 	virtual void Init() override;
+	virtual void LateUpdate() override;
 
 	void AddObserver(dae::Subject<Character, MovementState, MovementDirection>* pMoveStateChanged);
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
@@ -46,8 +56,8 @@ public:
 
 	virtual void Notify(bool roundFinished) override;
 
+	static std::unique_ptr<dae::Subject<Character, TileType>> CharacterStartedJumping;
 	std::unique_ptr<dae::Subject<bool>> TileChanged;
-	std::unique_ptr<dae::Subject<Character>> CharacterGoingToFall;
 private:
 	//-------------------------------------------------
 	// Private member functions								
@@ -58,7 +68,7 @@ private:
 	//-------------------------------------------------
 	// Datamembers								
 	//-------------------------------------------------
-	dae::Subject<Character, MovementState, MovementDirection>* m_pMoveStateChangedSubject;
+	dae::Subject<Character, MovementState, MovementDirection>* m_pMoveStateChangedSubject{ nullptr };
 	std::vector<dae::GameObject*> m_vTiles;
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };

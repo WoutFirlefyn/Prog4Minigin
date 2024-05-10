@@ -6,6 +6,8 @@
 #include "GraphicsComponent.h"
 #include "GameTime.h"
 #include "GameObject.h"
+#include "ServiceLocator.h"
+#include "Sounds.h"
 
 //---------------------------
 // Constructor & Destructor
@@ -43,6 +45,7 @@ void QbertCurseComponent::AddObserver(dae::Subject<int>* pPlayerDiedSubject)
 void QbertCurseComponent::Notify(int)
 {
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
+	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::Swearing, 0.2f);
 	m_AccumSec = 0.f;
 }
 

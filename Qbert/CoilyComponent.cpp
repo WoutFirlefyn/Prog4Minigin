@@ -22,8 +22,16 @@ void CoilyComponent::Init()
 	m_Character = Character::Coily;
 }
 
-void CoilyComponent::Notify(Character, MovementState movementState, MovementDirection movementDirection)
-{ 
+void CoilyComponent::AddObserver(dae::Subject<Character, TileType>*)
+{
+	//m_pCharacterStartedJumping = pCharacterStartedJumpingSubject;
+}
+
+void CoilyComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
+{
+	if (character != m_Character)
+		return;
+
 	int spritesheetCol = (m_IsEgg ? 4 : static_cast<int>(movementDirection));
 
 	switch (movementState)
@@ -32,8 +40,13 @@ void CoilyComponent::Notify(Character, MovementState movementState, MovementDire
 		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(spritesheetCol, 1);
 		break;
 	case MovementState::End:
-		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::CoilyEggJump, 0.2f);
+		dae::ServiceLocator::GetSoundSystem().Play((m_IsEgg ? dae::Sounds::CoilyEggJump : dae::Sounds::CoilySnakeJump), 0.2f);
 		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(spritesheetCol, 0);
+		if (++m_AmountOfJumps == 7)
+			m_IsEgg = false;
+		break;
+	case MovementState::Fall:
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::CoilyFall, 0.2f);
 		break;
 	default:
 		break;

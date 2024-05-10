@@ -2,6 +2,7 @@
 #include "QbertComponent.h"
 #include "DiskComponent.h"
 #include "GameTime.h"
+#include "LevelManagerComponent.h"
 
 std::unique_ptr<CharacterState> QbertIdleState::HandleInput(MovementDirection movementDirection)
 {
@@ -12,11 +13,15 @@ std::unique_ptr<CharacterState> QbertJumpState::Update()
 {
 	if (Jump())
 	{
-		// also disk state
-		if (m_pCharacter->IsGoingToFall())
-			return std::make_unique<QbertDeathState>(m_pCharacter, m_StartPos); 
-		else
+		switch (m_pCharacter->GetNextTileType())
+		{
+		case TileType::Tile:
 			return std::make_unique<QbertIdleState>(m_pCharacter);
+		case TileType::Disk:
+			return std::make_unique<QbertDiskState>(m_pCharacter);
+		case TileType::None:
+			return std::make_unique<QbertDeathState>(m_pCharacter, m_StartPos);
+		}
 	}
 	return nullptr;
 }
@@ -46,6 +51,11 @@ std::unique_ptr<CharacterState> QbertDiskState::Update()
 		m_AccumSec -= DiskComponent::m_TimeToReachTop;
 		m_HasReachedTop = true;
 	}
+
+	// Falling after disk is at the end
+	if (m_HasReachedTop)
+	return std::make_unique<QbertIdleState>(m_pCharacter);
+
 	return nullptr; 
 
 }

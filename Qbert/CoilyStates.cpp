@@ -1,6 +1,7 @@
 #include "CoilyStates.h"
 #include "CoilyComponent.h"
 #include "GameTime.h"
+#include "LevelManagerComponent.h"
 
 std::unique_ptr<CharacterState> CoilyIdleState::Update()
 {
@@ -18,10 +19,14 @@ std::unique_ptr<CharacterState> CoilyJumpState::Update()
 {
 	if (Jump())
 	{
-		return std::make_unique<CoilyIdleState>(m_pCharacter);
-		//if (m_pCharacter->IsGoingToFall())
-		//	return std::make_unique<QbertDeathState>(m_pCharacter);
-		//else
+		switch (m_pCharacter->GetNextTileType())
+		{
+		case TileType::Tile:
+			return std::make_unique<CoilyIdleState>(m_pCharacter);
+		case TileType::Disk:
+		case TileType::None:
+			return std::make_unique<CoilyDeathState>(m_pCharacter);
+		}
 	}
 	return nullptr;
 }
@@ -47,4 +52,9 @@ void CoilySpawnState::OnEnter()
 void CoilySpawnState::OnExit()
 {
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), MovementState::End, MovementDirection::None);
+}
+
+std::unique_ptr<CharacterState> CoilyDeathState::Update()
+{
+	return nullptr;
 }

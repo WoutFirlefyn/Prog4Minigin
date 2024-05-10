@@ -18,11 +18,14 @@
 //---------------------------
 // Constructor & Destructor
 //---------------------------
+
+//std::unique_ptr<dae::Subject<bool>> LevelManagerComponent::TileChanged{ std::make_unique<dae::Subject<bool>>() };
+std::unique_ptr<dae::Subject<Character, TileType>> LevelManagerComponent::CharacterStartedJumping{ std::make_unique<dae::Subject<Character, TileType>>() };
 LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene) : BaseComponent(pGameObject)
 {
     // Subjects
     TileChanged = std::make_unique<dae::Subject<bool>>();
-    CharacterGoingToFall = std::make_unique<dae::Subject<Character>>();
+    //CharacterStartedJumping = std::make_unique<dae::Subject<Character, TileType>>();
 
     glm::vec3 startPos{ 300, 200, 0 };
     std::vector<std::vector<TileComponent*>> v2DTiles{};
@@ -89,10 +92,20 @@ void LevelManagerComponent::SpawnQbert(dae::GameObject* pGameObject)
     m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(Character::Qbert1, pGameObject));
 }
 
+void LevelManagerComponent::SpawnCoily(dae::GameObject* pGameObject)
+{
+    m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(Character::Coily, pGameObject));
+}
+
 void LevelManagerComponent::Init()
 {
     m_pMoveStateChangedSubject->AddObserver(this);
     TileChanged->AddObserver(this);
+}
+
+void LevelManagerComponent::LateUpdate()
+{
+    // check for character collisions
 }
 
 void LevelManagerComponent::AddObserver(dae::Subject<Character, MovementState, MovementDirection>* pMoveStateChanged)
@@ -116,28 +129,58 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
     {
     case MovementState::Start:
     {
+        TileType nextTileType;
+
         if (!pNextTile)
-            CharacterGoingToFall->NotifyObservers(character);
+            nextTileType = TileType::None;
+        else if (pNextTile->HasComponent<TileComponent>())
+            nextTileType = TileType::Tile;
+        else
+            nextTileType = TileType::Disk;
+        CharacterStartedJumping->NotifyObservers(character, nextTileType);
         break;
     }
     case MovementState::End:
     {
-        if (pNextTile)
+        if (!pNextTile || !pNextTile->HasComponent<TileComponent>())
         {
-            auto characterObject = pCurrentTile->GetComponent<TileComponent>()->GetCharacter(character);
-            if (pNextTile->HasComponent<TileComponent>())
-            {
-                auto pNextTileComponent = pNextTile->GetComponent<TileComponent>();
-                pNextTileComponent->MoveCharacterHere(characterObject);
-                if (pNextTileComponent->ChangeTile(m_CurrentRound))
-                {
-                    ++m_TilesCovered;
-                    TileChanged->NotifyObservers(AreAllTilesCovered());
-                }
-            }
-            else if (pNextTile->HasComponent<DiskComponent>())
-                pNextTile->GetComponent<DiskComponent>()->MoveCharacterHere(characterObject);
+            assert(false);
+            return;
         }
+        auto characterObject = pCurrentTile->GetComponent<TileComponent>()->GetCharacter(character);
+        auto pNextTileComponent = pNextTile->GetComponent<TileComponent>();
+
+        pNextTileComponent->MoveCharacterHere(characterObject);
+
+        int tileChange{};
+
+        switch (character)
+        {
+        case Character::Qbert1:
+        case Character::Qbert2:
+            tileChange = 1;
+            break;
+        case Character::Slick:
+        case Character::Sam:
+            tileChange = -1;
+            break;
+        default:
+            return;
+        }
+
+        if (pNextTileComponent->ChangeTile(m_CurrentRound, m_TilesCovered, tileChange))
+            TileChanged->NotifyObservers(AreAllTilesCovered());
+        break;
+    }
+    case MovementState::Disk:
+    {
+        if (!pNextTile || !pNextTile->HasComponent<DiskComponent>())
+        {
+            assert(false);
+            return;
+        }
+        auto characterObject = pCurrentTile->GetComponent<TileComponent>()->GetCharacter(character);
+        pNextTile->GetComponent<DiskComponent>()->MoveCharacterHere(characterObject);
         break;
     }
     default:

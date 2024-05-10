@@ -31,3 +31,10 @@ private:
 	float m_FallDuration{ 2.f };
 	float m_FallLerpValue{ 0.f };
 };
+
+class CoilyDeathState : public DeathState
+{
+public:
+	CoilyDeathState(CharacterComponent* pCharacter) : DeathState(pCharacter) {}
+	virtual std::unique_ptr<CharacterState> Update() override;
+};

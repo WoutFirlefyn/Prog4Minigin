@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "QbertComponent.h"
 #include "CoilyComponent.h"
+#include <iostream>
 
 MoveCommand::MoveCommand(dae::GameObject* pGameObject, MovementDirection movementDirection)
 	: GameObjectCommand{ pGameObject }

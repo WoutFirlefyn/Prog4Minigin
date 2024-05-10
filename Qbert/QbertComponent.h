@@ -30,7 +30,7 @@ public:
 	//-------------------------------------------------
 	virtual void Init() override;
 
-	void AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>* pCharacterGoingToFallSubject);
+	void AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character, TileType>* pCharacterStartedJumpingSubject);
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
 	virtual void Notify(bool roundFinished) override;
 	void SubjectDestroyed(dae::Subject<bool>* pSubject);
@@ -40,7 +40,6 @@ public:
 	std::unique_ptr<dae::Subject<int>> PlayerDied;
 private:
 	dae::Subject<bool>* m_pTileChangedSubject{ nullptr };
-	dae::Subject<Character>* m_pCharacterFellSubject{ nullptr };
 	int m_Lives{ 3 };
 };
 

@@ -66,7 +66,6 @@ std::pair<Character, dae::GameObject*> DiskComponent::GetCharacter() const
 
 void DiskComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character)
 {
-	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLift);
 	m_pCharacter = character;
 	character.second->SetParent(GetGameObject(), true);
 }
