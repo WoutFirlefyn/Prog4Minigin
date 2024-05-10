@@ -15,7 +15,7 @@ class CoilyComponent final : public CharacterComponent
 {
 public:
 	CoilyComponent(dae::GameObject* pGameObject);	// Constructor
-	virtual ~CoilyComponent() override;				// Destructor
+	virtual ~CoilyComponent() override = default;				// Destructor
 
 	// -------------------------
 	// Copy/move constructors and assignment operators
@@ -29,13 +29,14 @@ public:
 	// Member functions						
 	//-------------------------------------------------
 	virtual void Init() override;
-	virtual void Update() override;
 
+	void AddObserver(dae::Subject<Character, TileType>* pCharacterStartedJumpingSubject);
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
+
+	static bool IsEgg() { return m_IsEgg; }
 private:
-	float m_TimeBetweenJumps{ 1.f };
-	float m_AccumSec{};
-	bool m_IsEgg{ true };
+	static bool m_IsEgg;
+	int m_AmountOfJumps{ 0 };
 };
 
 

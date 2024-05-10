@@ -4,55 +4,49 @@
 #include "ServiceLocator.h"
 #include "SpritesheetComponent.h"
 #include "Sounds.h"
+#include "CoilyStates.h"
+
+bool CoilyComponent::m_IsEgg{ true };
 
 CoilyComponent::CoilyComponent(dae::GameObject* pGameObject) 
 	: CharacterComponent(pGameObject)
 {
 }
 
-CoilyComponent::~CoilyComponent()
-{
-}
-
 void CoilyComponent::Init()
 {
 	CharacterComponent::Init();
-	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(4, 0);
+	m_pState = std::make_unique<CoilySpawnState>(this);
+	m_pState->OnEnter();
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(4, 1);
 	m_Character = Character::Coily;
 }
 
-void CoilyComponent::Update()
+void CoilyComponent::AddObserver(dae::Subject<Character, TileType>*)
 {
-	CharacterComponent::Update();
-
-	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
-
-	if (m_AccumSec > m_TimeBetweenJumps)
-	{
-		MovementDirection direction = static_cast<MovementDirection>(m_IsEgg ? rand() % 2 + 2 : rand() % 4);
-
-		MoveStateChanged->NotifyObservers(Character::Coily, MovementState::Start, direction);
-		m_AccumSec = 0.f;
-	}
+	//m_pCharacterStartedJumping = pCharacterStartedJumpingSubject;
 }
 
+void CoilyComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
+{
+	if (character != m_Character)
+		return;
 
-void CoilyComponent::Notify(Character, MovementState movementState, MovementDirection movementDirection)
-{ 
-	int spritesheetCol = (m_IsEgg ? 4 : static_cast<int>(m_MovementDirection));
+	int spritesheetCol = (m_IsEgg ? 4 : static_cast<int>(movementDirection));
 
 	switch (movementState)
 	{
 	case MovementState::Start:
-		m_MovementDirection = movementDirection;
 		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(spritesheetCol, 1);
-		m_JumpLerpValue = 0.f;
-		m_StartPos = GetGameObject()->GetLocalPosition();
 		break;
 	case MovementState::End:
-		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::CoilyEggJump, 0.2f);
+		dae::ServiceLocator::GetSoundSystem().Play((m_IsEgg ? dae::Sounds::CoilyEggJump : dae::Sounds::CoilySnakeJump), 0.2f);
 		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(spritesheetCol, 0);
-		m_MovementDirection = MovementDirection::None;
+		if (++m_AmountOfJumps == 7)
+			m_IsEgg = false;
+		break;
+	case MovementState::Fall:
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::CoilyFall, 0.2f);
 		break;
 	default:
 		break;

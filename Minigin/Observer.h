@@ -27,7 +27,7 @@ namespace dae
 		{
 			for (auto& pObserver : m_vObservers)
 				pObserver->SubjectDestroyed(this);
-		}
+		} 
 
 		void AddObserver(Observer<Args...>* pObserver)
 		{

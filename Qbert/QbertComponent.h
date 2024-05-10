@@ -11,7 +11,7 @@
 //-----------------------------------------------------
 // QbertComponent Class									
 //-----------------------------------------------------
-class QbertComponent final : public CharacterComponent, public dae::Observer<bool>, public dae::Observer<Character>
+class QbertComponent final : public CharacterComponent, public dae::Observer<bool>
 {
 public:
 	QbertComponent(dae::GameObject* pGameObject);	// Constructor
@@ -29,22 +29,17 @@ public:
 	// Member functions						
 	//-------------------------------------------------
 	virtual void Init() override;
-	//virtual void Update() override;
 
-	void AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character>* pCharacterFellSubject);
+	void AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character, TileType>* pCharacterStartedJumpingSubject);
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
-	virtual void Notify(Character character) override;
-	void SubjectDestroyed(dae::Subject<Character>* pSubject);
 	virtual void Notify(bool roundFinished) override;
 	void SubjectDestroyed(dae::Subject<bool>* pSubject);
 
-	void Die();
 	int GetLives() const { return m_Lives; }
 
 	std::unique_ptr<dae::Subject<int>> PlayerDied;
 private:
 	dae::Subject<bool>* m_pTileChangedSubject{ nullptr };
-	dae::Subject<Character>* m_pCharacterFellSubject{ nullptr };
 	int m_Lives{ 3 };
 };
 

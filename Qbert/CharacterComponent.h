@@ -2,11 +2,13 @@
 #include "BaseComponent.h"
 #include "Observer.h"
 #include "glm/glm.hpp"
-
+#include "CharacterStates.h"
 enum class MovementState
 {
 	Start,
-	End
+	End,
+	Fall,
+	Disk
 };
 
 enum class MovementDirection
@@ -30,11 +32,13 @@ enum class Character
 	None
 };
 
-class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>
+enum class TileType;
+class CharacterState;
+class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<Character, TileType>
 {
 public:
 	CharacterComponent(dae::GameObject* pGameObject);	// Constructor
-	virtual ~CharacterComponent() override = default;				// Destructor
+	virtual ~CharacterComponent() override;				// Destructor
 
 	CharacterComponent(const CharacterComponent& other) = delete;
 	CharacterComponent(CharacterComponent&& other) noexcept = delete;
@@ -44,16 +48,24 @@ public:
 	virtual void Init() override;
 	virtual void Update() override;
 
-	virtual void Notify(Character, MovementState movementState, MovementDirection movementDirection) = 0;
+	virtual void Notify(Character, MovementState, MovementDirection) = 0;
+	virtual void Notify(Character character, TileType tileType) override;
+	virtual void SubjectDestroyed(dae::Subject<Character, TileType>* pSubject) override;
 
-	bool IsMoving() const { return m_MovementDirection != MovementDirection::None; }
+	void Move(MovementDirection movementDirection);
+	bool IsMoving() const { return m_pState->IsMoving(); }
+	TileType GetNextTileType() const { return m_NextTileType; }
 
-	std::unique_ptr<dae::Subject<Character, MovementState, MovementDirection>> MoveStateChanged;
+	glm::vec3 GetPosition() const;
+	void SetPosition(const glm::vec3& pos);
+	Character GetCharacter() const { return m_Character; }
+
+	static std::unique_ptr<dae::Subject<Character, MovementState, MovementDirection>> MoveStateChanged;
 protected:
+	std::unique_ptr<CharacterState> m_pState{ nullptr };
 	Character m_Character{ Character::None };
-	MovementDirection m_MovementDirection{ MovementDirection::None };
-	glm::vec3 m_StartPos{};
-	float m_JumpLerpValue{ 0 };
-	float m_JumpDuration{ 0.4f };
+private:
+	dae::Subject<Character, TileType>* m_pCharacterStartedJumping{ nullptr };
+	TileType m_NextTileType{};
 };
 

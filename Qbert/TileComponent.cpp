@@ -55,13 +55,18 @@ void TileComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject
     m_CharactersHere.insert(character);
 }
 
-bool TileComponent::ChangeTile(int currentRound)
+bool TileComponent::ChangeTile(int currentRound, int& tilesCovered, int stageChange)
 {
-    if (m_TileStage == m_MaxTileStage)
+    int newTileStage{ m_TileStage + stageChange };
+    if (newTileStage > m_MaxTileStage || newTileStage < 0 || stageChange == 0)
         return false;
 
-    GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(currentRound, ++m_TileStage);
-    return true; 
+    tilesCovered += stageChange;
+
+    m_TileStage = newTileStage;
+
+    GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(currentRound, m_TileStage);
+    return stageChange > 0; 
 }
 
 void TileComponent::Reset(int currentRound)

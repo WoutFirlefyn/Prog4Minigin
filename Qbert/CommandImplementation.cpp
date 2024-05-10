@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "QbertComponent.h"
 #include "CoilyComponent.h"
+#include <iostream>
+
 MoveCommand::MoveCommand(dae::GameObject* pGameObject, MovementDirection movementDirection)
 	: GameObjectCommand{ pGameObject }
 	, m_pCharacterComponent{ nullptr }
@@ -17,5 +19,5 @@ MoveCommand::MoveCommand(dae::GameObject* pGameObject, MovementDirection movemen
 void MoveCommand::Execute()
 {
 	if (!m_pCharacterComponent->IsMoving())
-		m_pCharacterComponent->MoveStateChanged->NotifyObservers(Character::Qbert1, MovementState::Start, m_Direction);
+		m_pCharacterComponent->Move(m_Direction);
 }
