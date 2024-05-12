@@ -5,7 +5,7 @@
 #include "SpritesheetComponent.h"
 #include "GraphicsComponent.h"
 #include "Sounds.h"
-#include "CoilyStates.h"
+#include "EnemyStates.h"
 
 bool CoilyComponent::m_IsEgg{ true };
 
@@ -18,7 +18,7 @@ void CoilyComponent::Init()
 {
 	CharacterComponent::Init();
 	m_Character = Character::Coily;
-	SetState(std::make_unique<CoilySpawnState>(this));
+	SetState(std::make_unique<EnemySpawnState>(this));
 }
 
 void CoilyComponent::AddObserver(dae::Subject<Character, TileType>*)

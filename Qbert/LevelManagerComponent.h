@@ -70,9 +70,12 @@ private:
 	dae::Subject<Character>* m_pCharacterSpawnedSubject{ nullptr };
 	std::unordered_map<Character, dae::GameObject*> m_InactiveCharacters;
 	std::vector<dae::GameObject*> m_vTiles;
+	std::vector<dae::GameObject*> m_vDisks;
+	std::unordered_map<Character, bool> m_MovingCharacters;
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };
 	int m_CurrentRound{ 0 };
 	int m_AmountOfDisks{ 2 };
+	bool m_CharacterMovedDirtyFlag{ false };
 };
 

@@ -101,11 +101,23 @@ void LevelManagerComponent::Init()
 
 void LevelManagerComponent::LateUpdate()
 {
+    if (!m_CharacterMovedDirtyFlag)
+        return;
+
+    m_CharacterMovedDirtyFlag = false;
+
     // check for character collisions
     for (auto pTile : m_vTiles)
     {
-        // this sucks wtf
         auto charactersOnTile = pTile->GetComponent<TileComponent>()->GetCharacters();
+
+        if (charactersOnTile.size() < 2)
+            continue;
+
+        std::erase_if(charactersOnTile, [&](const auto& pair) 
+            {
+                return m_MovingCharacters[pair.first];
+            });
 
         if (charactersOnTile.size() < 2)
             continue;
@@ -124,7 +136,11 @@ void LevelManagerComponent::AddObserver(dae::Subject<Character, MovementState, M
 void LevelManagerComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
 {
     if (movementDirection == MovementDirection::None)
-        return;
+    {
+        m_MovingCharacters[character] = false;
+        m_CharacterMovedDirtyFlag = true;
+        //return;
+    }
 
     auto pCurrentTile = FindCharacter(character);
 
@@ -132,11 +148,11 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
     if (!pCurrentTile)
         return;
 
-    auto pNextTile = pCurrentTile->GetComponent<TileComponent>()->GetNeighboringTile(movementDirection);
     switch (movementState)
     {
     case MovementState::Start:
     {
+        auto pNextTile = pCurrentTile->GetComponent<TileComponent>()->GetNeighboringTile(movementDirection);
         TileType nextTileType;
 
         if (!pNextTile)
@@ -146,19 +162,27 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
         else
             nextTileType = TileType::Disk;
         CharacterStartedJumping->NotifyObservers(character, nextTileType);
+        m_MovingCharacters[character] = true;
         break;
     }
     case MovementState::End:
     {
-        if (!pNextTile || !pNextTile->HasComponent<TileComponent>())
+        auto pCurrentTileComponent = pCurrentTile->GetComponent<TileComponent>();
+        if (movementDirection != MovementDirection::None)
         {
-            assert(false);
-            return;
+            auto pNextTile = pCurrentTileComponent->GetNeighboringTile(movementDirection);
+            if (!pNextTile || !pNextTile->HasComponent<TileComponent>())
+            {
+                assert(false);
+                return;
+            }
+            auto pNextTileComponent = pNextTile->GetComponent<TileComponent>();
+            pNextTileComponent->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character));
+            pCurrentTileComponent = pNextTileComponent;
         }
-        auto characterObject = pCurrentTile->GetComponent<TileComponent>()->GetCharacter(character);
-        auto pNextTileComponent = pNextTile->GetComponent<TileComponent>();
 
-        pNextTileComponent->MoveCharacterHere(characterObject);
+        m_MovingCharacters[character] = false;
+        m_CharacterMovedDirtyFlag = true;
 
         int tileChange{};
         switch (character)
@@ -175,7 +199,7 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
             return;
         }
 
-        if (pNextTileComponent->ChangeTile(m_CurrentRound, m_TilesCovered, tileChange))
+        if (pCurrentTileComponent->ChangeTile(m_CurrentRound, m_TilesCovered, tileChange))
             TileChanged->NotifyObservers(AreAllTilesCovered());
         break;
     }
@@ -189,13 +213,14 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
     }
     case MovementState::Disk:
     {
+        auto pCurrentTileComponent = pCurrentTile->GetComponent<TileComponent>();
+        auto pNextTile = pCurrentTileComponent->GetNeighboringTile(movementDirection);
         if (!pNextTile || !pNextTile->HasComponent<DiskComponent>() || (character != Character::Qbert1 && character != Character::Qbert2))
         {
             assert(false);
             return;
         }
-        auto characterObject = pCurrentTile->GetComponent<TileComponent>()->GetCharacter(character);
-        pNextTile->GetComponent<DiskComponent>()->MoveCharacterHere(characterObject);
+        pNextTile->GetComponent<DiskComponent>()->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character));
         break;
     }
     default:
@@ -206,6 +231,8 @@ void LevelManagerComponent::Notify(Character character, MovementState movementSt
 void LevelManagerComponent::Notify(Character character)
 {
     auto characterObject = m_InactiveCharacters.extract(character);
+
+    m_MovingCharacters[character] = true;
     if (characterObject.empty())
     {
         assert(false && "Character doesn't exist or is already spawned");

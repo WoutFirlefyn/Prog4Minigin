@@ -18,6 +18,5 @@ MoveCommand::MoveCommand(dae::GameObject* pGameObject, MovementDirection movemen
 
 void MoveCommand::Execute()
 {
-	if (!m_pCharacterComponent->IsMoving())
-		m_pCharacterComponent->Move(m_Direction);
+	m_pCharacterComponent->Move(m_Direction);
 }

@@ -10,10 +10,18 @@ void QbertIdleState::HandleInput(MovementDirection movementDirection)
 	return m_pCharacter->SetState(std::make_unique<QbertJumpState>(m_pCharacter, movementDirection));
 }
 
-void QbertIdleState::Notify(Character character1, Character character2)
+void QbertIdleState::Notify(Character, Character otherCharacter)
 {
-	if (character1 == m_pCharacter->GetCharacter() ||character2 == m_pCharacter->GetCharacter())
+	switch (otherCharacter)
+	{
+	case Character::Coily:
+	case Character::Ugg:
+	case Character::Wrongway:
+		m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), MovementState::Fall, MovementDirection::None);
 		return m_pCharacter->SetState(std::make_unique<QbertDeathState>(m_pCharacter));
+	default:
+		return;
+	}
 }
 
 void QbertJumpState::Update()
@@ -59,6 +67,11 @@ void QbertDiskState::Update()
 	// Todo: Falling after disk is at the end
 	if (m_HasReachedTop)
 		return m_pCharacter->SetState(std::make_unique<QbertIdleState>(m_pCharacter));
+}
+
+void QbertDiskState::OnExit()
+{
+	//m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), MovementState::Disk, MovementDirection::None);
 }
 
 void QbertSpawnState::Update()

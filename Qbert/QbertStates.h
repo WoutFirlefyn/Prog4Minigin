@@ -37,6 +37,7 @@ class QbertDiskState : public CharacterState
 public:
 	QbertDiskState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
 	virtual void Update() override;
+	virtual void OnExit() override;
 private:
 	float m_AccumSec{};
 	bool m_HasReachedTop{ false };

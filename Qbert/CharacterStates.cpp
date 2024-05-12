@@ -82,3 +82,8 @@ void SpawnState::OnEnter()
 {
 	m_pCharacter->CharacterSpawned->NotifyObservers(m_pCharacter->GetCharacter());
 }
+
+void SpawnState::OnExit()
+{
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), MovementState::End, MovementDirection::None);
+}

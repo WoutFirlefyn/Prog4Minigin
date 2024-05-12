@@ -56,9 +56,15 @@ void CharacterComponent::SubjectDestroyed(dae::Subject<Character, TileType>* pSu
 		m_pCharacterStartedJumping = nullptr;
 }
 
-void CharacterComponent::Notify(Character character1, Character character2)
+void CharacterComponent::Notify(Character character, Character otherCharacter)
 {
-	m_pState->Notify(character1, character2);
+	if (character != m_Character && otherCharacter != m_Character)
+		return;
+
+	if (otherCharacter == m_Character)
+		std::swap(character, otherCharacter);
+
+	m_pState->Notify(character, otherCharacter);
 }
 
 void CharacterComponent::SubjectDestroyed(dae::Subject<Character, Character>* pSubject)

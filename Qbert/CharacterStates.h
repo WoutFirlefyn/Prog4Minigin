@@ -15,8 +15,6 @@ public:
 	virtual void OnEnter() {}
 	virtual void OnExit() {}
 	virtual void Notify(Character, Character) {}
-
-	virtual bool IsMoving() const { return true; }
 protected:
 	CharacterComponent* m_pCharacter{ nullptr };
 };
@@ -26,13 +24,13 @@ class SpawnState : public CharacterState
 public:
 	SpawnState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
 	virtual void OnEnter() override;
+	virtual void OnExit() override;
 };
 
 class IdleState : public CharacterState
 {
 public:
 	IdleState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
-	virtual bool IsMoving() const override { return false; }
 };
 
 class JumpState : public CharacterState

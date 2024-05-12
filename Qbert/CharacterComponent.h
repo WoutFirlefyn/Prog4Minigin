@@ -62,7 +62,6 @@ public:
 	void SetState(std::unique_ptr<CharacterState>&& pNewState);
 
 	void Move(MovementDirection movementDirection);
-	bool IsMoving() const { return m_pState->IsMoving(); }
 	TileType GetNextTileType() const { return m_NextTileType; }
 
 	glm::vec3 GetPosition() const;
@@ -71,6 +70,7 @@ public:
 
 	static std::unique_ptr<dae::Subject<Character, MovementState, MovementDirection>> MoveStateChanged;
 	static std::unique_ptr<dae::Subject<Character>> CharacterSpawned;
+	static std::unique_ptr<dae::Subject<Character>> CharacterDied;
 protected:
 	std::unique_ptr<CharacterState> m_pState{ nullptr };
 	Character m_Character{ Character::None };

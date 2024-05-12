@@ -5,7 +5,7 @@
 #include "SpritesheetComponent.h"
 #include "GraphicsComponent.h"
 #include "Sounds.h"
-#include "CoilyStates.h"
+#include "EnemyStates.h"
 
 
 SlickSamComponent::SlickSamComponent(dae::GameObject* pGameObject, Character character) : CharacterComponent(pGameObject)
@@ -21,7 +21,7 @@ SlickSamComponent::SlickSamComponent(dae::GameObject* pGameObject, Character cha
 void SlickSamComponent::Init()
 {
 	CharacterComponent::Init();
-	SetState(std::make_unique<CoilySpawnState>(this));
+	SetState(std::make_unique<EnemySpawnState>(this));
 }
 
 // MoveStateChanged
