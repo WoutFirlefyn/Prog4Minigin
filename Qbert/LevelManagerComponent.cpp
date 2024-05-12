@@ -104,9 +104,8 @@ void LevelManagerComponent::LateUpdate()
     // check for character collisions
     for (auto pTile : m_vTiles)
     {
+        // this sucks wtf
         auto charactersOnTile = pTile->GetComponent<TileComponent>()->GetCharacters();
-
-        charactersOnTile.begin()->second->GetComponent<CharacterComponent>();
 
         if (charactersOnTile.size() < 2)
             continue;

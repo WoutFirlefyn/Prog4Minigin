@@ -18,8 +18,7 @@ void CoilyComponent::Init()
 {
 	CharacterComponent::Init();
 	m_Character = Character::Coily;
-	m_pState = std::make_unique<CoilySpawnState>(this);
-	m_pState->OnEnter();
+	SetState(std::make_unique<CoilySpawnState>(this));
 }
 
 void CoilyComponent::AddObserver(dae::Subject<Character, TileType>*)

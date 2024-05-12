@@ -33,8 +33,7 @@ void QbertComponent::Init()
 	m_pTileChangedSubject->AddObserver(this);
 
 	m_Character = Character::Qbert1;
-	m_pState = std::make_unique<QbertSpawnState>(this);
-	m_pState->OnEnter();
+	SetState(std::make_unique<QbertSpawnState>(this));
 }
 
 void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character, TileType>*)

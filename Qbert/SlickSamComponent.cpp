@@ -21,8 +21,7 @@ SlickSamComponent::SlickSamComponent(dae::GameObject* pGameObject, Character cha
 void SlickSamComponent::Init()
 {
 	CharacterComponent::Init();
-	m_pState = std::make_unique<CoilySpawnState>(this);
-	m_pState->OnEnter();
+	SetState(std::make_unique<CoilySpawnState>(this));
 }
 
 // MoveStateChanged
