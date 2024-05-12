@@ -6,6 +6,7 @@
 #include <string>
 #include <stdexcept>
 #include <execution>
+#include <iostream>
 #include "Transform.h"
 #include "BaseComponent.h"
 
@@ -64,12 +65,26 @@ namespace dae
 		}
 
 		template<typename T>
-		T* GetComponent() const 
+		T* GetComponent() const
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must be a subclass of BaseComponent");
 
 			if (HasComponent<T>())
 				return dynamic_cast<T*>((*m_Components.find(typeid(T))).second.get());
+			
+			// In case the requested component isn't found, check for derived components from the requested one
+			//std::type_index targetType = std::type_index(typeid(T));
+			// Iterate over stored components
+			for (const auto& pair : m_Components) 
+			{
+				//const auto& storedType = pair.first;
+				const auto& component = pair.second.get();
+				
+				//Check if T is the same type or is a base class of the stored component's type
+				if (auto ptr = dynamic_cast<T*>(component))
+					return ptr;
+			}
+
 			return nullptr;
 		}
 

@@ -61,5 +61,6 @@ void CoilyComponent::Notify(Character character)
 
 	CharacterComponent::Notify(character);
 	m_IsEgg = true;
+	m_AmountOfJumps = 0;
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(4, 1);
 }

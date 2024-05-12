@@ -49,7 +49,7 @@ void DiskComponent::Update()
 
 	if (1.f - m_PlatformLerpValue < FLT_EPSILON)
 	{
-		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLand);
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLand, 0.2f);
 
 		m_pCharacter.second->SetParent(nullptr);
 		m_pCharacter.second->SetPosition(308, 193);

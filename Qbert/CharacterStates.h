@@ -1,17 +1,21 @@
 #pragma once
 #include <memory>
 #include <glm/glm.hpp>
+#include <iostream>
 class CharacterComponent;
 enum class MovementDirection;
+enum class Character;
 class CharacterState
 {
 public:
 	CharacterState(CharacterComponent* pCharacter);
 	virtual ~CharacterState() = default;
-	virtual std::unique_ptr<CharacterState> HandleInput(MovementDirection) { return nullptr; }
-	virtual std::unique_ptr<CharacterState> Update() = 0;
+	virtual void HandleInput(MovementDirection) {}
+	virtual void Update() {}
 	virtual void OnEnter() {}
 	virtual void OnExit() {}
+	virtual void Notify(Character, Character) {}
+
 	virtual bool IsMoving() const { return true; }
 protected:
 	CharacterComponent* m_pCharacter{ nullptr };
@@ -21,18 +25,13 @@ class SpawnState : public CharacterState
 {
 public:
 	SpawnState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
-	virtual std::unique_ptr<CharacterState> Update() override;
 	virtual void OnEnter() override;
-	virtual void OnExit() override;
 };
 
 class IdleState : public CharacterState
 {
 public:
 	IdleState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
-	virtual std::unique_ptr<CharacterState> Update() override;
-	virtual void OnEnter() override;
-	virtual void OnExit() override;
 	virtual bool IsMoving() const override { return false; }
 };
 
@@ -58,8 +57,6 @@ class DeathState : public CharacterState
 {
 public:
 	DeathState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
-	virtual std::unique_ptr<CharacterState> Update() override;
-	virtual void OnEnter() override;
-	virtual void OnExit() override;
+	virtual void OnEnter() override { std::cout << "Died\n"; }
 };
 

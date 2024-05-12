@@ -3,37 +3,41 @@
 #include "DiskComponent.h"
 #include "GameTime.h"
 #include "LevelManagerComponent.h"
+#include <iostream>
 
-std::unique_ptr<CharacterState> QbertIdleState::HandleInput(MovementDirection movementDirection)
+void QbertIdleState::HandleInput(MovementDirection movementDirection)
 {
-	return std::make_unique<QbertJumpState>(m_pCharacter, movementDirection);
+	return m_pCharacter->SetState(std::make_unique<QbertJumpState>(m_pCharacter, movementDirection));
 }
 
-std::unique_ptr<CharacterState> QbertJumpState::Update()
+void QbertIdleState::Notify(Character character1, Character character2)
+{
+	if (character1 == m_pCharacter->GetCharacter() ||character2 == m_pCharacter->GetCharacter())
+		return m_pCharacter->SetState(std::make_unique<QbertDeathState>(m_pCharacter));
+}
+
+void QbertJumpState::Update()
 {
 	if (Jump())
 	{
 		switch (m_pCharacter->GetNextTileType())
 		{
 		case TileType::Tile:
-			return std::make_unique<QbertIdleState>(m_pCharacter);
+			return m_pCharacter->SetState(std::make_unique<QbertIdleState>(m_pCharacter));
 		case TileType::Disk:
-			return std::make_unique<QbertDiskState>(m_pCharacter);
+			return m_pCharacter->SetState(std::make_unique<QbertDiskState>(m_pCharacter));
 		case TileType::None:
-			return std::make_unique<QbertDeathState>(m_pCharacter, m_StartPos);
+			return m_pCharacter->SetState(std::make_unique<QbertDeathState>(m_pCharacter, m_StartPos));
 		}
 	}
-	return nullptr;
 }
 
-std::unique_ptr<CharacterState> QbertDeathState::Update()
+void QbertDeathState::Update()
 {
 	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
 
-	if (m_AccumSec < m_RespawnDelay)
-		return nullptr;
-	
-	return std::make_unique<QbertIdleState>(m_pCharacter);
+	if (m_AccumSec >= m_RespawnDelay)
+		return m_pCharacter->SetState(std::make_unique<QbertIdleState>(m_pCharacter));
 }
 
 void QbertDeathState::OnExit()
@@ -42,7 +46,7 @@ void QbertDeathState::OnExit()
 		m_pCharacter->SetPosition(m_StartPos);
 }
 
-std::unique_ptr<CharacterState> QbertDiskState::Update()
+void QbertDiskState::Update()
 {
 	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
 
@@ -54,13 +58,10 @@ std::unique_ptr<CharacterState> QbertDiskState::Update()
 
 	// Todo: Falling after disk is at the end
 	if (m_HasReachedTop)
-		return std::make_unique<QbertIdleState>(m_pCharacter);
-
-	return nullptr; 
-
+		return m_pCharacter->SetState(std::make_unique<QbertIdleState>(m_pCharacter));
 }
 
-std::unique_ptr<CharacterState> QbertSpawnState::Update()
+void QbertSpawnState::Update()
 {
-	return std::make_unique<QbertIdleState>(m_pCharacter);
+	return m_pCharacter->SetState(std::make_unique<QbertIdleState>(m_pCharacter));
 }

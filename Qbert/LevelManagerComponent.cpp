@@ -4,7 +4,7 @@
 #include "LevelManagerComponent.h"
 #include "GameObject.h"
 #include "Scene.h"
-#include "QbertComponent.h"
+#include "CharacterComponent.h"
 #include "GraphicsComponent.h"
 #include "SpritesheetComponent.h"
 #include "TileComponent.h"
@@ -21,6 +21,7 @@
 
 //std::unique_ptr<dae::Subject<bool>> LevelManagerComponent::TileChanged{ std::make_unique<dae::Subject<bool>>() };
 std::unique_ptr<dae::Subject<Character, TileType>> LevelManagerComponent::CharacterStartedJumping{ std::make_unique<dae::Subject<Character, TileType>>() };
+std::unique_ptr<dae::Subject<Character, Character>> LevelManagerComponent::CharactersCollide{ std::make_unique<dae::Subject<Character, Character>>() };
 LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene) : BaseComponent(pGameObject)
 {
     // Subjects
@@ -96,22 +97,24 @@ void LevelManagerComponent::Init()
     m_pCharacterSpawnedSubject = CharacterComponent::CharacterSpawned.get();
     m_pCharacterSpawnedSubject->AddObserver(this);
     TileChanged->AddObserver(this); 
-
-    // temp
-    //auto character = m_InactiveCharacters.extract(Character::Qbert1);
-    //if (!character.empty())
-    //    m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(character.key(), character.mapped()));
-    //character = m_InactiveCharacters.extract(Character::Coily);
-    //if (!character.empty())
-    //    m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(character.key(), character.mapped()));
-    //character = m_InactiveCharacters.extract(Character::Slick);
-    //if (!character.empty())
-    //    m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(character.key(), character.mapped()));
 }
 
 void LevelManagerComponent::LateUpdate()
 {
     // check for character collisions
+    for (auto pTile : m_vTiles)
+    {
+        auto charactersOnTile = pTile->GetComponent<TileComponent>()->GetCharacters();
+
+        charactersOnTile.begin()->second->GetComponent<CharacterComponent>();
+
+        if (charactersOnTile.size() < 2)
+            continue;
+
+        for (auto it1 = charactersOnTile.begin(); it1 != charactersOnTile.end(); ++it1) 
+            for (auto it2 = std::next(it1); it2 != charactersOnTile.end(); ++it2) 
+                CharactersCollide->NotifyObservers(it1->first, it2->first);
+    }
 }
 
 void LevelManagerComponent::AddObserver(dae::Subject<Character, MovementState, MovementDirection>*)

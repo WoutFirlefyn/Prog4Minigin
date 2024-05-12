@@ -34,7 +34,7 @@ enum class Character
 
 enum class TileType;
 class CharacterState;
-class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<Character, TileType>, public dae::Observer<Character>
+class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<Character, TileType>, public dae::Observer<Character>, public dae::Observer<Character, Character>
 {
 public:
 	CharacterComponent(dae::GameObject* pGameObject);	// Constructor
@@ -48,10 +48,18 @@ public:
 	virtual void Init() override;
 	virtual void Update() override;
 
+	// MoveStateChanged
 	virtual void Notify(Character, MovementState, MovementDirection) = 0;
+	// CharacterSpawned
 	virtual void Notify(Character);
+	// CharacterStartedJumping
 	virtual void Notify(Character character, TileType tileType) override;
 	virtual void SubjectDestroyed(dae::Subject<Character, TileType>* pSubject) override;
+	// CharactersCollide
+	virtual void Notify(Character, Character) override;
+	virtual void SubjectDestroyed(dae::Subject<Character, Character>* pSubject) override;
+
+	void SetState(std::unique_ptr<CharacterState>&& pNewState);
 
 	void Move(MovementDirection movementDirection);
 	bool IsMoving() const { return m_pState->IsMoving(); }
@@ -68,6 +76,7 @@ protected:
 	Character m_Character{ Character::None };
 private:
 	dae::Subject<Character, TileType>* m_pCharacterStartedJumping{ nullptr };
+	dae::Subject<Character, Character>* m_pCharactersCollide{ nullptr };
 	TileType m_NextTileType{};
 };
 

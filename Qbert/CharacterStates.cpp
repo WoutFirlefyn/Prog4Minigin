@@ -2,25 +2,10 @@
 #include "CharacterComponent.h"
 #include "GameTime.h"
 #include "GameObject.h"
-#include "ServiceLocator.h"
-#include "Sounds.h"
 #include "LevelManagerComponent.h"
 
 CharacterState::CharacterState(CharacterComponent* pCharacter)
 	: m_pCharacter{ pCharacter }
-{
-}
-
-std::unique_ptr<CharacterState> IdleState::Update()
-{
-	return nullptr;
-}
-
-void IdleState::OnEnter()
-{
-}
-
-void IdleState::OnExit()
 {
 }
 
@@ -37,23 +22,17 @@ void JumpState::OnExit()
 	switch (m_pCharacter->GetNextTileType())
 	{
 	case TileType::Tile:
-	{
 		movementState = MovementState::End;
 		break;
-	}
 	case TileType::Disk:
-	{
 		if (m_pCharacter->GetCharacter() == Character::Qbert1 || m_pCharacter->GetCharacter() == Character::Qbert2)
 		{
 			movementState = MovementState::Disk;
 			break;
 		}
-	}
 	case TileType::None:
-	{
 		movementState = MovementState::Fall;
 		break;
-	}
 	}
 
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementState, m_MovementDirection);
@@ -99,29 +78,7 @@ bool JumpState::Jump()
 	return t >= 1.f;
 }
 
-std::unique_ptr<CharacterState> SpawnState::Update()
-{
-	return std::make_unique<IdleState>(m_pCharacter);
-}
-
 void SpawnState::OnEnter()
 {
 	m_pCharacter->CharacterSpawned->NotifyObservers(m_pCharacter->GetCharacter());
-}
-
-void SpawnState::OnExit()
-{
-}
-
-std::unique_ptr<CharacterState> DeathState::Update()
-{
-	return nullptr; 
-}
-
-void DeathState::OnEnter()
-{
-}
-
-void DeathState::OnExit()
-{
 }

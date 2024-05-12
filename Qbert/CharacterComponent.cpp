@@ -16,6 +16,7 @@ CharacterComponent::CharacterComponent(dae::GameObject* pGameObject)
 CharacterComponent::~CharacterComponent()
 {
 	m_pCharacterStartedJumping->RemoveObserver(this);
+	m_pCharactersCollide->RemoveObserver(this);
 	MoveStateChanged->RemoveObserver(this);
 	CharacterSpawned->RemoveObserver(this);
 }
@@ -24,18 +25,15 @@ void CharacterComponent::Init()
 {
 	m_pCharacterStartedJumping = LevelManagerComponent::CharacterStartedJumping.get();
 	m_pCharacterStartedJumping->AddObserver(this);
+	m_pCharactersCollide = LevelManagerComponent::CharactersCollide.get();
+	m_pCharactersCollide->AddObserver(this);
 	MoveStateChanged->AddObserver(this);
 	CharacterSpawned->AddObserver(this);
 }
 
 void CharacterComponent::Update()
 {
-	if (auto pNewState = m_pState->Update())
-	{
-		m_pState->OnExit();
-		m_pState = std::move(pNewState);
-		m_pState->OnEnter();
-	}
+	m_pState->Update();
 }
 
 void CharacterComponent::Notify(Character character)
@@ -58,14 +56,29 @@ void CharacterComponent::SubjectDestroyed(dae::Subject<Character, TileType>* pSu
 		m_pCharacterStartedJumping = nullptr;
 }
 
+void CharacterComponent::Notify(Character character1, Character character2)
+{
+	m_pState->Notify(character1, character2);
+}
+
+void CharacterComponent::SubjectDestroyed(dae::Subject<Character, Character>* pSubject)
+{
+	if (pSubject == m_pCharactersCollide)
+		m_pCharactersCollide = nullptr;
+}
+
+void CharacterComponent::SetState(std::unique_ptr<CharacterState>&& pNewState)
+{
+	if (m_pState)
+		m_pState->OnExit();
+	m_pState = std::move(pNewState);
+	if (m_pState)
+		m_pState->OnEnter();
+}
+
 void CharacterComponent::Move(MovementDirection movementDirection)
 {
-	if (auto pNewState = m_pState->HandleInput(movementDirection))
-	{
-		m_pState->OnExit();
-		m_pState = std::move(pNewState);
-		m_pState->OnEnter();
-	}
+	m_pState->HandleInput(movementDirection);
 }
 
 glm::vec3 CharacterComponent::GetPosition() const

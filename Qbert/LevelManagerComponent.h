@@ -60,6 +60,7 @@ public:
 	virtual void Notify(bool roundFinished) override;
 
 	static std::unique_ptr<dae::Subject<Character, TileType>> CharacterStartedJumping;
+	static std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
 	std::unique_ptr<dae::Subject<bool>> TileChanged;
 private:
 	bool AreAllTilesCovered() const;

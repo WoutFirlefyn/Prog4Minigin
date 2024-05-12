@@ -31,8 +31,11 @@ public:
 	virtual void Init() override;
 
 	void AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character, TileType>* pCharacterStartedJumpingSubject);
+	// MoveStateChanged
 	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
+	// CharacterSpawned
 	virtual void Notify(Character character) override;
+	// TileChanged
 	virtual void Notify(bool roundFinished) override;
 	void SubjectDestroyed(dae::Subject<bool>* pSubject);
 

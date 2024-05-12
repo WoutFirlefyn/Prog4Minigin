@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <execution>
 #include <mutex>
-#include <future>
 #include <memory>
 #include <condition_variable>
 
