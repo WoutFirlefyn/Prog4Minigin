@@ -4,10 +4,6 @@
 #include "GameObject.h"
 #include "LevelManagerComponent.h"
 
-void CharacterState::HandleInput(MovementInfo)
-{
-}
-
 CharacterState::CharacterState(CharacterComponent* pCharacter)
 	: m_pCharacter{ pCharacter }
 {
@@ -19,15 +15,22 @@ JumpState::JumpState(CharacterComponent* pCharacter, MovementInfo movementInfo)
 {
 }
 
+JumpState::~JumpState()
+{
+	m_pCharacterStartedJumping->RemoveObserver(this);
+}
+
 void JumpState::OnEnter()
 {
+	m_pCharacterStartedJumping = LevelManagerComponent::CharacterStartedJumping.get();
+	m_pCharacterStartedJumping->AddObserver(this);
 	m_StartPos = m_pCharacter->GetPosition(); 
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
 }
 
 void JumpState::OnExit()
 {
-	switch (m_pCharacter->GetNextTileType())
+	switch (m_NextTileType)
 	{
 	case TileType::Tile:
 		m_MovementInfo.state = MovementState::End;
@@ -44,6 +47,18 @@ void JumpState::OnExit()
 	}
 
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
+}
+
+void JumpState::Notify(Character character, TileType tileType)
+{
+	if (character == m_pCharacter->GetCharacter())
+		m_NextTileType = tileType;
+}
+
+void JumpState::SubjectDestroyed(dae::Subject<Character, TileType>* pSubject)
+{
+	if (pSubject == m_pCharacterStartedJumping)
+		m_pCharacterStartedJumping = nullptr;
 }
 
 bool JumpState::Jump()
@@ -76,4 +91,22 @@ void SpawnState::OnExit()
 	MovementInfo movementInfo{};
 	movementInfo.state = MovementState::End;
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
+}
+
+IdleState::~IdleState()
+{
+	if (m_pCharactersCollide)
+		m_pCharactersCollide->RemoveObserver(this);
+}
+
+void IdleState::OnEnter()
+{
+	m_pCharactersCollide = LevelManagerComponent::CharactersCollide.get();
+	m_pCharactersCollide->AddObserver(this);
+}
+
+void IdleState::SubjectDestroyed(dae::Subject<Character, Character>* pSubject)
+{
+	if (m_pCharactersCollide == pSubject)
+		m_pCharactersCollide = nullptr;
 }

@@ -19,14 +19,9 @@ TileComponent::TileComponent(dae::GameObject* pGameObject) : BaseComponent(pGame
 {
 }
 
-void TileComponent::SetNeighboringTiles(const std::vector<std::vector<TileComponent*>>& vTiles, size_t row, size_t col)
+void TileComponent::Init()
 {
-    const size_t levelLength = vTiles.size();
-
-    m_vNeighboringTiles.push_back((row > 0) ? vTiles[row - 1][col]->GetGameObject() : nullptr);
-    m_vNeighboringTiles.push_back((col > 0) ? vTiles[row][col - 1]->GetGameObject() : nullptr);
-    m_vNeighboringTiles.push_back((row < levelLength - (col + 1)) ? vTiles[row][col + 1]->GetGameObject() : nullptr);
-    m_vNeighboringTiles.push_back((col < levelLength - (row + 1)) ? vTiles[row + 1][col]->GetGameObject() : nullptr);
+    GetGameObject()->SetParent(nullptr, false);
 }
 
 bool TileComponent::IsCharacterHere(Character character)
@@ -68,35 +63,35 @@ void TileComponent::Reset(int currentRound)
     m_CharactersHere.clear();
 }
 
-void TileComponent::AddDiskAsNeighbor(dae::GameObject* pDisk)
-{
-    MovementDirection direction{};
-    if (std::count(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), nullptr) == 2)
-        direction = static_cast<MovementDirection>(rand() % 2);
-    else
-    {
-        auto it = std::find(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), nullptr);
-        direction = static_cast<MovementDirection>(std::distance(m_vNeighboringTiles.begin(), it));
-    }
-
-    glm::vec3 offset{};
-    switch (direction)
-    {
-    case MovementDirection::Up:
-        offset += glm::vec3{ 16, -24, 0 };
-        break;
-    case MovementDirection::Left:
-        offset += glm::vec3{ -16, -24, 0 };
-        break;
-    default:
-        return;
-    }
-    pDisk->SetParent(GetGameObject());
-    pDisk->SetPosition(pDisk->GetLocalPosition() + offset);
-    pDisk->SetParent(nullptr, true);
-
-    m_vNeighboringTiles[static_cast<size_t>(direction)] = pDisk;
-}
+//void TileComponent::AddDiskAsNeighbor(dae::GameObject* pDisk)
+//{
+//    MovementDirection direction{};
+//    if (std::count(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), nullptr) == 2)
+//        direction = static_cast<MovementDirection>(rand() % 2);
+//    else
+//    {
+//        auto it = std::find(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), nullptr);
+//        direction = static_cast<MovementDirection>(std::distance(m_vNeighboringTiles.begin(), it));
+//    }
+//
+//    glm::vec3 offset{};
+//    switch (direction)
+//    {
+//    case MovementDirection::Up:
+//        offset += glm::vec3{ 16, -24, 0 };
+//        break;
+//    case MovementDirection::Left:
+//        offset += glm::vec3{ -16, -24, 0 };
+//        break;
+//    default:
+//        return;
+//    }
+//    pDisk->SetParent(GetGameObject());
+//    pDisk->SetPosition(pDisk->GetLocalPosition() + offset);
+//    pDisk->SetParent(nullptr, true);
+//
+//    m_vNeighboringTiles[static_cast<size_t>(direction)] = pDisk;
+//}
 
 
 

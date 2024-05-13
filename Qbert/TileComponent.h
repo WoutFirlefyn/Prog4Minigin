@@ -30,8 +30,7 @@ public:
 	//-------------------------------------------------
 	// Member functions								   
 	//-------------------------------------------------
-	void SetNeighboringTiles(const std::vector<std::vector<TileComponent*>>& vTiles, size_t row, size_t col);
-	dae::GameObject* GetNeighboringTile(MovementDirection direction) const { return m_vNeighboringTiles[static_cast<size_t>(direction)]; }
+	virtual void Init() override;
 
 	bool IsCharacterHere(Character character);
 	std::pair<Character, dae::GameObject*> GetCharacter(Character character);
@@ -42,11 +41,7 @@ public:
 	void Reset(int currentRound);
 
 	static int GetMaxTileStage() { return m_MaxTileStage; }
-
-	void AddDiskAsNeighbor(dae::GameObject* pDisk);
-
 private:
-	std::vector<dae::GameObject*> m_vNeighboringTiles{};
 	std::unordered_map<Character, dae::GameObject*> m_CharactersHere;
 	int m_TileStage{ 0 };
 	const int m_TileId;

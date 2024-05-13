@@ -10,8 +10,14 @@ void QbertIdleState::HandleInput(MovementInfo movementInfo)
 	return m_pCharacter->SetState(std::make_unique<QbertJumpState>(m_pCharacter, movementInfo));
 }
 
-void QbertIdleState::Notify(Character, Character otherCharacter)
+void QbertIdleState::Notify(Character character, Character otherCharacter)
 {
+	if (character != m_pCharacter->GetCharacter() && otherCharacter != m_pCharacter->GetCharacter())
+		return;
+
+	if (otherCharacter == m_pCharacter->GetCharacter())
+		std::swap(character, otherCharacter);
+
 	switch (otherCharacter)
 	{
 	case Character::Coily:
@@ -32,7 +38,7 @@ void QbertJumpState::Update()
 {
 	if (Jump())
 	{
-		switch (m_pCharacter->GetNextTileType())
+		switch (m_NextTileType)
 		{
 		case TileType::Tile:
 			return m_pCharacter->SetState(std::make_unique<QbertIdleState>(m_pCharacter));

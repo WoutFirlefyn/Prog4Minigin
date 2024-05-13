@@ -28,25 +28,19 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
     TileChanged = std::make_unique<dae::Subject<bool>>();
     //CharacterStartedJumping = std::make_unique<dae::Subject<Character, TileType>>();
 
-    std::vector<std::vector<TileComponent*>> v2DTiles{};
-
     // Creating and placing the tiles
     for (int i{}; i < m_LevelLength; ++i)
     {
-        std::vector<TileComponent*> vNewTiles{};
         for (int j{}; j < m_LevelLength - i; ++j)
         {
             auto tile = std::make_unique<dae::GameObject>();
             tile->AddComponent<dae::GraphicsComponent>("Qbert Cubes.png");
             tile->AddComponent<dae::SpritesheetComponent>(6, 3);
             tile->AddComponent<TileComponent>();
-            vNewTiles.emplace_back(tile->GetComponent<TileComponent>());
-            tile->SetParent(GetGameObject());
             tile->SetPosition(16.f * (j - i), 24.f * (i + j));
-            m_vTiles.emplace_back(scene.Add(std::move(tile)));
-            m_Tiles[{i, j}] = m_vTiles.back();
+            tile->SetParent(GetGameObject());
+            m_Tiles[{j, i}] = scene.Add(std::move(tile));
         }
-        v2DTiles.emplace_back(vNewTiles);
     }
 
     // Disks spawning
@@ -59,7 +53,7 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
             col = -1;
             if (rand() % 2 == 1)
                 std::swap(row, col);
-        } while (m_Tiles.count({ row, col }));
+        } while (m_Tiles.count({ col,row }));
 
         auto disk = std::make_unique<dae::GameObject>();
         disk->AddComponent<dae::GraphicsComponent>("Disk Spritesheet.png");
@@ -69,51 +63,19 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
         glm::vec3 pos{ 8,5,0 };
         if (row < 0)
         {
-            disk->SetParent(m_Tiles[{0, col}]);
+            disk->SetParent(m_Tiles[{col, 0}]);
             pos += glm::vec3{ 16, -24, 0 };
         }
         else
         {
-            disk->SetParent(m_Tiles[{row, 0}]);
+            disk->SetParent(m_Tiles[{0, row}]);
             pos += glm::vec3{ -16, -24, 0 };
         }
 
         disk->SetPosition(pos);
 
-        m_Tiles[{row, col}] = scene.Add(std::move(disk));
+        m_Tiles[{col, row}] = scene.Add(std::move(disk));
     }
-
-    // Use the 2D vector to easily set the neighboring tiles
-    for (size_t i{}; i < v2DTiles.size(); ++i)
-        for (size_t j{}; j < v2DTiles[i].size(); ++j)
-            v2DTiles[i][j]->SetNeighboringTiles(v2DTiles, i, j);
-
-    //// Get all edge tiles were a disk can spawn next to
-    //std::vector<TileComponent*> vEdgeTiles{};//
-    //std::copy(v2DTiles[0].begin(), v2DTiles[0].end(), std::back_inserter(vEdgeTiles));//
-    //std::transform(v2DTiles.begin(), v2DTiles.end(), std::back_inserter(vEdgeTiles),///
-    //    [](const std::vector<TileComponent*>& row) //
-    //    { //
-    //        return row[0]; //
-    //    });//
-    //////
-
-    //// Shuffle to randomise disk locations
-    //std::random_device rd;
-    //std::mt19937 g(rd());
-    //std::shuffle(vEdgeTiles.begin(), vEdgeTiles.end(), g);
-
-    //// Create disks
-    //for (int i{}; i < m_AmountOfDisks; ++i)
-    //{
-    //    auto disk = std::make_unique<dae::GameObject>();
-    //    disk->AddComponent<dae::GraphicsComponent>("Disk Spritesheet.png");
-    //    disk->AddComponent<dae::SpritesheetComponent>(4, 6); 
-    //    disk->AddComponent<DiskComponent>(m_vTiles[0]);
-    //    disk->SetPosition(8, 5);
-    //   
-    //    vEdgeTiles[i]->AddDiskAsNeighbor(scene.Add(std::move(disk)));
-    //}
 }
 
 LevelManagerComponent::~LevelManagerComponent()
@@ -142,25 +104,33 @@ void LevelManagerComponent::LateUpdate()
     m_CharacterMovedDirtyFlag = false;
 
     // check for character collisions
-    for (auto pTile : m_vTiles)
-    {
-        auto charactersOnTile = pTile->GetComponent<TileComponent>()->GetCharacters();
+    std::for_each(std::execution::unseq, m_Tiles.begin(), m_Tiles.end(), [&](auto& tilePair)
+        {
+            if (tilePair.second->HasComponent<DiskComponent>())
+                return;
 
-        if (charactersOnTile.size() < 2)
-            continue;
+            auto charactersOnTile = tilePair.second->GetComponent<TileComponent>()->GetCharacters();
 
-        std::erase_if(charactersOnTile, [&](const auto& pair) 
+            if (charactersOnTile.size() < 2)
+                return;
+
+            std::erase_if(charactersOnTile, [&](const auto& pair)
+                {
+                    return m_MovingCharacters[pair.first];
+                });
+
+            if (charactersOnTile.size() < 2)
+                return;
+
+            for (auto it1 = charactersOnTile.begin(); it1 != charactersOnTile.end(); ++it1)
             {
-                return m_MovingCharacters[pair.first];
-            });
-
-        if (charactersOnTile.size() < 2)
-            continue;
-
-        for (auto it1 = charactersOnTile.begin(); it1 != charactersOnTile.end(); ++it1) 
-            for (auto it2 = std::next(it1); it2 != charactersOnTile.end(); ++it2) 
-                CharactersCollide->NotifyObservers(it1->first, it2->first);
-    }
+                for (auto it2 = std::next(it1); it2 != charactersOnTile.end(); ++it2)
+                {
+                    std::lock_guard<std::mutex> lock(m_CharactersCollideMutex);
+                    CharactersCollide->NotifyObservers(it1->first, it2->first);
+                }
+            }
+        });
 }
 
 void LevelManagerComponent::AddObserver(dae::Subject<Character, MovementInfo>*)
@@ -170,30 +140,25 @@ void LevelManagerComponent::AddObserver(dae::Subject<Character, MovementInfo>*)
 
 void LevelManagerComponent::Notify(Character character, MovementInfo movementInfo)
 {
-    if (movementInfo.direction == MovementDirection::None)
-    {
-        m_MovingCharacters[character] = false;
-        m_CharacterMovedDirtyFlag = true;
-        //return;
-    }
-    std::pair<std::pair<int, int>, dae::GameObject*> currentTile;
+    std::pair<std::pair<int, int>, dae::GameObject*> currentTilePair;
 
-    if(!FindCharacter(character, currentTile))
+    if(!FindCharacter(character, currentTilePair))
     {
         assert(false && "LevelManagerComponent: Character not found");
         return;
-    }
+    };
+    auto nextTileIdx = std::make_pair<int,int>( currentTilePair.first.first + movementInfo.indexOffset.first,currentTilePair.first.second + movementInfo.indexOffset.second );
+    auto nextTilePairIt = m_Tiles.find(nextTileIdx);
 
     switch (movementInfo.state)
     {
     case MovementState::Start:
     {
-        auto pNextTile = currentTile.second->GetComponent<TileComponent>()->GetNeighboringTile(movementInfo.direction);
         TileType nextTileType;
 
-        if (!pNextTile)
+        if (nextTilePairIt == m_Tiles.end())
             nextTileType = TileType::None;
-        else if (pNextTile->HasComponent<TileComponent>())
+        else if (nextTilePairIt->second->HasComponent<TileComponent>())
             nextTileType = TileType::Tile;
         else
             nextTileType = TileType::Disk;
@@ -203,16 +168,15 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
     }
     case MovementState::End:
     {
-        auto pCurrentTileComponent = currentTile.second->GetComponent<TileComponent>();
-        if (movementInfo.direction != MovementDirection::None)
+        auto pCurrentTileComponent = currentTilePair.second->GetComponent<TileComponent>();
+        if (nextTilePairIt == m_Tiles.end() || !nextTilePairIt->second->HasComponent<TileComponent>())
         {
-            auto pNextTile = pCurrentTileComponent->GetNeighboringTile(movementInfo.direction);
-            if (!pNextTile || !pNextTile->HasComponent<TileComponent>())
-            {
-                assert(false);
-                return;
-            }
-            auto pNextTileComponent = pNextTile->GetComponent<TileComponent>();
+            assert(false);
+            return;
+        }
+        if (currentTilePair.second != nextTilePairIt->second)
+        {
+            auto pNextTileComponent = nextTilePairIt->second->GetComponent<TileComponent>();
             pNextTileComponent->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character));
             pCurrentTileComponent = pNextTileComponent;
         }
@@ -244,19 +208,18 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
         if (character == Character::Qbert1 || character == Character::Qbert2)
             return;
 
-        m_InactiveCharacters.insert(currentTile.second->GetComponent<TileComponent>()->GetCharacter(character));
+        m_InactiveCharacters.insert(currentTilePair.second->GetComponent<TileComponent>()->GetCharacter(character));
         break;
     }
     case MovementState::Disk:
     {
-        auto pCurrentTileComponent = currentTile.second->GetComponent<TileComponent>();
-        auto pNextTile = pCurrentTileComponent->GetNeighboringTile(movementInfo.direction);
-        if (!pNextTile || !pNextTile->HasComponent<DiskComponent>() || (character != Character::Qbert1 && character != Character::Qbert2))
+        auto pCurrentTileComponent = currentTilePair.second->GetComponent<TileComponent>();
+        if (nextTilePairIt == m_Tiles.end() || !nextTilePairIt->second->HasComponent<DiskComponent>() || (character != Character::Qbert1 && character != Character::Qbert2))
         {
             assert(false);
             return;
         }
-        pNextTile->GetComponent<DiskComponent>()->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character));
+        nextTilePairIt->second->GetComponent<DiskComponent>()->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character));
         break;
     }
     default:
@@ -274,23 +237,23 @@ void LevelManagerComponent::Notify(Character character)
         assert(false && "Character doesn't exist or is already spawned");
         return;
     }
-    int tileIdx{};
+    std::pair<int,int> tileIdx{};
     glm::vec3 offset{};
     switch (character)
     {
     case Character::Qbert1:
-        tileIdx = 0;
+        tileIdx = { 0,0 };
         offset = glm::vec3{ 8, -6, 0 };
         break;
     case Character::Qbert2:
         break;
     case Character::Coily:
-        tileIdx = 1 + (rand() % 2) * 6;
+        tileIdx = rand() % 2 ? std::make_pair(1,0) : std::make_pair(0,1);
         offset = glm::vec3{ 8, -20, 0 };
         break;
     case Character::Slick:
     case Character::Sam:
-        tileIdx = 1 + (rand() % 2) * 6;
+        tileIdx = rand() % 2 ? std::make_pair(1,0) : std::make_pair(0,1);
         offset = glm::vec3{ 8, -6, 0 };
         break;
     case Character::Ugg:
@@ -298,11 +261,11 @@ void LevelManagerComponent::Notify(Character character)
     case Character::Wrongway:
         break;
     default:
-        tileIdx = -1;
+        tileIdx = { -1,-1 };
         break;
     }
-    characterObject.mapped()->SetPosition(m_vTiles[tileIdx]->GetWorldPosition() + offset);
-    m_vTiles[tileIdx]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(characterObject.key(), characterObject.mapped()));
+    characterObject.mapped()->SetPosition(m_Tiles[tileIdx]->GetWorldPosition() + offset);
+    m_Tiles[tileIdx]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(characterObject.key(), characterObject.mapped()));
 }
 
 void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character>* pSubject)
@@ -326,39 +289,28 @@ void LevelManagerComponent::Notify(bool roundFinished)
 
         dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::RoundCompleteTune);
 
-        for (auto pTile : m_vTiles)
+        for (const auto& tilePair : m_Tiles)
         {
-            auto pTileComponent = pTile->GetComponent<TileComponent>();
+            auto pTileComponent = tilePair.second->GetComponent<TileComponent>();
             m_InactiveCharacters.merge(pTileComponent->GetCharacters());
             pTileComponent->Reset(m_CurrentRound);
         }
-        //auto pCurrentTile = FindCharacter(Character::Qbert1);
-
-        //assert(pCurrentTile && "LevelManagerComponent: Character not found");
-
-        //auto characterObject = pCurrentTile->GetComponent<TileComponent>()->GetCharacter(Character::Qbert1);
-
-        //m_vTiles[0]->GetComponent<TileComponent>()->MoveCharacterHere(characterObject);
     }
 }
 
 bool LevelManagerComponent::AreAllTilesCovered() const
 { 
-    return TileComponent::GetMaxTileStage() * static_cast<int>(m_vTiles.size()) == m_TilesCovered;
+    const int amountOfTiles = m_LevelLength * (m_LevelLength + 1) / 2;
+    return TileComponent::GetMaxTileStage() * amountOfTiles == m_TilesCovered;
 }
 
 bool LevelManagerComponent::FindCharacter(Character character, std::pair<std::pair<int, int>, dae::GameObject*>& tile) const
 {
-    //auto it = std::find_if(std::execution::par_unseq, m_vTiles.begin(), m_vTiles.end(), [&character](dae::GameObject* pTile)
-    //    {
-    //        return pTile->GetComponent<TileComponent>()->IsCharacterHere(character);
-    //    });
     auto it = std::find_if(std::execution::par_unseq, m_Tiles.begin(), m_Tiles.end(), [&character](const auto& tilePair)
         {
-            if (tilePair.second->HasComponent<TileComponent>())
-                return tilePair.second->GetComponent<TileComponent>()->IsCharacterHere(character);
+            if (auto pTileComponent = tilePair.second->GetComponent<TileComponent>())
+                return pTileComponent->IsCharacterHere(character);
             return false;
-            //return tilePair.second->GetComponent<TileComponent>()->IsCharacterHere(character);
         });
 
     if (it == m_Tiles.end())

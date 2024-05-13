@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_map>
 #include <map>
+#include <mutex>
 #include "BaseComponent.h"
 #include "Observer.h"
 
@@ -70,9 +71,8 @@ private:
 	dae::Subject<Character>* m_pCharacterSpawnedSubject{ nullptr };
 	std::unordered_map<Character, dae::GameObject*> m_InactiveCharacters;
 	std::map<std::pair<int, int>, dae::GameObject*> m_Tiles;
-	std::vector<dae::GameObject*> m_vTiles;
-	std::vector<dae::GameObject*> m_vDisks;
 	std::unordered_map<Character, bool> m_MovingCharacters;
+	std::mutex m_CharactersCollideMutex{};
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };
 	int m_CurrentRound{ 0 };

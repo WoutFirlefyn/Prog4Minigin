@@ -15,6 +15,12 @@ void EnemyIdleState::Update()
 
 void EnemyIdleState::Notify(Character character, Character otherCharacter)
 {
+	if (character != m_pCharacter->GetCharacter() && otherCharacter != m_pCharacter->GetCharacter())
+		return;
+
+	if (otherCharacter == m_pCharacter->GetCharacter())
+		std::swap(character, otherCharacter);
+
 	switch (character)
 	{
 	case Character::Slick:
@@ -43,7 +49,7 @@ void EnemyJumpState::Update()
 {
 	if (Jump())
 	{
-		switch (m_pCharacter->GetNextTileType())
+		switch (m_NextTileType)
 		{
 		case TileType::Tile:
 			return m_pCharacter->SetState(std::make_unique<EnemyIdleState>(m_pCharacter));

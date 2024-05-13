@@ -23,7 +23,8 @@ void DiskComponent::Init()
 {
 	m_pSpritesheetComponent = GetGameObject()->GetComponent<dae::SpritesheetComponent>();
 	assert(m_pSpritesheetComponent);
-	m_StartPos = GetGameObject()->GetWorldPosition();
+	GetGameObject()->SetParent(nullptr, false);
+	m_StartPos = GetGameObject()->GetLocalPosition();
 }
 
 void DiskComponent::Update()
