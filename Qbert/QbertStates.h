@@ -5,14 +5,14 @@ class QbertIdleState : public IdleState
 {
 public:
 	QbertIdleState(CharacterComponent* pCharacter) : IdleState(pCharacter) {}
-	virtual void HandleInput(MovementDirection movementDirection) override;
+	virtual void HandleInput(MovementInfo) override;
 	virtual void Notify(Character, Character) override;
 };
 
 class QbertJumpState : public JumpState
 {
 public:
-	QbertJumpState(CharacterComponent* pCharacter, MovementDirection movementDirection) : JumpState(pCharacter, movementDirection) {}
+	QbertJumpState(CharacterComponent* pCharacter, MovementInfo movementInfo) : JumpState(pCharacter, movementInfo) {}
 	virtual void Update() override;
 };
 

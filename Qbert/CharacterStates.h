@@ -2,20 +2,19 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include <iostream>
-class CharacterComponent;
-enum class MovementDirection;
-enum class Character;
+#include "CharacterComponent.h"
+
 class CharacterState
 {
 public:
-	CharacterState(CharacterComponent* pCharacter);
 	virtual ~CharacterState() = default;
-	virtual void HandleInput(MovementDirection) {}
+	virtual void HandleInput(MovementInfo);
 	virtual void Update() {}
 	virtual void OnEnter() {}
 	virtual void OnExit() {}
 	virtual void Notify(Character, Character) {}
 protected:
+	CharacterState(CharacterComponent* pCharacter);
 	CharacterComponent* m_pCharacter{ nullptr };
 };
 
@@ -36,11 +35,7 @@ public:
 class JumpState : public CharacterState
 {
 public:
-	JumpState(CharacterComponent* pCharacter, MovementDirection movementDirection)
-		: CharacterState(pCharacter)
-		, m_MovementDirection{ movementDirection }
-	{
-	}
+	JumpState(CharacterComponent* pCharacter, MovementInfo movementInfo);
 	virtual void OnEnter() override;
 	virtual void OnExit() override;
 protected:
@@ -48,7 +43,7 @@ protected:
 	float m_JumpDuration{ 0.4f };
 	float m_JumpLerpValue{ 0.f };
 	glm::vec3 m_StartPos{};
-	MovementDirection m_MovementDirection{};
+	MovementInfo m_MovementInfo;
 };
 
 class DeathState : public CharacterState

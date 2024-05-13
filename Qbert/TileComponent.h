@@ -32,7 +32,6 @@ public:
 	//-------------------------------------------------
 	void SetNeighboringTiles(const std::vector<std::vector<TileComponent*>>& vTiles, size_t row, size_t col);
 	dae::GameObject* GetNeighboringTile(MovementDirection direction) const { return m_vNeighboringTiles[static_cast<size_t>(direction)]; }
-	bool IsEdgeTile() const;
 
 	bool IsCharacterHere(Character character);
 	std::pair<Character, dae::GameObject*> GetCharacter(Character character);

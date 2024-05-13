@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <map>
 #include "BaseComponent.h"
 #include "Observer.h"
 
@@ -18,8 +19,7 @@ namespace dae
 }
 class TileComponent;
 enum class Character;
-enum class MovementState;
-enum class MovementDirection;
+struct MovementInfo;
 
 enum class TileType
 {
@@ -28,7 +28,7 @@ enum class TileType
 	None
 };
 
-class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<bool>, public dae::Observer<Character>
+class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>, public dae::Observer<Character>
 {
 public:
 	LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene);
@@ -50,9 +50,9 @@ public:
 	virtual void Init() override;
 	virtual void LateUpdate() override;
 
-	void AddObserver(dae::Subject<Character, MovementState, MovementDirection>* pMoveStateChanged);
-	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
-	virtual void SubjectDestroyed(dae::Subject<Character, MovementState, MovementDirection>* pSubject) override;
+	void AddObserver(dae::Subject<Character, MovementInfo>* pMoveStateChanged);
+	virtual void Notify(Character character, MovementInfo movementInfo) override;
+	virtual void SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSubject) override;
 
 	virtual void Notify(Character character) override;
 	virtual void SubjectDestroyed(dae::Subject<Character>* pSubject) override;
@@ -64,11 +64,12 @@ public:
 	std::unique_ptr<dae::Subject<bool>> TileChanged;
 private:
 	bool AreAllTilesCovered() const;
-	dae::GameObject* FindCharacter(Character character) const;
+	bool FindCharacter(Character character, std::pair<std::pair<int, int>, dae::GameObject*>& tile) const;
 
-	dae::Subject<Character, MovementState, MovementDirection>* m_pMoveStateChangedSubject{ nullptr };
+	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
 	dae::Subject<Character>* m_pCharacterSpawnedSubject{ nullptr };
 	std::unordered_map<Character, dae::GameObject*> m_InactiveCharacters;
+	std::map<std::pair<int, int>, dae::GameObject*> m_Tiles;
 	std::vector<dae::GameObject*> m_vTiles;
 	std::vector<dae::GameObject*> m_vDisks;
 	std::unordered_map<Character, bool> m_MovingCharacters;

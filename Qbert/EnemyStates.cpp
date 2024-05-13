@@ -9,9 +9,8 @@ void EnemyIdleState::Update()
 
 	if (m_AccumSec < m_TimeBetweenJumps)
 		return;
-
-	MovementDirection direction = static_cast<MovementDirection>((m_pCharacter->GetCharacter() == Character::Coily && CoilyComponent::IsEgg()) || (m_pCharacter->GetCharacter() == Character::Slick || m_pCharacter->GetCharacter() == Character::Sam) ? rand() % 2 + 2 : rand() % 4);
-	return m_pCharacter->SetState(std::make_unique<EnemyJumpState>(m_pCharacter, direction));
+	MovementInfo movementInfo{ static_cast<MovementDirection>((m_pCharacter->GetCharacter() == Character::Coily && CoilyComponent::IsEgg()) || (m_pCharacter->GetCharacter() == Character::Slick || m_pCharacter->GetCharacter() == Character::Sam) ? rand() % 2 + 2 : rand() % 4)};
+	return m_pCharacter->SetState(std::make_unique<EnemyJumpState>(m_pCharacter, movementInfo));
 }
 
 void EnemyIdleState::Notify(Character character, Character otherCharacter)
@@ -29,8 +28,12 @@ void EnemyIdleState::Notify(Character character, Character otherCharacter)
 	{
 	case Character::Qbert1:
 	case Character::Qbert2:
-		m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), MovementState::Fall, MovementDirection::None);
+	{
+		MovementInfo movementInfo{};
+		movementInfo.state = MovementState::Fall;
+		m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
 		return m_pCharacter->SetState(std::make_unique<EnemyDeathState>(m_pCharacter));
+	}
 	default:
 		return;
 	}

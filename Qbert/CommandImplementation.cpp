@@ -4,10 +4,10 @@
 #include "CoilyComponent.h"
 #include <iostream>
 
-MoveCommand::MoveCommand(dae::GameObject* pGameObject, MovementDirection movementDirection)
+MoveCommand::MoveCommand(dae::GameObject* pGameObject, const MovementInfo& movementInfo)
 	: GameObjectCommand{ pGameObject }
 	, m_pCharacterComponent{ nullptr }
-	, m_Direction{ movementDirection }
+	, m_MovementInfo{ movementInfo }
 {
 	if (pGameObject->HasComponent<QbertComponent>())
 		m_pCharacterComponent = pGameObject->GetComponent<QbertComponent>();
@@ -18,5 +18,5 @@ MoveCommand::MoveCommand(dae::GameObject* pGameObject, MovementDirection movemen
 
 void MoveCommand::Execute()
 {
-	m_pCharacterComponent->Move(m_Direction);
+	m_pCharacterComponent->Move(m_MovementInfo);
 }

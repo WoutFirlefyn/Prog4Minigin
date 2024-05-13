@@ -28,6 +28,13 @@ void dae::SpritesheetComponent::MoveSourceRect(int cols, int rows)
 	m_CurrRow = rows;
 }
 
+void dae::SpritesheetComponent::MoveSourceRectRelative(int cols, int rows)
+{
+	m_CurrCol += cols;
+	m_CurrRow += rows;
+	m_pGraphicsComponent->SetSourceRect({ static_cast<float>(m_SpriteWidth * m_CurrCol), static_cast<float>(m_SpriteHeight * m_CurrRow), m_SpriteWidth, m_SpriteHeight });
+}
+
 
 
 

@@ -5,9 +5,9 @@
 #include "LevelManagerComponent.h"
 #include <iostream>
 
-void QbertIdleState::HandleInput(MovementDirection movementDirection)
+void QbertIdleState::HandleInput(MovementInfo movementInfo)
 {
-	return m_pCharacter->SetState(std::make_unique<QbertJumpState>(m_pCharacter, movementDirection));
+	return m_pCharacter->SetState(std::make_unique<QbertJumpState>(m_pCharacter, movementInfo));
 }
 
 void QbertIdleState::Notify(Character, Character otherCharacter)
@@ -17,8 +17,12 @@ void QbertIdleState::Notify(Character, Character otherCharacter)
 	case Character::Coily:
 	case Character::Ugg:
 	case Character::Wrongway:
-		m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), MovementState::Fall, MovementDirection::None);
+	{
+		MovementInfo movementInfo{};
+		movementInfo.state = MovementState::Fall;
+		m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
 		return m_pCharacter->SetState(std::make_unique<QbertDeathState>(m_pCharacter));
+	}
 	default:
 		return;
 	}

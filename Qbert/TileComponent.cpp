@@ -29,14 +29,6 @@ void TileComponent::SetNeighboringTiles(const std::vector<std::vector<TileCompon
     m_vNeighboringTiles.push_back((col < levelLength - (row + 1)) ? vTiles[row + 1][col]->GetGameObject() : nullptr);
 }
 
-bool TileComponent::IsEdgeTile() const
-{
-    return std::any_of(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), [](auto pTile)
-        {
-            return pTile == nullptr;
-        });
-}
-
 bool TileComponent::IsCharacterHere(Character character)
 {
     return m_CharactersHere.contains(character);

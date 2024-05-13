@@ -25,15 +25,19 @@ void SlickSamComponent::Init()
 }
 
 // MoveStateChanged
-void SlickSamComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
+void SlickSamComponent::Notify(Character character, MovementInfo movementInfo)
 {
 	if (character != m_Character)
 		return;
 
-	switch (movementState)
+	switch (movementInfo.state)
 	{
 	case MovementState::Start:
-		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(movementDirection) - 2, static_cast<int>(m_Character) - static_cast<int>(Character::Slick));
+		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect
+		(
+			static_cast<int>(movementInfo.direction) - 2, 
+			static_cast<int>(m_Character) - static_cast<int>(Character::Slick)
+		);
 		break;
 	case MovementState::End:
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);

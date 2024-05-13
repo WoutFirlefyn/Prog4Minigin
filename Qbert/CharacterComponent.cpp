@@ -5,7 +5,7 @@
 #include "LevelManagerComponent.h"
 #include "GraphicsComponent.h"
 
-std::unique_ptr<dae::Subject<Character, MovementState, MovementDirection>> CharacterComponent::MoveStateChanged{ std::make_unique<dae::Subject<Character, MovementState, MovementDirection>>() };
+std::unique_ptr<dae::Subject<Character, MovementInfo>> CharacterComponent::MoveStateChanged{ std::make_unique<dae::Subject<Character, MovementInfo>>() };
 std::unique_ptr<dae::Subject<Character>> CharacterComponent::CharacterSpawned{ std::make_unique<dae::Subject<Character>>() };
 
 CharacterComponent::CharacterComponent(dae::GameObject* pGameObject) 
@@ -82,9 +82,9 @@ void CharacterComponent::SetState(std::unique_ptr<CharacterState>&& pNewState)
 		m_pState->OnEnter();
 }
 
-void CharacterComponent::Move(MovementDirection movementDirection)
+void CharacterComponent::Move(MovementInfo movementInfo)
 {
-	m_pState->HandleInput(movementDirection);
+	m_pState->HandleInput(movementInfo);
 }
 
 glm::vec3 CharacterComponent::GetPosition() const

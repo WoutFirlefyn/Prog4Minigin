@@ -30,6 +30,7 @@ namespace dae
 		// Member functions						
 		//-------------------------------------------------
 		void MoveSourceRect(int cols, int rows);
+		void MoveSourceRectRelative(int cols, int rows);
 		int GetCurrRow() const { return m_CurrRow; } 
 		int GetCurrCol() const { return m_CurrCol; } 
 

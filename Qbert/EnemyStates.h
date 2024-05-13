@@ -15,7 +15,7 @@ private:
 class EnemyJumpState : public JumpState
 {
 public:
-	EnemyJumpState(CharacterComponent* pCharacter, MovementDirection movementDirection) : JumpState(pCharacter, movementDirection) {}
+	EnemyJumpState(CharacterComponent* pCharacter, MovementInfo movementInfo) : JumpState(pCharacter, movementInfo) {}
 	virtual void Update() override;
 };
 

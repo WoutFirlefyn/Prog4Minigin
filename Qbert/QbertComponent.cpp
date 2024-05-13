@@ -41,15 +41,15 @@ void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::S
 	m_pTileChangedSubject = pTileChangedSubject;
 }
 
-void QbertComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
+void QbertComponent::Notify(Character character, MovementInfo movementInfo)
 {
 	if (character != m_Character)
 		return;
 
-	switch (movementState)
+	switch (movementInfo.state)
 	{
 	case MovementState::Start:
-		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(movementDirection), 0);
+		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(movementInfo.direction), 0);
 		break;
 	case MovementState::End:
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertJump, 0.2f);

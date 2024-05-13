@@ -26,21 +26,19 @@ void CoilyComponent::AddObserver(dae::Subject<Character, TileType>*)
 	//m_pCharacterStartedJumping = pCharacterStartedJumpingSubject;
 }
 
-void CoilyComponent::Notify(Character character, MovementState movementState, MovementDirection movementDirection)
+void CoilyComponent::Notify(Character character, MovementInfo movementInfo)
 {
 	if (character != m_Character)
 		return;
 
-	int spritesheetCol = (m_IsEgg ? 4 : static_cast<int>(movementDirection));
-
-	switch (movementState)
+	switch (movementInfo.state)
 	{
 	case MovementState::Start:
-		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(spritesheetCol, 1);
+		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(m_IsEgg ? 4 : static_cast<int>(movementInfo.direction), 1);
 		break;
 	case MovementState::End:
 		dae::ServiceLocator::GetSoundSystem().Play((m_IsEgg ? dae::Sounds::CoilyEggJump : dae::Sounds::CoilySnakeJump), 0.2f);
-		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(spritesheetCol, 0);
+		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRectRelative(0, -1);
 		if (++m_AmountOfJumps == 6)
 			m_IsEgg = false;
 		break;

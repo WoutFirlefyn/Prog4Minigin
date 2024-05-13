@@ -28,7 +28,7 @@ public:
 	virtual void Init() override;
 
 	void AddObserver(dae::Subject<Character, TileType>* pCharacterStartedJumpingSubject);
-	virtual void Notify(Character character, MovementState movementState, MovementDirection movementDirection) override;
+	virtual void Notify(Character character, MovementInfo movementInfo) override;
 	virtual void Notify(Character character) override;
 
 	static bool IsEgg() { return m_IsEgg; }

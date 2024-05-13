@@ -2,7 +2,7 @@
 #include "BaseComponent.h"
 #include "Observer.h"
 #include "glm/glm.hpp"
-#include "CharacterStates.h"
+
 enum class MovementState
 {
 	Start,
@@ -32,9 +32,49 @@ enum class Character
 	None
 };
 
+struct MovementInfo
+{
+	MovementInfo(MovementDirection dir, const glm::vec3& vec, const std::pair<int, int>& offset)
+		: direction(dir)
+		, vector(vec)
+		, indexOffset(offset)
+	{
+	}
+	MovementInfo(MovementDirection dir)
+		: direction(dir)
+	{
+		switch (direction)
+		{
+		case MovementDirection::Up:
+			vector = glm::vec3{ 16, -24, 0 };
+			indexOffset = { 0,-1 };
+			break;
+		case MovementDirection::Left:
+			vector = glm::vec3{ -16, -24, 0 };
+			indexOffset = { -1,0 };
+			break;
+		case MovementDirection::Right:
+			vector = glm::vec3{ 16, 24, 0 };
+			indexOffset = { 1,0 };
+			break;
+		case MovementDirection::Down:
+			vector = glm::vec3{ -16, 24, 0 };
+			indexOffset = { 0,1 };
+			break;
+		default:
+			break;
+		}
+	}
+	MovementInfo() = default;
+	MovementDirection direction{ MovementDirection::None };
+	glm::vec3 vector{ glm::vec3(0) };
+	std::pair<int, int> indexOffset{ 0,0 };
+	MovementState state{ MovementState::Start };
+};
+
 enum class TileType;
 class CharacterState;
-class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementState, MovementDirection>, public dae::Observer<Character, TileType>, public dae::Observer<Character>, public dae::Observer<Character, Character>
+class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<Character, TileType>, public dae::Observer<Character>, public dae::Observer<Character, Character>
 {
 public:
 	CharacterComponent(dae::GameObject* pGameObject);	// Constructor
@@ -49,7 +89,7 @@ public:
 	virtual void Update() override;
 
 	// MoveStateChanged
-	virtual void Notify(Character, MovementState, MovementDirection) = 0;
+	virtual void Notify(Character, MovementInfo) = 0;
 	// CharacterSpawned
 	virtual void Notify(Character);
 	// CharacterStartedJumping
@@ -61,14 +101,14 @@ public:
 
 	void SetState(std::unique_ptr<CharacterState>&& pNewState);
 
-	void Move(MovementDirection movementDirection);
+	void Move(MovementInfo movementInfo);
 	TileType GetNextTileType() const { return m_NextTileType; }
 
 	glm::vec3 GetPosition() const;
 	void SetPosition(const glm::vec3& pos);
 	Character GetCharacter() const { return m_Character; }
 
-	static std::unique_ptr<dae::Subject<Character, MovementState, MovementDirection>> MoveStateChanged;
+	static std::unique_ptr<dae::Subject<Character, MovementInfo>> MoveStateChanged;
 	static std::unique_ptr<dae::Subject<Character>> CharacterSpawned;
 	static std::unique_ptr<dae::Subject<Character>> CharacterDied;
 protected:
