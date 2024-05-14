@@ -1,35 +1,22 @@
 #pragma once
-
-//-----------------------------------------------------
-// Include Files
-//-----------------------------------------------------
 #include "BaseComponent.h"
 #include "Observer.h"
 #include <vector>
 #include <unordered_map>
 
-//-----------------------------------------------------
-// TileComponent Class									
-//-----------------------------------------------------
 enum class Character;
 enum class MovementDirection;
 class TileComponent final : public dae::BaseComponent
 {
 public:
-	TileComponent(dae::GameObject* pGameObject);		// Constructor
-	virtual ~TileComponent() override = default;		// Destructor
+	TileComponent(dae::GameObject* pGameObject);	
+	virtual ~TileComponent() override = default;	
 
-	// -------------------------
-	// Copy/move constructors and assignment operators
-	// -------------------------    
 	TileComponent(const TileComponent& other)					= delete;
 	TileComponent(TileComponent&& other) noexcept				= delete;
 	TileComponent& operator=(const TileComponent& other)		= delete;
 	TileComponent& operator=(TileComponent&& other)	noexcept	= delete;
 
-	//-------------------------------------------------
-	// Member functions								   
-	//-------------------------------------------------
 	virtual void Init() override;
 
 	bool IsCharacterHere(Character character);

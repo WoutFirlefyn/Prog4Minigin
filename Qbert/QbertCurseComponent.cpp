@@ -1,17 +1,10 @@
-//---------------------------
-// Includes
-//---------------------------
 #include "QbertCurseComponent.h"
-#include "QbertComponent.h"
 #include "GraphicsComponent.h"
 #include "GameTime.h"
 #include "GameObject.h"
 #include "ServiceLocator.h"
 #include "Sounds.h"
 
-//---------------------------
-// Constructor & Destructor
-//---------------------------
 QbertCurseComponent::QbertCurseComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
 {
 }
@@ -54,7 +47,3 @@ void QbertCurseComponent::SubjectDestroyed(dae::Subject<int>* pSubject)
 	if (pSubject == m_pPlayerDied)
 		m_pPlayerDied = nullptr;
 }
-
-
-
-

@@ -1,6 +1,3 @@
-//---------------------------
-// Includes
-//---------------------------
 #include "DiskComponent.h"
 #include "SpritesheetComponent.h"
 #include "GraphicsComponent.h"
@@ -10,9 +7,6 @@
 #include "ServiceLocator.h"
 #include "Sounds.h"
 
-//---------------------------
-// Constructor & Destructor
-//---------------------------
 DiskComponent::DiskComponent(dae::GameObject* pGameObject, dae::GameObject* pTopTile) : BaseComponent(pGameObject)
 	, m_pTopTile{ pTopTile }
 	, m_pSpritesheetComponent{ nullptr }
@@ -58,11 +52,6 @@ void DiskComponent::Update()
 		m_pCharacter.second = nullptr;
 		GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
 	}
-}
-
-std::pair<Character, dae::GameObject*> DiskComponent::GetCharacter() const
-{
-	return m_pCharacter;
 }
 
 void DiskComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character)

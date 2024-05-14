@@ -51,9 +51,6 @@ namespace dae
 		bool IsDown(unsigned int button) const;
 		bool IsThumbsNotInDeadZone() const;
 	private:
-		//-------------------------------------------------
-		// Datamembers								
-		//-------------------------------------------------
 		class ControllerImpl;
 		std::unique_ptr<ControllerImpl> m_pControllerImpl;
 	};

@@ -1,13 +1,6 @@
 #pragma once
-
-//-----------------------------------------------------
-// Include Files
-//-----------------------------------------------------
 #include "Singleton.h"
 
-//-----------------------------------------------------
-// Time Class									
-//-----------------------------------------------------
 namespace dae
 {
 	class GameTime final : public Singleton<GameTime>
@@ -20,14 +13,6 @@ namespace dae
 		float GetFixedTimeStep() const { return m_FixedTimeStep; };
 
 	private:
-		//-------------------------------------------------
-		// Private member functions								
-		//-------------------------------------------------
-
-
-		//-------------------------------------------------
-		// Datamembers								
-		//-------------------------------------------------
 		friend class Singleton<GameTime>;
 		GameTime() = default;
 		float m_DeltaTime{};

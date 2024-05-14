@@ -1,6 +1,3 @@
-//---------------------------
-// Includes
-//---------------------------
 #include "LevelManagerComponent.h"
 #include "GameObject.h"
 #include "Scene.h"
@@ -12,12 +9,6 @@
 #include "ServiceLocator.h"
 #include "Sounds.h"
 #include <algorithm>
-#include <iterator>
-#include <random>
-
-//---------------------------
-// Constructor & Destructor
-//---------------------------
 
 //std::unique_ptr<dae::Subject<bool>> LevelManagerComponent::TileChanged{ std::make_unique<dae::Subject<bool>>() };
 std::unique_ptr<dae::Subject<Character, TileType>> LevelManagerComponent::CharacterStartedJumping{ std::make_unique<dae::Subject<Character, TileType>>() };
@@ -133,11 +124,6 @@ void LevelManagerComponent::LateUpdate()
         });
 }
 
-void LevelManagerComponent::AddObserver(dae::Subject<Character, MovementInfo>*)
-{
-    //m_pMoveStateChangedSubject = pMoveStateChanged;
-}
-
 void LevelManagerComponent::Notify(Character character, MovementInfo movementInfo)
 {
     std::pair<std::pair<int, int>, dae::GameObject*> currentTilePair;
@@ -147,7 +133,8 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
         assert(false && "LevelManagerComponent: Character not found");
         return;
     };
-    auto nextTileIdx = std::make_pair<int,int>( currentTilePair.first.first + movementInfo.indexOffset.first,currentTilePair.first.second + movementInfo.indexOffset.second );
+
+    std::pair<int,int> nextTileIdx = { currentTilePair.first.first + movementInfo.indexOffset.first, currentTilePair.first.second + movementInfo.indexOffset.second };
     auto nextTilePairIt = m_Tiles.find(nextTileIdx);
 
     switch (movementInfo.state)
@@ -184,23 +171,7 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
         m_MovingCharacters[character] = false;
         m_CharacterMovedDirtyFlag = true;
 
-        int tileChange{};
-        switch (character)
-        {
-        case Character::Qbert1:
-        case Character::Qbert2:
-            tileChange = 1;
-            break;
-        case Character::Slick:
-        case Character::Sam:
-            tileChange = -1;
-            break;
-        default:
-            return;
-        }
-
-        if (pCurrentTileComponent->ChangeTile(m_CurrentRound, m_TilesCovered, tileChange))
-            TileChanged->NotifyObservers(AreAllTilesCovered());
+        ChangeTiles(character, pCurrentTileComponent);
         break;
     }
     case MovementState::Fall:
@@ -302,6 +273,27 @@ bool LevelManagerComponent::AreAllTilesCovered() const
 { 
     const int amountOfTiles = m_LevelLength * (m_LevelLength + 1) / 2;
     return TileComponent::GetMaxTileStage() * amountOfTiles == m_TilesCovered;
+}
+
+void LevelManagerComponent::ChangeTiles(Character character, TileComponent* pTileComponent)
+{
+    int tileChange{};
+    switch (character)
+    {
+    case Character::Qbert1:
+    case Character::Qbert2:
+        tileChange = 1;
+        break;
+    case Character::Slick:
+    case Character::Sam:
+        tileChange = -1;
+        break;
+    default:
+        return;
+    }
+
+    if (pTileComponent->ChangeTile(m_CurrentRound, m_TilesCovered, tileChange))
+        TileChanged->NotifyObservers(AreAllTilesCovered());
 }
 
 bool LevelManagerComponent::FindCharacter(Character character, std::pair<std::pair<int, int>, dae::GameObject*>& tile) const

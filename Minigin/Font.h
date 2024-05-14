@@ -7,7 +7,7 @@ namespace dae
 	class Font final
 	{
 	public:
-		_TTF_Font* GetFont() const;
+		_TTF_Font* GetFont() const { return m_font; }
 		explicit Font(const std::string& fullPath, unsigned int size);
 		~Font();
 

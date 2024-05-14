@@ -1,16 +1,7 @@
 #pragma once
-
-//-----------------------------------------------------
-// Include Files
-//-----------------------------------------------------
-
-//-----------------------------------------------------
-// BaseComponent Class									
-//-----------------------------------------------------
 namespace dae
 {
 	class GameObject;
-
 	class BaseComponent
 	{
 	public:
@@ -28,11 +19,10 @@ namespace dae
 		virtual void LateUpdate() {};
 		virtual void RenderGUI() {};
 	protected:
-		BaseComponent(GameObject* pGameObject);
-		GameObject* GetGameObject() const;
+		BaseComponent(GameObject* pGameObject) : m_pGameObject{ pGameObject } {}
+		GameObject* GetGameObject() const { return m_pGameObject; }
 	private:
 		GameObject* m_pGameObject;
-
 	};
 };
 

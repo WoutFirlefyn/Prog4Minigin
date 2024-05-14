@@ -22,5 +22,4 @@ namespace dae
 		std::vector<std::unique_ptr<Controller>> m_vControllers{};
 		static constexpr int m_MaxControllers = 4;
 	};
-
 }

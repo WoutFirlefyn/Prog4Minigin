@@ -14,20 +14,14 @@
 class QbertComponent final : public CharacterComponent, public dae::Observer<bool>
 {
 public:
-	QbertComponent(dae::GameObject* pGameObject);	// Constructor
-	virtual ~QbertComponent() override;				// Destructor
+	QbertComponent(dae::GameObject* pGameObject);	
+	virtual ~QbertComponent() override;				
 
-	// -------------------------
-	// Copy/move constructors and assignment operators
-	// -------------------------    
 	QbertComponent(const QbertComponent& other) = delete;
 	QbertComponent(QbertComponent&& other) noexcept = delete;
 	QbertComponent& operator=(const QbertComponent& other) = delete;
 	QbertComponent& operator=(QbertComponent&& other) noexcept = delete;
 
-	//-------------------------------------------------
-	// Member functions						
-	//-------------------------------------------------
 	virtual void Init() override;
 
 	void AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character, TileType>* pCharacterStartedJumpingSubject);

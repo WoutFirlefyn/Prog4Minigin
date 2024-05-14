@@ -7,20 +7,14 @@
 class SlickSamComponent final : public CharacterComponent
 {
 public:
-	SlickSamComponent(dae::GameObject* pGameObject, Character character);	// Constructor
-	virtual ~SlickSamComponent() override = default;				// Destructor
+	SlickSamComponent(dae::GameObject* pGameObject, Character character);
+	virtual ~SlickSamComponent() override = default;
 
-	// -------------------------
-	// Copy/move constructors and assignment operators
-	// -------------------------    
 	SlickSamComponent(const SlickSamComponent& other) = delete;
 	SlickSamComponent(SlickSamComponent&& other) noexcept = delete;
 	SlickSamComponent& operator=(const SlickSamComponent& other) = delete;
 	SlickSamComponent& operator=(SlickSamComponent&& other) noexcept = delete;
 
-	//-------------------------------------------------
-	// Member functions						
-	//-------------------------------------------------
 	virtual void Init() override;
 
 	virtual void Notify(Character character, MovementInfo movementInfo) override;

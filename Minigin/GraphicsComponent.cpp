@@ -8,9 +8,6 @@
 #include "Texture2D.h"
 #include "ServiceLocator.h"
 
-//---------------------------
-// Constructor & Destructor
-//---------------------------
 dae::GraphicsComponent::GraphicsComponent(GameObject* pGameObject, const std::string& filename, bool renderingEnabled) : BaseComponent(pGameObject)
 	, m_RenderingEnabled{ renderingEnabled }
 {

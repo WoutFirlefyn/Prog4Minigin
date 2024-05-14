@@ -21,11 +21,6 @@ void CoilyComponent::Init()
 	SetState(std::make_unique<EnemySpawnState>(this));
 }
 
-void CoilyComponent::AddObserver(dae::Subject<Character, TileType>*)
-{
-	//m_pCharacterStartedJumping = pCharacterStartedJumpingSubject;
-}
-
 void CoilyComponent::Notify(Character character, MovementInfo movementInfo)
 {
 	if (character != m_Character)

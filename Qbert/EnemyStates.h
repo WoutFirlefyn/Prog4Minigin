@@ -9,7 +9,7 @@ public:
 	virtual void Notify(Character, Character) override;
 private:
 	float m_AccumSec{ 0.f };
-	float m_TimeBetweenJumps{ 0.6f };
+	float m_TimeBetweenJumps{ 1.f };
 };
 
 class EnemyJumpState : public JumpState

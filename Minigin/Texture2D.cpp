@@ -2,7 +2,7 @@
 #include "Texture2D.h"
 
 dae::Texture2D::Texture2D(SDL_Texture* texture)
-	: m_texture{ std::unique_ptr<SDL_Texture, DeleteTexture>(texture, DeleteTexture()) }
+	: m_pTexture{ std::unique_ptr<SDL_Texture, DeleteTexture>(texture, DeleteTexture()) }
 {
 }
 

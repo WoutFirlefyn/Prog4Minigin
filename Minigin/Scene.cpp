@@ -1,6 +1,5 @@
 #include "Scene.h"
 #include "GameObject.h"
-
 #include <algorithm>
 
 using namespace dae;
@@ -13,73 +12,61 @@ Scene::~Scene() = default;
 
 GameObject* Scene::Add(std::unique_ptr<GameObject>&& object)
 {
-	m_objects.emplace_back(std::move(object));
-	return m_objects.back().get();
+	m_vObjects.emplace_back(std::move(object));
+	return m_vObjects.back().get();
 }
 
 void Scene::Remove(std::unique_ptr<GameObject>&& object)
 {
-	m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
+	m_vObjects.erase(std::remove(m_vObjects.begin(), m_vObjects.end(), object), m_vObjects.end());
 }
 
 void Scene::RemoveAll()
 {
-	m_objects.clear();
+	m_vObjects.clear();
 }
 
 void dae::Scene::Init()
 {
-	for (auto& object : m_objects)
-	{
-		object->Init();
-	}
+	for (auto& pObject : m_vObjects)
+		pObject->Init();
 }
 
 void Scene::Update()
 {
-	for(auto& object : m_objects)
-	{
-		if (!object->IsDestroyed())
-			object->Update();
-	}
+	for(auto& pObject : m_vObjects)
+		if (!pObject->IsDestroyed())
+			pObject->Update();
 
-	m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(),
-		[&](const auto& object)
+	m_vObjects.erase(std::remove_if(m_vObjects.begin(), m_vObjects.end(),
+		[&](const auto& pObject)
 		{
-			return object->IsDestroyed();
+			return pObject->IsDestroyed();
 		}
-	), m_objects.end());
+	), m_vObjects.end());
 }
 
 void Scene::FixedUpdate()
 {
-	for(auto& object : m_objects)
-	{
-		object->FixedUpdate();
-	}
+	for(auto& pObject : m_vObjects)
+		pObject->FixedUpdate();
 }
 
 void dae::Scene::LateUpdate()
 {
-	for (auto& object : m_objects)
-	{
-		object->LateUpdate();
-	}
+	for (auto& pObject : m_vObjects)
+		pObject->LateUpdate();
 }
 
 void Scene::Render() const
 {
-	for (const auto& object : m_objects)
-	{
-		object->Render();
-	}
+	for (const auto& pObject : m_vObjects)
+		pObject->Render();
 }
 
 void dae::Scene::RenderGUI()
 {
-	for (auto& object : m_objects)
-	{
-		object->RenderGUI();
-	}
+	for (auto& pObject : m_vObjects)
+		pObject->RenderGUI();
 }
 

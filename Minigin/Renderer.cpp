@@ -6,7 +6,6 @@
 #include "imgui.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
-#include "imgui_plot.h"
 
 int GetOpenGLDriverIndex()
 {
@@ -47,7 +46,6 @@ void dae::Renderer::Render() const
 
 	auto& sceneManager = SceneManager::GetInstance();
 	sceneManager.Render();
-	sceneManager.RenderGUI();
 	
 	SDL_RenderPresent(m_renderer);
 }
@@ -106,5 +104,3 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, fl
 
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dst);
 }
-
-SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }

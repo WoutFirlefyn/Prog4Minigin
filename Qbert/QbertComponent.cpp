@@ -1,19 +1,11 @@
-//---------------------------
-// Includes
-//---------------------------
 #include "QbertComponent.h"
 #include "GameObject.h"
-#include "GameTime.h"
 #include "SpritesheetComponent.h"
 #include "TileComponent.h"
-#include "LevelManagerComponent.h"
 #include "ServiceLocator.h"
 #include "Sounds.h"
 #include "QbertStates.h"
 
-//---------------------------
-// Constructor & Destructor
-//---------------------------
 QbertComponent::QbertComponent(dae::GameObject* pGameObject)
 	: CharacterComponent(pGameObject)
 {

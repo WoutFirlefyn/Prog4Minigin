@@ -1,15 +1,8 @@
 #pragma once
-
-//-----------------------------------------------------
-// Include Files
-//-----------------------------------------------------
 #include "BaseComponent.h"
 #include "Observer.h"
 #include "glm/glm.hpp"
 
-//-----------------------------------------------------
-// DiscComponent Class									
-//-----------------------------------------------------
 namespace dae
 {
 	class SpritesheetComponent;
@@ -24,21 +17,14 @@ public:
 	DiskComponent(dae::GameObject* pGameObject, dae::GameObject* pTopTile);
 	~DiskComponent() = default;			
 
-	// -------------------------
-	// Copy/move constructors and assignment operators
-	// -------------------------    
 	DiskComponent(const DiskComponent& other) = delete;
 	DiskComponent(DiskComponent&& other) noexcept = delete;
 	DiskComponent& operator=(const DiskComponent& other) = delete;
 	DiskComponent& operator=(DiskComponent&& other)	noexcept = delete;
 
-	//-------------------------------------------------
-	// Member functions						
-	//-------------------------------------------------
 	virtual void Init() override;
 	virtual void Update() override;
 
-	std::pair<Character, dae::GameObject*> GetCharacter() const;
 	void MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character);
 
 	inline static const float m_TimeToReachTop{ 2.5f };

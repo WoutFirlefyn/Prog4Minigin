@@ -1,6 +1,3 @@
-//---------------------------
-// Includes
-//---------------------------
 #include <sstream>
 #include <iomanip>
 #include "FPSComponent.h"
@@ -8,16 +5,9 @@
 #include "GameObject.h"
 #include "GameTime.h"
 
-//---------------------------
-// Constructor & Destructor
-//---------------------------
 FPSComponent::FPSComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
 {
 }
-
-//---------------------------
-// Member functions
-//---------------------------
 
 void FPSComponent::Init()
 {

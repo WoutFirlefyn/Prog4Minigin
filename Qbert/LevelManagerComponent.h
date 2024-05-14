@@ -35,23 +35,16 @@ public:
 	LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene);
 	~LevelManagerComponent();
 
-	// -------------------------
-	// Copy/move constructors and assignment operators
-	// -------------------------    
 	LevelManagerComponent(const LevelManagerComponent& other) = delete;
 	LevelManagerComponent(LevelManagerComponent&& other) noexcept = delete;
 	LevelManagerComponent& operator=(const LevelManagerComponent& other) = delete;
 	LevelManagerComponent& operator=(LevelManagerComponent&& other)	noexcept = delete;
 
-	//-------------------------------------------------
-	// Member functions						
-	//-------------------------------------------------
 	void AddCharacters(const std::unordered_map<Character, dae::GameObject*>& characters) { m_InactiveCharacters = characters; }
 
 	virtual void Init() override;
 	virtual void LateUpdate() override;
 
-	void AddObserver(dae::Subject<Character, MovementInfo>* pMoveStateChanged);
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
 	virtual void SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSubject) override;
 
@@ -65,13 +58,14 @@ public:
 	std::unique_ptr<dae::Subject<bool>> TileChanged;
 private:
 	bool AreAllTilesCovered() const;
+	void ChangeTiles(Character character, TileComponent* pTileComponent);
 	bool FindCharacter(Character character, std::pair<std::pair<int, int>, dae::GameObject*>& tile) const;
 
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
 	dae::Subject<Character>* m_pCharacterSpawnedSubject{ nullptr };
 	std::unordered_map<Character, dae::GameObject*> m_InactiveCharacters;
-	std::map<std::pair<int, int>, dae::GameObject*> m_Tiles;
 	std::unordered_map<Character, bool> m_MovingCharacters;
+	std::map<std::pair<int, int>, dae::GameObject*> m_Tiles;
 	std::mutex m_CharactersCollideMutex{};
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };

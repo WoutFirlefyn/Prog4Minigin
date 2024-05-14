@@ -1,17 +1,10 @@
 #pragma once
-
-//-----------------------------------------------------
-// Include Files
-//-----------------------------------------------------
 #include <memory>
 #include <chrono>
 #include <vector>
 #include <numeric>
 #include "BaseComponent.h"
 
-//-----------------------------------------------------
-// GraphComponent Class									
-//-----------------------------------------------------
 struct transform
 {
 	float matrix[16] = {
@@ -52,26 +45,16 @@ class dae::GameObject;
 class GraphComponent final : public dae::BaseComponent
 {
 public:
-	GraphComponent(dae::GameObject* pGameObject);				// Constructor
-	virtual ~GraphComponent() override = default;				// Destructor
+	GraphComponent(dae::GameObject* pGameObject);
+	virtual ~GraphComponent() override = default;
 
-	// -------------------------
-	// Copy/move constructors and assignment operators
-	// -------------------------    
 	GraphComponent(const GraphComponent& other) = delete;
 	GraphComponent(GraphComponent&& other) noexcept = delete;
 	GraphComponent& operator=(const GraphComponent& other) = delete;
 	GraphComponent& operator=(GraphComponent&& other) noexcept = delete;
 
-	//-------------------------------------------------
-	// Member functions						
-	//-------------------------------------------------
 	virtual void RenderGUI() override;
-
 private:
-	//-------------------------------------------------
-	// Private member functions								
-	//-------------------------------------------------
 	template <typename T>
 	void TrashTheCache(int sampleSize)
 	{
@@ -109,16 +92,11 @@ private:
 		else
 			m_GO3DAltTimings = newValues;
 	}
-
-	//-------------------------------------------------
-	// Datamembers								
-	//-------------------------------------------------
 	std::vector<float> m_IntTimings{};
 	std::vector<float> m_GO3DTimings{};
 	std::vector<float> m_GO3DAltTimings{};
 	const std::vector<float> m_XAxis{ 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
 	static const int m_Size{ 11 };
-
 };
 
 

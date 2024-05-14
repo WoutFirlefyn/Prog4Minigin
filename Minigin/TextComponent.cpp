@@ -4,15 +4,12 @@
 #include <stdexcept>
 #include "TextComponent.h"
 #include "GraphicsComponent.h"
-#include "Renderer.h"
 #include "GameObject.h"
 #include "Font.h"
 #include "Texture2D.h"
 #include "ResourceManager.h"
 #include "ServiceLocator.h"
-//---------------------------
-// Constructor & Destructor
-//---------------------------
+
 dae::TextComponent::TextComponent(GameObject* pGameObject, const std::string& text, std::shared_ptr<Font> pFont) : BaseComponent(pGameObject)
 	, m_NeedsUpdate{ true }
 	, m_Text{ text }
@@ -23,10 +20,6 @@ dae::TextComponent::TextComponent(GameObject* pGameObject, const std::string& te
 dae::TextComponent::TextComponent(GameObject* pGameObject, std::shared_ptr<Font> pFont) : TextComponent(pGameObject, " ", pFont)
 {
 }
-
-//---------------------------
-// Member functions
-//---------------------------
 
 void dae::TextComponent::Update()
 {
@@ -45,7 +38,3 @@ void dae::TextComponent::SetText(const std::string& text)
 	m_Text = text;
 	m_NeedsUpdate = true;
 }
-
-
-
-

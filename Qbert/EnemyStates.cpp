@@ -9,7 +9,7 @@ void EnemyIdleState::Update()
 
 	if (m_AccumSec < m_TimeBetweenJumps)
 		return;
-	MovementInfo movementInfo{ static_cast<MovementDirection>((m_pCharacter->GetCharacter() == Character::Coily && CoilyComponent::IsEgg()) || (m_pCharacter->GetCharacter() == Character::Slick || m_pCharacter->GetCharacter() == Character::Sam) ? rand() % 2 + 2 : rand() % 4)};
+	MovementInfo movementInfo{ MovementInfo::GetMovementInfo(static_cast<MovementDirection>((m_pCharacter->GetCharacter() == Character::Coily && CoilyComponent::IsEgg()) || (m_pCharacter->GetCharacter() == Character::Slick || m_pCharacter->GetCharacter() == Character::Sam) ? rand() % 2 + 2 : rand() % 4)) };
 	return m_pCharacter->SetState(std::make_unique<EnemyJumpState>(m_pCharacter, movementInfo));
 }
 

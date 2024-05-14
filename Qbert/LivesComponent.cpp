@@ -1,15 +1,7 @@
-//---------------------------
-// Includes
-//---------------------------
 #include "LivesComponent.h"
-#include "TextComponent.h"
-#include "QbertComponent.h"
 #include "GraphicsComponent.h"
 #include "GameObject.h"
 
-//---------------------------
-// Constructor & Destructor
-//---------------------------
 int LivesComponent::m_CurrentId{ 0 };
 
 LivesComponent::LivesComponent(dae::GameObject* pGameObject)
@@ -23,10 +15,6 @@ LivesComponent::~LivesComponent()
 	if (m_pPlayerDiedSubject)
 		m_pPlayerDiedSubject->RemoveObserver(this);
 }
-
-//---------------------------
-// Member functions
-//---------------------------
 
 void LivesComponent::Init()
 {

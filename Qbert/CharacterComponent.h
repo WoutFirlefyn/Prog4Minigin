@@ -35,18 +35,19 @@ enum class Character
 
 struct MovementInfo
 {
-	MovementInfo(MovementDirection dir)
-	{
-		MovementInfo movementInfo = m_MovementInfos[dir];
-		direction = movementInfo.direction;
-		vector = movementInfo.vector;
-		indexOffset = movementInfo.indexOffset;
-	}
 	MovementInfo() = default;
 
 	static void AddMovementInfo(MovementDirection dir, const glm::vec3& vec, const std::pair<int, int>& offset)
 	{
-		m_MovementInfos[dir] = MovementInfo{ dir, vec, offset };
+		m_MovementInfos[dir] = MovementInfo(dir, vec, offset);
+	}
+
+	static MovementInfo GetMovementInfo(MovementDirection dir)
+	{
+		auto movementInfoIt = m_MovementInfos.find(dir);
+		if (movementInfoIt == m_MovementInfos.end())
+			return MovementInfo{};
+		return movementInfoIt->second;
 	}
 
 	MovementDirection direction{ MovementDirection::None };
@@ -54,7 +55,6 @@ struct MovementInfo
 	std::pair<int, int> indexOffset{ 0,0 };
 	MovementState state{ MovementState::Start };
 private:
-
 	MovementInfo(MovementDirection dir, const glm::vec3& vec, const std::pair<int, int>& offset)
 		: direction(dir)
 		, vector(vec)
@@ -68,8 +68,8 @@ class CharacterState;
 class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<Character>
 {
 public:
-	CharacterComponent(dae::GameObject* pGameObject);	// Constructor
-	virtual ~CharacterComponent() override;				// Destructor
+	CharacterComponent(dae::GameObject* pGameObject);
+	virtual ~CharacterComponent() override;			
 
 	CharacterComponent(const CharacterComponent& other) = delete;
 	CharacterComponent(CharacterComponent&& other) noexcept = delete;
@@ -94,9 +94,9 @@ public:
 
 	static std::unique_ptr<dae::Subject<Character, MovementInfo>> MoveStateChanged;
 	static std::unique_ptr<dae::Subject<Character>> CharacterSpawned;
-	static std::unique_ptr<dae::Subject<Character>> CharacterDied;
 protected:
-	std::unique_ptr<CharacterState> m_pState{ nullptr };
 	Character m_Character{ Character::None };
+private:
+	std::unique_ptr<CharacterState> m_pState{ nullptr };
 };
 
