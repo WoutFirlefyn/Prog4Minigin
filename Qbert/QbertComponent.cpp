@@ -9,7 +9,7 @@
 QbertComponent::QbertComponent(dae::GameObject* pGameObject)
 	: CharacterComponent(pGameObject)
 {
-	PlayerDied = std::make_unique<dae::Subject<int>>();
+	PlayerDied = std::make_unique<dae::Subject<>>();
 }
 
 QbertComponent::~QbertComponent()
@@ -48,7 +48,8 @@ void QbertComponent::Notify(Character character, MovementInfo movementInfo)
 		break;
 	case MovementState::Fall:
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertFall, 0.2f);
-		PlayerDied->NotifyObservers(--m_Lives);
+		--m_Lives;
+		PlayerDied->NotifyObservers();
 		break;
 	case MovementState::Disk:
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLift, 0.2f);

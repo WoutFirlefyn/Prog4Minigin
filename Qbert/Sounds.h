@@ -3,7 +3,7 @@
 
 namespace dae
 {
-	enum class Sounds : dae::SoundId
+	enum class Sounds : SoundId
 	{
 		ChangeSelection,
 		ClearDisks,

@@ -3,7 +3,7 @@
 #include "Observer.h"
 
 class QbertComponent;
-class LivesComponent final : public dae::BaseComponent, public dae::Observer<int>
+class LivesComponent final : public dae::BaseComponent, public dae::Observer<>
 {
 public:
 	LivesComponent(dae::GameObject* pGameObject);
@@ -16,12 +16,12 @@ public:
 
 	virtual void Init() override;
 
-	void AddObserver(dae::Subject<int>* pPlayerDiedSubject);
+	void AddObserver(dae::Subject<>* pPlayerDiedSubject);
 
-	virtual void Notify(int currentLives) override;
-	virtual void SubjectDestroyed(dae::Subject<int>* pSubject) override;
+	virtual void Notify() override;
+	virtual void SubjectDestroyed(dae::Subject<>* pSubject) override;
 private:
-	dae::Subject<int>* m_pPlayerDiedSubject{ nullptr };
+	dae::Subject<>* m_pPlayerDiedSubject{ nullptr };
 	static int m_CurrentId;
 	const int m_HeartId;
 };

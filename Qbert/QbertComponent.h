@@ -1,16 +1,9 @@
 #pragma once
-
-//-----------------------------------------------------
-// Include Files
-//-----------------------------------------------------
 #include "CharacterComponent.h"
 #include "Observer.h"
 #include <memory>
 #include <glm/glm.hpp>
 
-//-----------------------------------------------------
-// QbertComponent Class									
-//-----------------------------------------------------
 class QbertComponent final : public CharacterComponent, public dae::Observer<bool>
 {
 public:
@@ -35,7 +28,7 @@ public:
 
 	int GetLives() const { return m_Lives; }
 
-	std::unique_ptr<dae::Subject<int>> PlayerDied;
+	std::unique_ptr<dae::Subject<>> PlayerDied;
 private:
 	dae::Subject<bool>* m_pTileChangedSubject{ nullptr };
 	int m_Lives{ 3 };

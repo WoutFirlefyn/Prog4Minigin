@@ -21,18 +21,21 @@ void LivesComponent::Init()
 	m_pPlayerDiedSubject->AddObserver(this);
 }
 
-void LivesComponent::AddObserver(dae::Subject<int>* pPlayerDiedSubject)
+void LivesComponent::AddObserver(dae::Subject<>* pPlayerDiedSubject)
 {
 	m_pPlayerDiedSubject = pPlayerDiedSubject;
 }
 
-void LivesComponent::Notify(int currentLives)
+void LivesComponent::Notify()
 {
-	if (currentLives == m_HeartId)
+	if (m_CurrentId - 1 == m_HeartId)
+	{
+		--m_CurrentId;
 		GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
+	}
 }
 
-void LivesComponent::SubjectDestroyed(dae::Subject<int>* pSubject)
+void LivesComponent::SubjectDestroyed(dae::Subject<>* pSubject)
 {
 	if (pSubject == m_pPlayerDiedSubject)
 		m_pPlayerDiedSubject = nullptr;

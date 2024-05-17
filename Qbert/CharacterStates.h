@@ -8,8 +8,8 @@ class CharacterState
 {
 public:
 	virtual ~CharacterState() = default;
-	virtual void HandleInput(MovementInfo) {};
-	virtual void Update() {};
+	virtual void HandleInput(MovementInfo) {}
+	virtual void Update() {}
 	virtual void OnEnter() {}
 	virtual void OnExit() {}
 protected:

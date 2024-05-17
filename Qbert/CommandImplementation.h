@@ -1,7 +1,6 @@
 #pragma once
 #include "Command.h"
 #include "CharacterComponent.h"
-
 class MoveCommand : public dae::GameObjectCommand
 {
 public:
@@ -11,6 +10,6 @@ public:
 private:
 	// added m_pCharacterComponent to avoid having to get it every time MoveCommand is executed (which could be a lot if the player is holding down the movementkey)
 	CharacterComponent* m_pCharacterComponent{ nullptr };
-	MovementInfo m_MovementInfo;
+	MovementInfo m_MovementInfo{};
 };
 

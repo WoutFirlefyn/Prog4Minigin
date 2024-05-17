@@ -14,23 +14,23 @@ enum class MovementState
 
 enum class MovementDirection
 {
-	Up,
-	Left,
-	Right,
-	Down,
-	None
+	Up = 0,
+	Left = 1,
+	Right = 2,
+	Down = 3,
+	None = -1
 };
 
 enum class Character
 {
-	Qbert1,
-	Qbert2,
-	Coily,
-	Ugg,
-	Wrongway,
-	Slick,
-	Sam,
-	None
+	Qbert1 = 0,
+	Qbert2 = 1,
+	Coily = 2,
+	Ugg = 3,
+	Wrongway = 4,
+	Slick = 5,
+	Sam = 6, 
+	None = -1
 };
 
 struct MovementInfo
@@ -60,6 +60,7 @@ private:
 		, vector(vec)
 		, indexOffset(offset)
 	{}
+
 	inline static std::unordered_map<MovementDirection, MovementInfo> m_MovementInfos{};
 };
 
@@ -83,7 +84,6 @@ public:
 	virtual void Notify(Character, MovementInfo) = 0;
 	// CharacterSpawned
 	virtual void Notify(Character);
-
 
 	void Move(MovementInfo movementInfo);
 

@@ -1,8 +1,4 @@
 #pragma once
-
-//-----------------------------------------------------
-// Include Files
-//-----------------------------------------------------
 #include "CharacterComponent.h"
 #include "Observer.h"
 #include <memory>

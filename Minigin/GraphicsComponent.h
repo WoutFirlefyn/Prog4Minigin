@@ -22,9 +22,9 @@ namespace dae
 		GraphicsComponent& operator=(GraphicsComponent&& other)	noexcept = delete;
 
 		virtual void Render() const override;
-		void ToggleRendering(bool isEnabled) { m_RenderingEnabled = isEnabled; }
 		void SetTexture(const std::string& filename);
 		void SetTexture(Texture2D* pTexture);
+		void ToggleRendering(bool isEnabled) { m_RenderingEnabled = isEnabled; }
 		Texture2D* GetTexture() const { return m_pTexture; }
 		void ToggleSourceRect(bool useSourceRect) { m_UseSourceRect = useSourceRect; }
 		void SetSourceRect(const glm::vec4& srcRect) { m_SrcRect = srcRect; }

@@ -42,7 +42,7 @@ void DiskComponent::Update()
 
 	GetGameObject()->SetPosition(m_StartPos + (endPos - m_StartPos) * m_PlatformLerpValue);
 
-	if (1.f - m_PlatformLerpValue < FLT_EPSILON)
+	if (m_PlatformLerpValue >= 1.f)
 	{
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLand, 0.2f);
 
