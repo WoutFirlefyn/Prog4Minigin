@@ -84,7 +84,6 @@ public:
 	// CharacterSpawned
 	virtual void Notify(Character);
 
-	void SetState(std::unique_ptr<CharacterState>&& pNewState);
 
 	void Move(MovementInfo movementInfo);
 
@@ -95,7 +94,10 @@ public:
 	static std::unique_ptr<dae::Subject<Character, MovementInfo>> MoveStateChanged;
 	static std::unique_ptr<dae::Subject<Character>> CharacterSpawned;
 protected:
-	Character m_Character{ Character::None };
+	Character m_Character{ Character::None };	
+
+	friend class CharacterState;
+	void SetState(std::unique_ptr<CharacterState>&& pNewState);
 private:
 	std::unique_ptr<CharacterState> m_pState{ nullptr };
 };

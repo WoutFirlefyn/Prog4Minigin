@@ -1,6 +1,3 @@
-//---------------------------
-// Includes
-//---------------------------
 #include "TileComponent.h"
 #include "QbertComponent.h"
 #include "GraphicsComponent.h"
@@ -11,9 +8,6 @@
 
 int TileComponent::m_MaxTileStage{ 1 };
 int TileComponent::m_TileCount{ 0 };
-//---------------------------
-// Constructor & Destructor
-//---------------------------
 TileComponent::TileComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
     , m_TileId{ m_TileCount++ }
 {
@@ -62,37 +56,3 @@ void TileComponent::Reset(int currentRound)
     GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(currentRound, m_TileStage);
     m_CharactersHere.clear();
 }
-
-//void TileComponent::AddDiskAsNeighbor(dae::GameObject* pDisk)
-//{
-//    MovementDirection direction{};
-//    if (std::count(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), nullptr) == 2)
-//        direction = static_cast<MovementDirection>(rand() % 2);
-//    else
-//    {
-//        auto it = std::find(std::execution::par_unseq, m_vNeighboringTiles.begin(), m_vNeighboringTiles.end(), nullptr);
-//        direction = static_cast<MovementDirection>(std::distance(m_vNeighboringTiles.begin(), it));
-//    }
-//
-//    glm::vec3 offset{};
-//    switch (direction)
-//    {
-//    case MovementDirection::Up:
-//        offset += glm::vec3{ 16, -24, 0 };
-//        break;
-//    case MovementDirection::Left:
-//        offset += glm::vec3{ -16, -24, 0 };
-//        break;
-//    default:
-//        return;
-//    }
-//    pDisk->SetParent(GetGameObject());
-//    pDisk->SetPosition(pDisk->GetLocalPosition() + offset);
-//    pDisk->SetParent(nullptr, true);
-//
-//    m_vNeighboringTiles[static_cast<size_t>(direction)] = pDisk;
-//}
-
-
-
-

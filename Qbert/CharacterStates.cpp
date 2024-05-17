@@ -93,6 +93,15 @@ void SpawnState::OnExit()
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
 }
 
+bool SpawnState::Spawn()
+{
+	m_FallLerpValue += dae::GameTime::GetInstance().GetDeltaTime() / m_FallDuration;
+	m_FallLerpValue = std::min(m_FallLerpValue, 1.f);
+	m_pCharacter->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset * (1.f - m_FallLerpValue), 0.f });
+
+	return m_FallLerpValue >= 1.f;
+}
+
 IdleState::~IdleState()
 {
 	if (m_pCharactersCollide)

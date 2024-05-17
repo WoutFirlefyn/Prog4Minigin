@@ -7,7 +7,7 @@
 
 void QbertIdleState::HandleInput(MovementInfo movementInfo)
 {
-	return m_pCharacter->SetState(std::make_unique<QbertJumpState>(m_pCharacter, movementInfo));
+	return SetState(std::make_unique<QbertJumpState>(m_pCharacter, movementInfo));
 }
 
 void QbertIdleState::Notify(Character character, Character otherCharacter)
@@ -27,7 +27,7 @@ void QbertIdleState::Notify(Character character, Character otherCharacter)
 		MovementInfo movementInfo{};
 		movementInfo.state = MovementState::Fall;
 		m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
-		return m_pCharacter->SetState(std::make_unique<QbertDeathState>(m_pCharacter));
+		return SetState(std::make_unique<QbertDeathState>(m_pCharacter));
 	}
 	default:
 		return;
@@ -41,11 +41,11 @@ void QbertJumpState::Update()
 		switch (m_NextTileType)
 		{
 		case TileType::Tile:
-			return m_pCharacter->SetState(std::make_unique<QbertIdleState>(m_pCharacter));
+			return SetState(std::make_unique<QbertIdleState>(m_pCharacter));
 		case TileType::Disk:
-			return m_pCharacter->SetState(std::make_unique<QbertDiskState>(m_pCharacter));
+			return SetState(std::make_unique<QbertDiskState>(m_pCharacter));
 		case TileType::None:
-			return m_pCharacter->SetState(std::make_unique<QbertDeathState>(m_pCharacter, m_StartPos));
+			return SetState(std::make_unique<QbertDeathState>(m_pCharacter, m_StartPos));
 		}
 	}
 }
@@ -55,7 +55,7 @@ void QbertDeathState::Update()
 	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
 
 	if (m_AccumSec >= m_RespawnDelay)
-		return m_pCharacter->SetState(std::make_unique<QbertIdleState>(m_pCharacter));
+		return SetState(std::make_unique<QbertIdleState>(m_pCharacter));
 }
 
 void QbertDeathState::OnExit()
@@ -76,7 +76,7 @@ void QbertDiskState::Update()
 
 	// Todo: Falling after disk is at the end
 	if (m_HasReachedTop)
-		return m_pCharacter->SetState(std::make_unique<QbertIdleState>(m_pCharacter));
+		return SetState(std::make_unique<QbertIdleState>(m_pCharacter));
 }
 
 void QbertDiskState::OnExit()
@@ -86,5 +86,5 @@ void QbertDiskState::OnExit()
 
 void QbertSpawnState::Update()
 {
-	return m_pCharacter->SetState(std::make_unique<QbertIdleState>(m_pCharacter));
+	return SetState(std::make_unique<QbertIdleState>(m_pCharacter));
 }

@@ -98,6 +98,5 @@ namespace dae
 		bool m_PositionIsDirty{ false };
 
 		bool m_IsDestroyed{ false };
-
 	};
 }

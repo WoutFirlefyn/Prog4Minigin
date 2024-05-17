@@ -1,15 +1,8 @@
-//---------------------------
-// Includes
-//---------------------------
-#define _USE_MATH_DEFINES
 #include "RotateComponent.h"
 #include "GameObject.h"
 #include "GameTime.h"
-#include <cmath>
+#include <numbers>
 
-//---------------------------
-// Constructor & Destructor
-//---------------------------
 RotateComponent::RotateComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
 {
 }
@@ -27,9 +20,7 @@ void RotateComponent::Init()
 
 void RotateComponent::Update()
 {
-	m_CurrentAngle += m_Speed * dae::GameTime::GetInstance().GetDeltaTime();
-	
-	m_CurrentAngle = std::fmod(m_CurrentAngle, 2 * static_cast<float>(M_PI));
+	m_CurrentAngle = std::fmod(m_CurrentAngle + m_Speed * dae::GameTime::GetInstance().GetDeltaTime(), 2 * std::numbers::pi_v<float>);
 
 	glm::vec3 newPosition{ cosf(m_CurrentAngle) * m_Distance, sinf(m_CurrentAngle) * m_Distance, 0 };
 	newPosition += m_Center;

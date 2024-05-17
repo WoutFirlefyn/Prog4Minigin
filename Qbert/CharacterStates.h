@@ -9,12 +9,17 @@ class CharacterState
 public:
 	virtual ~CharacterState() = default;
 	virtual void HandleInput(MovementInfo) {};
-	virtual void Update() {}
+	virtual void Update() {};
 	virtual void OnEnter() {}
 	virtual void OnExit() {}
 protected:
 	CharacterState(CharacterComponent* pCharacter);
 	CharacterComponent* m_pCharacter{ nullptr };
+
+	void SetState(std::unique_ptr<CharacterState>&& pNewState)
+	{
+		m_pCharacter->SetState(std::move(pNewState));
+	}
 };
 
 class SpawnState : public CharacterState
@@ -23,6 +28,13 @@ public:
 	SpawnState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
 	virtual void OnEnter() override;
 	virtual void OnExit() override;
+protected:
+	bool Spawn();
+
+	glm::vec3 m_TargetPos{};
+	float m_HeightOffset{ 200.f };
+	float m_FallDuration{ 2.f };
+	float m_FallLerpValue{ 0.f };
 };
 
 class IdleState : public CharacterState, dae::Observer<Character, Character>
@@ -31,6 +43,7 @@ public:
 	IdleState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
 	virtual ~IdleState() override;
 	virtual void OnEnter() override;
+	virtual void Notify(Character, Character) override {}
 	virtual void SubjectDestroyed(dae::Subject<Character, Character>* pSubject) override;
 private:
 	dae::Subject<Character, Character>* m_pCharactersCollide{ nullptr };
@@ -61,6 +74,6 @@ class DeathState : public CharacterState
 {
 public:
 	DeathState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
-	virtual void OnEnter() override { std::cout << "Died\n"; }
+	virtual void OnEnter() override {}
 };
 

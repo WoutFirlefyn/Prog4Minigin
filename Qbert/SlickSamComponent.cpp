@@ -1,12 +1,11 @@
 #include "SlickSamComponent.h"
 #include "GameObject.h"
 #include "GameTime.h"
-#include "ServiceLocator.h"
 #include "SpritesheetComponent.h"
 #include "GraphicsComponent.h"
+#include "ServiceLocator.h"
 #include "Sounds.h"
-#include "EnemyStates.h"
-
+#include "SlickSamStates.h"
 
 SlickSamComponent::SlickSamComponent(dae::GameObject* pGameObject, Character character) : CharacterComponent(pGameObject)
 {
@@ -21,7 +20,7 @@ SlickSamComponent::SlickSamComponent(dae::GameObject* pGameObject, Character cha
 void SlickSamComponent::Init()
 {
 	CharacterComponent::Init();
-	SetState(std::make_unique<EnemySpawnState>(this));
+	SetState(std::make_unique<SlickSamSpawnState>(this));
 }
 
 // MoveStateChanged

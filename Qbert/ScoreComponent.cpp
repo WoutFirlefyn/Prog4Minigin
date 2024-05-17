@@ -1,6 +1,3 @@
-//---------------------------
-// Includes
-//---------------------------
 #include "ScoreComponent.h"
 #include "TextComponent.h"
 #include "QbertComponent.h"
@@ -8,9 +5,6 @@
 #include "LevelManagerComponent.h"
 #include "GameObject.h"
 
-//---------------------------
-// Constructor & Destructor
-//---------------------------
 ScoreComponent::ScoreComponent(dae::GameObject* pGameObject)
 	: BaseComponent(pGameObject)
 {
@@ -21,10 +15,6 @@ ScoreComponent::~ScoreComponent()
 	if (m_pTileChangedSubject)
 		m_pTileChangedSubject->RemoveObserver(this);
 }
-
-//---------------------------
-// Member functions
-//---------------------------
 
 void ScoreComponent::Init()
 {

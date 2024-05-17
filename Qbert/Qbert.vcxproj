@@ -206,7 +206,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClCompile Include="CharacterComponent.cpp" />
     <ClCompile Include="CharacterStates.cpp" />
     <ClCompile Include="CoilyComponent.cpp" />
-    <ClCompile Include="EnemyStates.cpp" />
+    <ClCompile Include="CoilyStates.cpp" />
     <ClCompile Include="CommandImplementation.cpp" />
     <ClCompile Include="DiskComponent.cpp" />
     <ClCompile Include="FPSComponent.cpp" />
@@ -220,13 +220,14 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClCompile Include="RotateComponent.cpp" />
     <ClCompile Include="ScoreComponent.cpp" />
     <ClCompile Include="SlickSamComponent.cpp" />
+    <ClCompile Include="SlickSamStates.cpp" />
     <ClCompile Include="TileComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharacterComponent.h" />
     <ClInclude Include="CharacterStates.h" />
     <ClInclude Include="CoilyComponent.h" />
-    <ClInclude Include="EnemyStates.h" />
+    <ClInclude Include="CoilyStates.h" />
     <ClInclude Include="CommandImplementation.h" />
     <ClInclude Include="DiskComponent.h" />
     <ClInclude Include="FPSComponent.h" />
@@ -239,6 +240,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="RotateComponent.h" />
     <ClInclude Include="ScoreComponent.h" />
     <ClInclude Include="SlickSamComponent.h" />
+    <ClInclude Include="SlickSamStates.h" />
     <ClInclude Include="Sounds.h" />
     <ClInclude Include="TileComponent.h" />
   </ItemGroup>
