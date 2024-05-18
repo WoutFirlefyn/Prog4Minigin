@@ -14,6 +14,7 @@ class QbertJumpState : public JumpState
 public:
 	QbertJumpState(CharacterComponent* pCharacter, MovementInfo movementInfo) : JumpState(pCharacter, movementInfo) {}
 	virtual void Update() override;
+	virtual void OnEnter() override;
 };
 
 class QbertDeathState : public DeathState
@@ -57,4 +58,5 @@ class QbertSpawnState : public SpawnState
 public:
 	QbertSpawnState(CharacterComponent* pCharacter) : SpawnState(pCharacter) {}
 	virtual void Update() override;
+	virtual void OnEnter() override;
 };

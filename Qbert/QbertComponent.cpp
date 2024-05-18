@@ -40,9 +40,6 @@ void QbertComponent::Notify(Character character, MovementInfo movementInfo)
 
 	switch (movementInfo.state)
 	{
-	case MovementState::Start:
-		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(movementInfo.direction), 0);
-		break;
 	case MovementState::End:
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertJump, 0.2f);
 		break;
@@ -51,22 +48,9 @@ void QbertComponent::Notify(Character character, MovementInfo movementInfo)
 		--m_Lives;
 		PlayerDied->NotifyObservers();
 		break;
-	case MovementState::Disk:
-		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLift, 0.2f);
-		break;
 	default:
 		break;
 	}
-}
-
-void QbertComponent::Notify(Character character)
-{
-	if (m_Character != character)
-		return;
-
-	CharacterComponent::Notify(character);
-
-	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
 }
 
 void QbertComponent::Notify(bool roundFinished)

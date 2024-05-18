@@ -29,7 +29,7 @@ enum class Character
 	Ugg = 3,
 	Wrongway = 4,
 	Slick = 5,
-	Sam = 6, 
+	Sam = 6,
 	None = -1
 };
 
@@ -66,7 +66,7 @@ private:
 
 enum class TileType;
 class CharacterState;
-class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<Character>
+class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>
 {
 public:
 	CharacterComponent(dae::GameObject* pGameObject);
@@ -82,8 +82,6 @@ public:
 
 	// MoveStateChanged
 	virtual void Notify(Character, MovementInfo) = 0;
-	// CharacterSpawned
-	virtual void Notify(Character);
 
 	void Move(MovementInfo movementInfo);
 

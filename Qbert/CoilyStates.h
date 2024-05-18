@@ -16,6 +16,7 @@ class CoilyJumpState : public JumpState
 public:
 	CoilyJumpState(CharacterComponent* pCharacter, MovementInfo movementInfo) : JumpState(pCharacter, movementInfo) {}
 	virtual void Update() override;
+	virtual void OnEnter() override;
 };
 
 class CoilySpawnState : public SpawnState
@@ -24,6 +25,7 @@ public:
 	CoilySpawnState(CharacterComponent* pCharacter) : SpawnState(pCharacter) {}
 	virtual void Update() override;
 	virtual void OnEnter() override;
+	virtual void OnExit() override;
 };
 
 class CoilyDeathState : public DeathState
@@ -31,6 +33,7 @@ class CoilyDeathState : public DeathState
 public:
 	CoilyDeathState(CharacterComponent* pCharacter) : DeathState(pCharacter) {}
 	virtual void Update() override;
+	virtual void OnEnter() override;
 private:
 	float m_AccumSec{};
 	float m_RespawnDelay{ 5.f };

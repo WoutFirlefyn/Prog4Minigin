@@ -79,6 +79,8 @@ void DiskComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject
 
 	m_EndPos = pTopTile->GetLocalPosition() + offset;
 	character.second->SetParent(GetGameObject(), true);
+
+	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLift, 0.2f);
 }
 
 

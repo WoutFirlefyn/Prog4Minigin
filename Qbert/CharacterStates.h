@@ -26,12 +26,11 @@ class SpawnState : public CharacterState
 public:
 	SpawnState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
 	virtual void OnEnter() override;
-	virtual void OnExit() override;
 protected:
 	bool Spawn();
 
 	glm::vec3 m_TargetPos{};
-	float m_HeightOffset{ 200.f };
+	float m_HeightOffset{ 400.f };
 	float m_FallDuration{ 2.f };
 	float m_FallLerpValue{ 0.f };
 };
@@ -73,6 +72,5 @@ class DeathState : public CharacterState
 {
 public:
 	DeathState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
-	virtual void OnEnter() override {}
 };
 

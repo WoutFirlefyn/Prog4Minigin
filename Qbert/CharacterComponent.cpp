@@ -14,26 +14,16 @@ CharacterComponent::CharacterComponent(dae::GameObject* pGameObject)
 CharacterComponent::~CharacterComponent()
 {
 	MoveStateChanged->RemoveObserver(this);
-	CharacterSpawned->RemoveObserver(this);
 }
 
 void CharacterComponent::Init()
 {
 	MoveStateChanged->AddObserver(this);
-	CharacterSpawned->AddObserver(this);
 }
 
 void CharacterComponent::Update()
 {
 	m_pState->Update();
-}
-
-void CharacterComponent::Notify(Character character)
-{
-	if (character != m_Character)
-		return;
-
-	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
 }
 
 void CharacterComponent::Move(MovementInfo movementInfo)

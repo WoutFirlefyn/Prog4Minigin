@@ -24,8 +24,8 @@ public:
 	void MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character);
 	std::unordered_map<Character, dae::GameObject*> GetCharacters() const { return m_CharactersHere; }
 
-	bool ChangeTile(int currentRound, int& tilesCovered, int stageChange);
-	void Reset(int currentRound);
+	bool ChangeTile(int& tilesCovered, int stageChange);
+	void Reset();
 
 	static int GetMaxTileStage() { return m_MaxTileStage; }
 private:

@@ -4,11 +4,11 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-class CoilyComponent final : public CharacterComponent
+class CoilyComponent final : public CharacterComponent, public dae::Observer<Character>
 {
 public:
 	CoilyComponent(dae::GameObject* pGameObject);
-	virtual ~CoilyComponent() override = default;
+	virtual ~CoilyComponent() override;
 
 	CoilyComponent(const CoilyComponent& other) = delete;
 	CoilyComponent(CoilyComponent&& other) noexcept = delete;

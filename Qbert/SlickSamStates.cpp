@@ -3,6 +3,10 @@
 #include "GameTime.h"
 #include "GameObject.h"
 #include "LevelManagerComponent.h"
+#include "SpritesheetComponent.h"
+#include "GraphicsComponent.h"
+#include "ServiceLocator.h"
+#include "Sounds.h"
 
 void SlickSamIdleState::Update()
 {
@@ -52,6 +56,16 @@ void SlickSamJumpState::Update()
 	}
 }
 
+void SlickSamJumpState::OnEnter()
+{
+	JumpState::OnEnter();
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect
+	(
+		static_cast<int>(m_MovementInfo.direction) - 2,
+		static_cast<int>(GetCharacter()) - static_cast<int>(Character::Slick)
+	);
+}
+
 void SlickSamSpawnState::Update()
 {
 	if (Spawn())
@@ -61,8 +75,15 @@ void SlickSamSpawnState::Update()
 void SlickSamSpawnState::OnEnter()
 { 
 	SpawnState::OnEnter();
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, static_cast<int>(GetCharacter()) - static_cast<int>(Character::Slick));
+
 	m_TargetPos = GetGameObject()->GetLocalPosition();
 	GetGameObject()->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
+}
+
+void SlickSamSpawnState::OnExit()
+{
+	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);
 }
 
 void SlickSamDeathState::Update()
@@ -71,6 +92,9 @@ void SlickSamDeathState::Update()
 
 	if (m_AccumSec >= m_RespawnDelay)
 		return SetState(std::make_unique<SlickSamSpawnState>(m_pCharacter));
+}
 
-	
+void SlickSamDeathState::OnEnter()
+{
+	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
 }

@@ -4,6 +4,7 @@
 #include "GameTime.h"
 #include "GameObject.h"
 #include "LevelManagerComponent.h"
+#include "SpritesheetComponent.h"
 #include <iostream>
 
 void QbertIdleState::HandleInput(MovementInfo movementInfo)
@@ -49,6 +50,12 @@ void QbertJumpState::Update()
 			return SetState(std::make_unique<QbertDeathState>(m_pCharacter, m_StartPos));
 		}
 	}
+}
+
+void QbertJumpState::OnEnter()
+{
+	JumpState::OnEnter();
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(m_MovementInfo.direction), 0);
 }
 
 void QbertDeathState::Update()
@@ -117,4 +124,11 @@ void QbertDiskState::SubjectDestroyed(dae::Subject<dae::GameObject*, Character>*
 void QbertSpawnState::Update()
 {
 	return SetState(std::make_unique<QbertIdleState>(m_pCharacter));
+}
+
+void QbertSpawnState::OnEnter()
+{
+	SpawnState::OnEnter();
+
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(MovementDirection::Right), 0);
 }

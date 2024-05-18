@@ -3,6 +3,7 @@
 #include "GameTime.h"
 #include "GameObject.h"
 #include "LevelManagerComponent.h"
+#include "GraphicsComponent.h"
 
 CharacterState::CharacterState(CharacterComponent* pCharacter)
 	: m_pCharacter{ pCharacter }
@@ -98,14 +99,8 @@ bool JumpState::Jump()
 
 void SpawnState::OnEnter()
 {
+	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
 	m_pCharacter->CharacterSpawned->NotifyObservers(GetCharacter());
-}
-
-void SpawnState::OnExit()
-{
-	MovementInfo movementInfo{};
-	movementInfo.state = MovementState::End;
-	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
 }
 
 bool SpawnState::Spawn()

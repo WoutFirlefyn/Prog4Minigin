@@ -3,6 +3,10 @@
 #include "GameTime.h"
 #include "GameObject.h"
 #include "LevelManagerComponent.h"
+#include "SpritesheetComponent.h"
+#include "GraphicsComponent.h"
+#include "Sounds.h"
+#include "ServiceLocator.h"
 
 void CoilyIdleState::Update()
 {
@@ -10,8 +14,7 @@ void CoilyIdleState::Update()
 
 	if (m_AccumSec < m_TimeBetweenJumps)
 		return;
-	MovementInfo movementInfo{ MovementInfo::GetMovementInfo(static_cast<MovementDirection>(GetCharacter() == Character::Coily && CoilyComponent::IsEgg() ? 
-		rand() % 2 + 2 : rand() % 4)) };
+	MovementInfo movementInfo{ MovementInfo::GetMovementInfo(static_cast<MovementDirection>(CoilyComponent::IsEgg() ? rand() % 2 + 2 : rand() % 4)) };
 	return SetState(std::make_unique<CoilyJumpState>(m_pCharacter, movementInfo));
 }
 
@@ -30,6 +33,12 @@ void CoilyJumpState::Update()
 	}
 }
 
+void CoilyJumpState::OnEnter()
+{
+	JumpState::OnEnter();
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(CoilyComponent::IsEgg() ? 4 : static_cast<int>(m_MovementInfo.direction), 1);
+}
+
 void CoilySpawnState::Update()
 {
 	if(Spawn())
@@ -39,8 +48,16 @@ void CoilySpawnState::Update()
 void CoilySpawnState::OnEnter()
 { 
 	SpawnState::OnEnter();
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(4, 1);
+
 	m_TargetPos = GetGameObject()->GetLocalPosition();
 	GetGameObject()->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
+}
+
+void CoilySpawnState::OnExit()
+{
+	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::CoilyEggJump, 0.2f);
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(4, 0);
 }
 
 void CoilyDeathState::Update()
@@ -49,6 +66,10 @@ void CoilyDeathState::Update()
 
 	if (m_AccumSec >= m_RespawnDelay)
 		return SetState(std::make_unique<CoilySpawnState>(m_pCharacter));
+}
 
-	
+void CoilyDeathState::OnEnter()
+{
+	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::CoilyFall, 0.2f);
+	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
 }

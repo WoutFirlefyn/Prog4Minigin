@@ -2,6 +2,7 @@
 #include "QbertComponent.h"
 #include "GraphicsComponent.h"
 #include "SpritesheetComponent.h"
+#include "LevelManagerComponent.h"
 #include "GameObject.h"
 #include <iostream>
 #include <optional>
@@ -36,7 +37,7 @@ void TileComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject
     m_CharactersHere.insert(character);
 }
 
-bool TileComponent::ChangeTile(int currentRound, int& tilesCovered, int stageChange)
+bool TileComponent::ChangeTile(int& tilesCovered, int stageChange)
 {
     int newTileStage{ m_TileStage + stageChange };
     if (newTileStage > m_MaxTileStage || newTileStage < 0)
@@ -46,13 +47,13 @@ bool TileComponent::ChangeTile(int currentRound, int& tilesCovered, int stageCha
 
     m_TileStage = newTileStage;
 
-    GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(currentRound, m_TileStage);
+    GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(LevelManagerComponent::GetRoundNr(), m_TileStage);
     return stageChange > 0; 
 }
 
-void TileComponent::Reset(int currentRound)
+void TileComponent::Reset()
 {
     m_TileStage = 0;
-    GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(currentRound, m_TileStage);
+    GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(LevelManagerComponent::GetRoundNr(), m_TileStage);
     m_CharactersHere.clear();
 }

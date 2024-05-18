@@ -60,13 +60,15 @@ public:
 	virtual void Notify(dae::GameObject* pDisk, Character character) override;
 	virtual void SubjectDestroyed(dae::Subject<dae::GameObject*, Character>* pSubject) override;
 
+	static int GetRoundNr() { return m_CurrentRound; }
+
 	static std::unique_ptr<dae::Subject<Character, TileType>> CharacterStartedJumping;
 	static std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
 	std::unique_ptr<dae::Subject<bool>> TileChanged;
 private:
 
 	bool AreAllTilesCovered() const;
-	void ChangeTiles(Character character, TileComponent* pTileComponent);
+	void ChangeTile(Character character, TileComponent* pTileComponent);
 	bool FindCharacter(Character character, std::pair<std::pair<int, int>, dae::GameObject*>& tile) const;
 
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
@@ -83,7 +85,7 @@ private:
 	std::mutex m_CharactersCollideMutex{};
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };
-	int m_CurrentRound{ 0 };
+	static int m_CurrentRound;
 	int m_AmountOfDisks{ 2 };
 	bool m_CharacterMovedDirtyFlag{ false };
 };

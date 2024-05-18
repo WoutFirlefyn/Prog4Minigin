@@ -13,6 +13,7 @@
 //std::unique_ptr<dae::Subject<bool>> LevelManagerComponent::TileChanged{ std::make_unique<dae::Subject<bool>>() };
 std::unique_ptr<dae::Subject<Character, TileType>> LevelManagerComponent::CharacterStartedJumping{ std::make_unique<dae::Subject<Character, TileType>>() };
 std::unique_ptr<dae::Subject<Character, Character>> LevelManagerComponent::CharactersCollide{ std::make_unique<dae::Subject<Character, Character>>() };
+int LevelManagerComponent::m_CurrentRound{ 0 };
 LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene) : BaseComponent(pGameObject)
 {
     TileChanged = std::make_unique<dae::Subject<bool>>();
@@ -136,6 +137,7 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
         assert(false && "LevelManagerComponent: Character not found");
         return;
     };
+    auto pCurrentTileComponent = currentTilePair.second->GetComponent<TileComponent>();
 
     std::pair<int,int> nextTileIdx = { currentTilePair.first.first + movementInfo.indexOffset.first, currentTilePair.first.second + movementInfo.indexOffset.second };
     auto nextTilePairIt = m_Tiles.find(nextTileIdx);
@@ -158,23 +160,17 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
     }
     case MovementState::End:
     {
-        auto pCurrentTileComponent = currentTilePair.second->GetComponent<TileComponent>();
-        if (nextTilePairIt == m_Tiles.end() || !nextTilePairIt->second->HasComponent<TileComponent>())
-        {
-            assert(false);
-            return;
-        }
         if (currentTilePair.second != nextTilePairIt->second)
         {
             auto pNextTileComponent = nextTilePairIt->second->GetComponent<TileComponent>();
             pNextTileComponent->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character));
             pCurrentTileComponent = pNextTileComponent;
+            ChangeTile(character, pCurrentTileComponent);
         }
 
         m_MovingCharacters[character] = false;
         m_CharacterMovedDirtyFlag = true;
 
-        ChangeTiles(character, pCurrentTileComponent);
         break;
     }
     case MovementState::Fall:
@@ -187,12 +183,6 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
     }
     case MovementState::Disk:
     {
-        auto pCurrentTileComponent = currentTilePair.second->GetComponent<TileComponent>();
-        if (nextTilePairIt == m_Tiles.end() || !nextTilePairIt->second->HasComponent<DiskComponent>() || (character != Character::Qbert1 && character != Character::Qbert2))
-        {
-            assert(false);
-            return;
-        }
         nextTilePairIt->second->GetComponent<DiskComponent>()->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character), m_Tiles[{0,0}]);
         break;
     }
@@ -262,11 +252,11 @@ void LevelManagerComponent::Notify(bool roundFinished)
 
         dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::RoundCompleteTune);
 
-        for (const auto& tilePair : m_Tiles)
+        for (const auto& [index, pTile] : m_Tiles)
         {
-            auto pTileComponent = tilePair.second->GetComponent<TileComponent>();
+            auto pTileComponent = pTile->GetComponent<TileComponent>();
             m_InactiveCharacters.merge(pTileComponent->GetCharacters());
-            pTileComponent->Reset(m_CurrentRound);
+            pTileComponent->Reset();
         }
     }
 }
@@ -298,7 +288,7 @@ bool LevelManagerComponent::AreAllTilesCovered() const
     return TileComponent::GetMaxTileStage() * amountOfTiles == m_TilesCovered;
 }
 
-void LevelManagerComponent::ChangeTiles(Character character, TileComponent* pTileComponent)
+void LevelManagerComponent::ChangeTile(Character character, TileComponent* pTileComponent)
 {
     int tileChange{};
     switch (character)
@@ -315,7 +305,7 @@ void LevelManagerComponent::ChangeTiles(Character character, TileComponent* pTil
         return;
     }
 
-    if (pTileComponent->ChangeTile(m_CurrentRound, m_TilesCovered, tileChange))
+    if (pTileComponent->ChangeTile(m_TilesCovered, tileChange))
         TileChanged->NotifyObservers(AreAllTilesCovered());
 }
 
