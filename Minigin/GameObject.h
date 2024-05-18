@@ -51,7 +51,7 @@ namespace dae
 		bool IsDestroyed() const { return m_IsDestroyed; }
 
 		GameObject* GetParent() const { return m_pParent; }
-		void SetParent(GameObject* pParent, bool keepWorldPosition = false);
+		void SetParent(GameObject* pParent, bool keepWorldTransform = false);
 		size_t GetChildCount() const { return m_vChildren.size(); }
 		GameObject* GetChildAtIdx(int idx) const { return m_vChildren[idx]; }
 

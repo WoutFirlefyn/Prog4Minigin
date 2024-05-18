@@ -8,14 +8,11 @@ namespace dae
 	class SpritesheetComponent;
 }
 enum class Character;
-enum class MovementState;
-enum class MovementDirection;
-class QbertComponent;
-class DiskComponent final : public dae::BaseComponent
+class DiskComponent final : public dae::BaseComponent, public dae::Observer<dae::GameObject*, Character>
 {
 public:
-	DiskComponent(dae::GameObject* pGameObject, dae::GameObject* pTopTile);
-	~DiskComponent() = default;			
+	DiskComponent(dae::GameObject* pGameObject);
+	virtual ~DiskComponent() override;			
 
 	DiskComponent(const DiskComponent& other) = delete;
 	DiskComponent(DiskComponent&& other) noexcept = delete;
@@ -25,16 +22,20 @@ public:
 	virtual void Init() override;
 	virtual void Update() override;
 
-	void MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character);
+	virtual void Notify(dae::GameObject*, Character) override;
 
-	inline static const float m_TimeToReachTop{ 2.5f };
+	std::pair<Character, dae::GameObject*> GetCharacter();
+	void MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character, dae::GameObject* pTopTile);
+
+	static std::unique_ptr<dae::Subject<dae::GameObject*, Character>> DiskReachedTop;
 private:
-	dae::GameObject* m_pTopTile;
-	std::pair<Character, dae::GameObject*> m_pCharacter;
-	dae::SpritesheetComponent* m_pSpritesheetComponent;
+	std::pair<Character, dae::GameObject*> m_pCharacter{};
+	dae::SpritesheetComponent* m_pSpritesheetComponent{ nullptr };
 	glm::vec3 m_StartPos{};
+	glm::vec3 m_EndPos{};
+	const float m_TimeToReachTop{ 2.5f };
 	float m_PlatformLerpValue{ 0.f };
-	float m_AccumSec{};
+	float m_AccumSec{ 0.f };
 	float m_Fps{ 12.f };
 };
 

@@ -32,15 +32,24 @@ private:
 	float m_RespawnDelay{ 1.f };
 };
 
-class QbertDiskState : public CharacterState
+class QbertDiskState : public CharacterState, public dae::Observer<dae::GameObject*, Character>
 {
 public:
 	QbertDiskState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
+	virtual ~QbertDiskState() override;
 	virtual void Update() override;
+	virtual void OnEnter() override;
 	virtual void OnExit() override;
+	virtual void Notify(dae::GameObject* pTile, Character character) override;
+	virtual void SubjectDestroyed(dae::Subject<dae::GameObject*, Character>* pSubject) override;
 private:
-	float m_AccumSec{};
-	bool m_HasReachedTop{ false };
+	dae::Subject<dae::GameObject*, Character>* m_pDiskReachedTopSubject{ nullptr };
+
+	bool m_DiskReachedTop{ false };
+	glm::vec3 m_StartPos{};
+	glm::vec3 m_TargetPos{};
+	float m_FallLerpValue{};
+	float m_FallDuration{ 0.5f };
 };
 
 class QbertSpawnState : public SpawnState

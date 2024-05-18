@@ -1,6 +1,7 @@
 #include "CoilyStates.h"
 #include "CoilyComponent.h"
 #include "GameTime.h"
+#include "GameObject.h"
 #include "LevelManagerComponent.h"
 
 void CoilyIdleState::Update()
@@ -9,7 +10,7 @@ void CoilyIdleState::Update()
 
 	if (m_AccumSec < m_TimeBetweenJumps)
 		return;
-	MovementInfo movementInfo{ MovementInfo::GetMovementInfo(static_cast<MovementDirection>(m_pCharacter->GetCharacter() == Character::Coily && CoilyComponent::IsEgg() ? 
+	MovementInfo movementInfo{ MovementInfo::GetMovementInfo(static_cast<MovementDirection>(GetCharacter() == Character::Coily && CoilyComponent::IsEgg() ? 
 		rand() % 2 + 2 : rand() % 4)) };
 	return SetState(std::make_unique<CoilyJumpState>(m_pCharacter, movementInfo));
 }
@@ -38,8 +39,8 @@ void CoilySpawnState::Update()
 void CoilySpawnState::OnEnter()
 { 
 	SpawnState::OnEnter();
-	m_TargetPos = GetPosition();
-	SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
+	m_TargetPos = GetGameObject()->GetLocalPosition();
+	GetGameObject()->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
 }
 
 void CoilyDeathState::Update()

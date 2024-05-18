@@ -29,11 +29,11 @@ enum class TileType
 	None
 };
 
-class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>, public dae::Observer<Character>
+class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>, public dae::Observer<Character>, public dae::Observer<dae::GameObject*, Character>
 {
 public:
 	LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene);
-	~LevelManagerComponent();
+	virtual ~LevelManagerComponent() override;
 
 	LevelManagerComponent(const LevelManagerComponent& other) = delete;
 	LevelManagerComponent(LevelManagerComponent&& other) noexcept = delete;
@@ -45,13 +45,20 @@ public:
 	virtual void Init() override;
 	virtual void LateUpdate() override;
 
+	// MoveStateChanged
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
 	virtual void SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSubject) override;
 
+	// CharacterSpawned
 	virtual void Notify(Character character) override;
 	virtual void SubjectDestroyed(dae::Subject<Character>* pSubject) override;
 
+	// TileChanged
 	virtual void Notify(bool roundFinished) override;
+
+	// DiskReachedTop
+	virtual void Notify(dae::GameObject* pDisk, Character character) override;
+	virtual void SubjectDestroyed(dae::Subject<dae::GameObject*, Character>* pSubject) override;
 
 	static std::unique_ptr<dae::Subject<Character, TileType>> CharacterStartedJumping;
 	static std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
@@ -64,11 +71,14 @@ private:
 
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
 	dae::Subject<Character>* m_pCharacterSpawnedSubject{ nullptr };
+	dae::Subject<dae::GameObject*, Character>* m_pDiskReachedTopSubject{ nullptr };
 
 	std::unordered_map<Character, dae::GameObject*> m_InactiveCharacters;
 	std::unordered_map<Character, bool> m_MovingCharacters;
 
 	std::map<std::pair<int, int>, dae::GameObject*> m_Tiles;
+
+	std::vector<dae::GameObject*> m_vInactiveDisks;
 
 	std::mutex m_CharactersCollideMutex{};
 	const int m_LevelLength{ 7 };

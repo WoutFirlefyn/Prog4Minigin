@@ -2,6 +2,7 @@
 #include "QbertComponent.h"
 #include "DiskComponent.h"
 #include "GameTime.h"
+#include "GameObject.h"
 #include "LevelManagerComponent.h"
 #include <iostream>
 
@@ -12,10 +13,10 @@ void QbertIdleState::HandleInput(MovementInfo movementInfo)
 
 void QbertIdleState::Notify(Character character, Character otherCharacter)
 {
-	if (character != m_pCharacter->GetCharacter() && otherCharacter != m_pCharacter->GetCharacter())
+	if (character != GetCharacter() && otherCharacter != GetCharacter())
 		return;
 
-	if (otherCharacter == m_pCharacter->GetCharacter())
+	if (otherCharacter == GetCharacter())
 		std::swap(character, otherCharacter);
 
 	switch (otherCharacter)
@@ -26,7 +27,7 @@ void QbertIdleState::Notify(Character character, Character otherCharacter)
 	{
 		MovementInfo movementInfo{};
 		movementInfo.state = MovementState::Fall;
-		m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
+		m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
 		return SetState(std::make_unique<QbertDeathState>(m_pCharacter));
 	}
 	default:
@@ -61,27 +62,56 @@ void QbertDeathState::Update()
 void QbertDeathState::OnExit()
 {
 	if (m_StartPos != glm::vec3{})
-		SetPosition(m_StartPos);
+		GetGameObject()->SetPosition(m_StartPos);
+}
+
+QbertDiskState::~QbertDiskState()
+{
+	if (m_pDiskReachedTopSubject)
+		m_pDiskReachedTopSubject->RemoveObserver(this);
 }
 
 void QbertDiskState::Update()
 {
-	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
+	if (!m_DiskReachedTop)
+		return;
 
-	if (!m_HasReachedTop && m_AccumSec >= DiskComponent::m_TimeToReachTop)
-	{
-		m_AccumSec -= DiskComponent::m_TimeToReachTop;
-		m_HasReachedTop = true;
-	}
+	m_FallLerpValue = std::min(m_FallLerpValue + dae::GameTime::GetInstance().GetDeltaTime() / m_FallDuration, 1.f);
+	GetGameObject()->SetPosition(m_StartPos + (m_TargetPos - m_StartPos) * m_FallLerpValue);
 
-	// Todo: Falling after disk is at the end
-	if (m_HasReachedTop)
+	if (m_FallLerpValue >= 1.f)
 		return SetState(std::make_unique<QbertIdleState>(m_pCharacter));
+}
+
+void QbertDiskState::OnEnter()
+{
+	m_pDiskReachedTopSubject = DiskComponent::DiskReachedTop.get();
+	m_pDiskReachedTopSubject->AddObserver(this);
 }
 
 void QbertDiskState::OnExit()
 {
-	//m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), MovementState::Disk, MovementDirection::None);
+	MovementInfo movementInfo{};
+	movementInfo.state = MovementState::End;
+	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
+}
+
+void QbertDiskState::Notify(dae::GameObject*, Character character)
+{
+	if (GetCharacter() != character)
+		return;
+
+	GetGameObject()->SetParent(nullptr);
+	m_DiskReachedTop = true;
+	m_StartPos = GetGameObject()->GetLocalPosition();
+
+	m_TargetPos = GetGameObject()->GetLocalPosition() + glm::vec3{ 0,64,0 };
+}
+
+void QbertDiskState::SubjectDestroyed(dae::Subject<dae::GameObject*, Character>* pSubject)
+{
+	if (m_pDiskReachedTopSubject == pSubject)
+		m_pDiskReachedTopSubject = nullptr;
 }
 
 void QbertSpawnState::Update()

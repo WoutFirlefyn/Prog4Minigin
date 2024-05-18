@@ -11,7 +11,7 @@ class QbertCurseComponent final : public dae::BaseComponent, public dae::Observe
 {
 public:
 	QbertCurseComponent(dae::GameObject* pGameObject);
-	~QbertCurseComponent();
+	virtual ~QbertCurseComponent() override;
 
 	QbertCurseComponent(const QbertCurseComponent& other) = delete;
 	QbertCurseComponent(QbertCurseComponent&& other) noexcept = delete;

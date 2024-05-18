@@ -45,7 +45,7 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
         auto disk = std::make_unique<dae::GameObject>();
         disk->AddComponent<dae::GraphicsComponent>("Disk Spritesheet.png");
         disk->AddComponent<dae::SpritesheetComponent>(4, 6);
-        disk->AddComponent<DiskComponent>(m_Tiles[{0, 0}]);
+        disk->AddComponent<DiskComponent>();
 
         m_Tiles[{col, row}] = scene.Add(std::move(disk));
     }
@@ -57,6 +57,8 @@ LevelManagerComponent::~LevelManagerComponent()
         m_pMoveStateChangedSubject->RemoveObserver(this);
     if (m_pCharacterSpawnedSubject)
         m_pCharacterSpawnedSubject->RemoveObserver(this);
+    if (m_pDiskReachedTopSubject)
+        m_pDiskReachedTopSubject->RemoveObserver(this);
     TileChanged->RemoveObserver(this);
 }
 
@@ -66,12 +68,14 @@ void LevelManagerComponent::Init()
     m_pMoveStateChangedSubject->AddObserver(this);
     m_pCharacterSpawnedSubject = CharacterComponent::CharacterSpawned.get();
     m_pCharacterSpawnedSubject->AddObserver(this);
+    m_pDiskReachedTopSubject = DiskComponent::DiskReachedTop.get();
+    m_pDiskReachedTopSubject->AddObserver(this);
     TileChanged->AddObserver(this); 
 
-    const glm::vec3& scale = GetGameObject()->GetWorldScale();
+    const glm::vec3 scale = GetGameObject()->GetWorldScale();
 
-    glm::ivec2 tileSize = m_Tiles[{0, 0}]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-    glm::vec3 tileOffset{ tileSize.x * 0.5f * scale.x, tileSize.y * 0.75f * scale.y, 0.f };
+    const glm::ivec2 tileSize = m_Tiles[{0, 0}]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
+    const glm::vec3 tileOffset{ tileSize.x * 0.5f * scale.x, tileSize.y * 0.75f * scale.y, 0.f };
 
     for (const auto& [index, pTile] : m_Tiles)
     {
@@ -84,7 +88,7 @@ void LevelManagerComponent::Init()
             continue;
         }
 
-        glm::ivec2 diskSize = pTile->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
+        const glm::ivec2 diskSize = pTile->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
         pTile->SetPosition(glm::vec3{ diskSize.x, diskSize.y, 0.f } * 0.5f * scale + offsetToPos);
     }
 }
@@ -189,12 +193,18 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
             assert(false);
             return;
         }
-        nextTilePairIt->second->GetComponent<DiskComponent>()->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character));
+        nextTilePairIt->second->GetComponent<DiskComponent>()->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character), m_Tiles[{0,0}]);
         break;
     }
     default:
         return;
     }
+}
+
+void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSubject)
+{
+    if (pSubject == m_pMoveStateChangedSubject)
+        m_pMoveStateChangedSubject = nullptr;
 }
 
 void LevelManagerComponent::Notify(Character character)
@@ -243,12 +253,6 @@ void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character>* pSubject)
         m_pCharacterSpawnedSubject = nullptr;
 }
 
-void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSubject)
-{
-    if (pSubject == m_pMoveStateChangedSubject)
-        m_pMoveStateChangedSubject = nullptr;
-}
-
 void LevelManagerComponent::Notify(bool roundFinished)
 {
     if (roundFinished)
@@ -265,6 +269,27 @@ void LevelManagerComponent::Notify(bool roundFinished)
             pTileComponent->Reset(m_CurrentRound);
         }
     }
+}
+
+void LevelManagerComponent::Notify(dae::GameObject* pDisk, Character)
+{
+    auto it = std::find_if(m_Tiles.begin(), m_Tiles.end(), [pDisk](const auto& pair) 
+        {
+            return pair.second == pDisk;
+        });
+
+    if (it != m_Tiles.end()) 
+    {
+        m_Tiles[{0,0}]->GetComponent<TileComponent>()->MoveCharacterHere(it->second->GetComponent<DiskComponent>()->GetCharacter());
+        m_vInactiveDisks.push_back(it->second);
+        m_Tiles.erase(it);
+    }
+}
+
+void LevelManagerComponent::SubjectDestroyed(dae::Subject<dae::GameObject*, Character>* pSubject)
+{
+    if (pSubject == m_pDiskReachedTopSubject)
+        m_pDiskReachedTopSubject = nullptr;
 }
 
 bool LevelManagerComponent::AreAllTilesCovered() const

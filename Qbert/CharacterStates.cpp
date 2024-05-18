@@ -14,14 +14,14 @@ void CharacterState::SetState(std::unique_ptr<CharacterState>&& pNewState)
 	m_pCharacter->SetState(std::move(pNewState));
 }
 
-glm::vec3 CharacterState::GetPosition() const
+dae::GameObject* CharacterState::GetGameObject() const
 {
-	return m_pCharacter->GetGameObject()->GetLocalPosition();
+	return m_pCharacter->GetGameObject();
 }
 
-void CharacterState::SetPosition(const glm::vec3& pos)
+Character CharacterState::GetCharacter() const
 {
-	m_pCharacter->GetGameObject()->SetPosition(pos);
+	return m_pCharacter->m_Character;
 }
 
 JumpState::JumpState(CharacterComponent* pCharacter, MovementInfo movementInfo)
@@ -39,8 +39,8 @@ void JumpState::OnEnter()
 {
 	m_pCharacterStartedJumping = LevelManagerComponent::CharacterStartedJumping.get();
 	m_pCharacterStartedJumping->AddObserver(this);
-	m_StartPos = GetPosition(); 
-	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
+	m_StartPos = GetGameObject()->GetLocalPosition(); 
+	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), m_MovementInfo);
 }
 
 void JumpState::OnExit()
@@ -51,7 +51,7 @@ void JumpState::OnExit()
 		m_MovementInfo.state = MovementState::End;
 		break;
 	case TileType::Disk:
-		if (m_pCharacter->GetCharacter() == Character::Qbert1 || m_pCharacter->GetCharacter() == Character::Qbert2)
+		if (GetCharacter() == Character::Qbert1 || GetCharacter() == Character::Qbert2)
 		{
 			m_MovementInfo.state = MovementState::Disk;
 			break;
@@ -61,12 +61,12 @@ void JumpState::OnExit()
 		break;
 	}
 
-	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
+	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), m_MovementInfo);
 }
 
 void JumpState::Notify(Character character, TileType tileType)
 {
-	if (character == m_pCharacter->GetCharacter())
+	if (character == GetCharacter())
 		m_NextTileType = tileType;
 }
 
@@ -91,28 +91,28 @@ bool JumpState::Jump()
 
 	glm::vec3 currentPos = (1 - t) * (1 - t) * m_StartPos + 2 * (1 - t) * t * control + t * t * endPos;
 
-	SetPosition(currentPos);
+	GetGameObject()->SetPosition(currentPos);
 
 	return t >= 1.f;
 }
 
 void SpawnState::OnEnter()
 {
-	m_pCharacter->CharacterSpawned->NotifyObservers(m_pCharacter->GetCharacter());
+	m_pCharacter->CharacterSpawned->NotifyObservers(GetCharacter());
 }
 
 void SpawnState::OnExit()
 {
 	MovementInfo movementInfo{};
 	movementInfo.state = MovementState::End;
-	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
+	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
 }
 
 bool SpawnState::Spawn()
 {
 	m_FallLerpValue += dae::GameTime::GetInstance().GetDeltaTime() / m_FallDuration;
 	m_FallLerpValue = std::min(m_FallLerpValue, 1.f);
-	SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset * (1.f - m_FallLerpValue), 0.f });
+	GetGameObject()->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset * (1.f - m_FallLerpValue), 0.f });
 
 	return m_FallLerpValue >= 1.f;
 }

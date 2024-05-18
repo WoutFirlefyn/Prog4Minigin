@@ -100,14 +100,14 @@ void dae::GameObject::UpdateWorldTransform()
 	m_PositionIsDirty = false;
 }
 
-void dae::GameObject::SetParent(GameObject* pParent, bool keepWorldPosition)
+void dae::GameObject::SetParent(GameObject* pParent, bool keepWorldTransform)
 {
 	if (pParent == this || IsChild(pParent) || pParent == m_pParent)
 		return;
 
 	if (pParent)
 	{
-		if(keepWorldPosition)
+		if(keepWorldTransform)
 			SetLocalTransform(GetWorldTransform() - pParent->GetWorldTransform());
 	}
 	else

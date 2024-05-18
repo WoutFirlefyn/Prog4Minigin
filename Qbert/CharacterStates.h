@@ -17,8 +17,8 @@ protected:
 	CharacterComponent* m_pCharacter{ nullptr };
 
 	void SetState(std::unique_ptr<CharacterState>&& pNewState);
-	glm::vec3 GetPosition() const;
-	void SetPosition(const glm::vec3& pos);
+	dae::GameObject* GetGameObject() const;
+	Character GetCharacter() const;
 };
 
 class SpawnState : public CharacterState

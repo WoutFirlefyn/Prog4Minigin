@@ -9,7 +9,7 @@ namespace dae
 	{
 	public:
 		SpritesheetComponent(GameObject* pGameObject, int spriteCols, int spriteRows);
-		~SpritesheetComponent() = default;			
+		virtual ~SpritesheetComponent() override = default;			
 
 		SpritesheetComponent(const SpritesheetComponent& other) = delete;
 		SpritesheetComponent(SpritesheetComponent&& other) noexcept = delete;

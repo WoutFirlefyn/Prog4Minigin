@@ -1,6 +1,7 @@
 #include "SlickSamStates.h"
 #include "CoilyComponent.h"
 #include "GameTime.h"
+#include "GameObject.h"
 #include "LevelManagerComponent.h"
 
 void SlickSamIdleState::Update()
@@ -15,10 +16,10 @@ void SlickSamIdleState::Update()
 
 void SlickSamIdleState::Notify(Character character, Character otherCharacter)
 {
-	if (character != m_pCharacter->GetCharacter() && otherCharacter != m_pCharacter->GetCharacter())
+	if (character != GetCharacter() && otherCharacter != GetCharacter())
 		return;
 
-	if (otherCharacter == m_pCharacter->GetCharacter())
+	if (otherCharacter == GetCharacter())
 		std::swap(character, otherCharacter);
 
 	switch (otherCharacter)
@@ -28,7 +29,7 @@ void SlickSamIdleState::Notify(Character character, Character otherCharacter)
 	{
 		MovementInfo movementInfo{};
 		movementInfo.state = MovementState::Fall;
-		m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
+		m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
 		return SetState(std::make_unique<SlickSamDeathState>(m_pCharacter));
 	}
 	default:
@@ -60,8 +61,8 @@ void SlickSamSpawnState::Update()
 void SlickSamSpawnState::OnEnter()
 { 
 	SpawnState::OnEnter();
-	m_TargetPos = GetPosition();
-	SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
+	m_TargetPos = GetGameObject()->GetLocalPosition();
+	GetGameObject()->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
 }
 
 void SlickSamDeathState::Update()
