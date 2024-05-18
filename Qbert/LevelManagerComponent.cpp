@@ -15,11 +15,9 @@ std::unique_ptr<dae::Subject<Character, TileType>> LevelManagerComponent::Charac
 std::unique_ptr<dae::Subject<Character, Character>> LevelManagerComponent::CharactersCollide{ std::make_unique<dae::Subject<Character, Character>>() };
 LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene) : BaseComponent(pGameObject)
 {
-    // Subjects
     TileChanged = std::make_unique<dae::Subject<bool>>();
-    //CharacterStartedJumping = std::make_unique<dae::Subject<Character, TileType>>();
 
-    // Creating and placing the tiles
+    // Initializing the tiles
     for (int i{}; i < m_LevelLength; ++i)
     {
         for (int j{}; j < m_LevelLength - i; ++j)
@@ -28,13 +26,11 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
             tile->AddComponent<dae::GraphicsComponent>("Qbert Cubes.png");
             tile->AddComponent<dae::SpritesheetComponent>(6, 3);
             tile->AddComponent<TileComponent>();
-            tile->SetPosition(16.f * (j - i), 24.f * (i + j));
-            tile->SetParent(GetGameObject());
             m_Tiles[{j, i}] = scene.Add(std::move(tile));
         }
     }
 
-    // Disks spawning
+    // Initializing disks
     for (int i{}; i < m_AmountOfDisks; ++i)
     {
         int row, col;
@@ -50,20 +46,6 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
         disk->AddComponent<dae::GraphicsComponent>("Disk Spritesheet.png");
         disk->AddComponent<dae::SpritesheetComponent>(4, 6);
         disk->AddComponent<DiskComponent>(m_Tiles[{0, 0}]);
-
-        glm::vec3 pos{ 8,5,0 };
-        if (row < 0)
-        {
-            disk->SetParent(m_Tiles[{col, 0}]);
-            pos += glm::vec3{ 16, -24, 0 };
-        }
-        else
-        {
-            disk->SetParent(m_Tiles[{0, row}]);
-            pos += glm::vec3{ -16, -24, 0 };
-        }
-
-        disk->SetPosition(pos);
 
         m_Tiles[{col, row}] = scene.Add(std::move(disk));
     }
@@ -85,6 +67,33 @@ void LevelManagerComponent::Init()
     m_pCharacterSpawnedSubject = CharacterComponent::CharacterSpawned.get();
     m_pCharacterSpawnedSubject->AddObserver(this);
     TileChanged->AddObserver(this); 
+
+    const glm::vec3& scale = GetGameObject()->GetWorldScale();
+    glm::vec3 tileOffset{ 16.f * scale.x, 24.f * scale.y, 0.f };
+
+    for (const auto& [index, pTile] : m_Tiles)
+    {
+        const auto& [col, row] = index;
+        if (col >= 0 && row >= 0)
+        {
+            m_Tiles[{col, row}]->SetParent(GetGameObject());
+            m_Tiles[{col, row}]->SetPosition(tileOffset.x * (col - row), tileOffset.y * (row + col));
+            continue;
+        }
+
+        glm::vec3 pos = glm::vec3(8,5,0) * scale;
+        if (row < 0)
+        {
+            m_Tiles[{col,row}]->SetParent(m_Tiles[{col, 0}]);
+            pos += glm::vec3{ tileOffset.x, -tileOffset.y, 0 };
+        }
+        else
+        {
+            m_Tiles[{col, row}]->SetParent(m_Tiles[{0, row}]);
+            pos += glm::vec3{ -tileOffset.x, -tileOffset.y, 0 };
+        }
+        m_Tiles[{col, row}]->SetPosition(pos);
+    }
 }
 
 void LevelManagerComponent::LateUpdate()
@@ -95,7 +104,7 @@ void LevelManagerComponent::LateUpdate()
     m_CharacterMovedDirtyFlag = false;
 
     // check for character collisions
-    std::for_each(std::execution::unseq, m_Tiles.begin(), m_Tiles.end(), [&](auto& tilePair)
+    std::for_each(std::execution::par_unseq, m_Tiles.begin(), m_Tiles.end(), [&](auto& tilePair)
         {
             if (tilePair.second->HasComponent<DiskComponent>())
                 return;
@@ -113,15 +122,12 @@ void LevelManagerComponent::LateUpdate()
             if (charactersOnTile.size() < 2)
                 return;
 
+            std::lock_guard lock(m_CharactersCollideMutex);
+
             for (auto it1 = charactersOnTile.begin(); it1 != charactersOnTile.end(); ++it1)
-            {
                 for (auto it2 = std::next(it1); it2 != charactersOnTile.end(); ++it2)
-                {
-                    std::lock_guard<std::mutex> lock(m_CharactersCollideMutex);
                     CharactersCollide->NotifyObservers(it1->first, it2->first);
-                }
-            }
-        });
+    });
 }
 
 void LevelManagerComponent::Notify(Character character, MovementInfo movementInfo)
@@ -209,31 +215,30 @@ void LevelManagerComponent::Notify(Character character)
         return;
     }
     std::pair<int,int> tileIdx{};
-    glm::vec3 offset{};
+    glm::vec3 offset{GetGameObject()->GetLocalScale()};
     switch (character)
     {
     case Character::Qbert1:
         tileIdx = { 0,0 };
-        offset = glm::vec3{ 8, -6, 0 };
+        offset *= glm::vec3{ 8, -6, 0 };
         break;
     case Character::Qbert2:
         break;
     case Character::Coily:
         tileIdx = rand() % 2 ? std::make_pair(1,0) : std::make_pair(0,1);
-        offset = glm::vec3{ 8, -20, 0 };
+        offset *= glm::vec3{ 8, -20, 0 };
         break;
     case Character::Slick:
     case Character::Sam:
         tileIdx = rand() % 2 ? std::make_pair(1,0) : std::make_pair(0,1);
-        offset = glm::vec3{ 8, -6, 0 };
+        offset *= glm::vec3{ 8, -6, 0 };
         break;
     case Character::Ugg:
         break;
     case Character::Wrongway:
         break;
     default:
-        tileIdx = { -1,-1 };
-        break;
+        return;
     }
     characterObject.mapped()->SetPosition(m_Tiles[tileIdx]->GetWorldPosition() + offset);
     m_Tiles[tileIdx]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(characterObject.key(), characterObject.mapped()));

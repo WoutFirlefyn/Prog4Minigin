@@ -34,14 +34,20 @@ namespace dae
 		
 		void SetPosition(float x, float y);
 		void SetPosition(const glm::vec3& pos);
-		void SetLocalTransform(const dae::Transform& transform);
 		glm::vec3 GetLocalPosition() { return m_LocalTransform.GetPosition(); }
+		glm::vec3 GetWorldPosition() { return GetWorldTransform().GetPosition(); }
+
+		void SetScale(float x, float y);
+		void SetScale(const glm::vec3& scale);
+		glm::vec3 GetLocalScale() { return m_LocalTransform.GetScale(); }
+		glm::vec3 GetWorldScale() { return GetWorldTransform().GetScale(); }
+
+		void SetLocalTransform(const dae::Transform& transform);
 		const Transform& GetLocalTransform() { return m_LocalTransform; }
 		const Transform& GetWorldTransform();
-		glm::vec3 GetWorldPosition() { return GetWorldTransform().GetPosition(); }
 		void UpdateWorldTransform();
 
-		void MarkAsDestroyed() { m_IsDestroyed = true; }
+		void Destroy() { m_IsDestroyed = true; }
 		bool IsDestroyed() const { return m_IsDestroyed; }
 
 		GameObject* GetParent() const { return m_pParent; }

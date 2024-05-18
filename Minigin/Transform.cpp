@@ -1,13 +1,5 @@
 #include "Transform.h"
 
-dae::Transform::Transform(const glm::vec3& pos) : Transform(pos, glm::vec3(3), glm::vec3(0))
-{
-}
-
-dae::Transform::Transform(const glm::vec3& pos, const glm::vec3& rot) : Transform(pos, rot, glm::vec3(0))
-{
-}
-
 dae::Transform::Transform(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& scale)
 	: m_Position{ pos }
 	, m_Rotation{ rot }

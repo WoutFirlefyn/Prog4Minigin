@@ -61,7 +61,7 @@ void QbertDeathState::Update()
 void QbertDeathState::OnExit()
 {
 	if (m_StartPos != glm::vec3{})
-		m_pCharacter->SetPosition(m_StartPos);
+		SetPosition(m_StartPos);
 }
 
 void QbertDiskState::Update()

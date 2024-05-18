@@ -27,6 +27,7 @@ namespace dae
 
 	private: 
 		explicit Scene(const std::string& name);
+		void CheckForDestroyedObjects();
 
 		std::string m_name;
 		std::vector <std::unique_ptr<GameObject>> m_vObjects{};

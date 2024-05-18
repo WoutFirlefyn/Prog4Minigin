@@ -57,15 +57,19 @@ public:
 	static std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
 	std::unique_ptr<dae::Subject<bool>> TileChanged;
 private:
+
 	bool AreAllTilesCovered() const;
 	void ChangeTiles(Character character, TileComponent* pTileComponent);
 	bool FindCharacter(Character character, std::pair<std::pair<int, int>, dae::GameObject*>& tile) const;
 
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
 	dae::Subject<Character>* m_pCharacterSpawnedSubject{ nullptr };
+
 	std::unordered_map<Character, dae::GameObject*> m_InactiveCharacters;
 	std::unordered_map<Character, bool> m_MovingCharacters;
+
 	std::map<std::pair<int, int>, dae::GameObject*> m_Tiles;
+
 	std::mutex m_CharactersCollideMutex{};
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };

@@ -17,14 +17,12 @@ void DiskComponent::Init()
 {
 	m_pSpritesheetComponent = GetGameObject()->GetComponent<dae::SpritesheetComponent>();
 	assert(m_pSpritesheetComponent);
-	GetGameObject()->SetParent(nullptr, false);
-	m_StartPos = GetGameObject()->GetLocalPosition();
 }
 
 void DiskComponent::Update()
 {
-	auto& time = dae::GameTime::GetInstance();
-	m_AccumSec += time.GetDeltaTime();
+	float deltaTime = dae::GameTime::GetInstance().GetDeltaTime();
+	m_AccumSec += deltaTime;
 
 	float secondsPerFrame{ 1.f / m_Fps };
 	if (m_AccumSec > secondsPerFrame)
@@ -36,7 +34,7 @@ void DiskComponent::Update()
 	if (m_pCharacter.second == nullptr)
 		return;
 
-	m_PlatformLerpValue = std::min(m_PlatformLerpValue + (time.GetDeltaTime() / m_TimeToReachTop), 1.f);
+	m_PlatformLerpValue = std::min(m_PlatformLerpValue + (deltaTime / m_TimeToReachTop), 1.f);
 
 	glm::vec3 endPos = m_pTopTile->GetWorldPosition();
 
@@ -57,6 +55,7 @@ void DiskComponent::Update()
 void DiskComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character)
 {
 	m_pCharacter = character;
+	m_StartPos = GetGameObject()->GetWorldPosition();
 	character.second->SetParent(GetGameObject(), true);
 }
 

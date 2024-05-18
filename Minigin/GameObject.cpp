@@ -55,13 +55,24 @@ void dae::GameObject::RenderGUI()
 
 void dae::GameObject::SetPosition(float x, float y)
 {
-	m_LocalTransform.SetPosition(x, y, 0.0f);
-	SetPositionDirty();
+	SetPosition(glm::vec3{ x,y,0.f });
 }
 
 void dae::GameObject::SetPosition(const glm::vec3& pos)
 {
-	SetPosition(pos.x, pos.y);
+	m_LocalTransform.SetPosition(pos);
+	SetPositionDirty();
+}
+
+void dae::GameObject::SetScale(float x, float y)
+{
+	SetScale(glm::vec3{ x,y,0.f });
+}
+
+void dae::GameObject::SetScale(const glm::vec3& scale)
+{
+	m_LocalTransform.SetScale(scale);
+	SetPositionDirty();
 }
 
 void dae::GameObject::SetLocalTransform(const dae::Transform& transform)

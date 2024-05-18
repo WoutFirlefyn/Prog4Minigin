@@ -38,24 +38,25 @@ void Scene::Update()
 		if (!pObject->IsDestroyed())
 			pObject->Update();
 
-	m_vObjects.erase(std::remove_if(m_vObjects.begin(), m_vObjects.end(),
-		[&](const auto& pObject)
-		{
-			return pObject->IsDestroyed();
-		}
-	), m_vObjects.end());
+	CheckForDestroyedObjects();
 }
 
 void Scene::FixedUpdate()
 {
 	for(auto& pObject : m_vObjects)
-		pObject->FixedUpdate();
+		if (!pObject->IsDestroyed())
+			pObject->FixedUpdate();
+
+	CheckForDestroyedObjects();
 }
 
 void dae::Scene::LateUpdate()
 {
 	for (auto& pObject : m_vObjects)
-		pObject->LateUpdate();
+		if (!pObject->IsDestroyed())
+			pObject->LateUpdate();
+
+	CheckForDestroyedObjects();
 }
 
 void Scene::Render() const
@@ -70,3 +71,12 @@ void dae::Scene::RenderGUI()
 		pObject->RenderGUI();
 }
 
+void dae::Scene::CheckForDestroyedObjects()
+{
+	m_vObjects.erase(std::remove_if(m_vObjects.begin(), m_vObjects.end(),
+		[&](const auto& pObject)
+		{
+			return pObject->IsDestroyed();
+		}
+	), m_vObjects.end());
+}

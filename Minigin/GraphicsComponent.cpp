@@ -22,11 +22,11 @@ void dae::GraphicsComponent::Render() const
 {
 	if (m_pTexture != nullptr && m_RenderingEnabled)
 	{
-		const auto& pos = GetGameObject()->GetWorldTransform().GetPosition();
+		//const auto& pos = GetGameObject()->GetWorldTransform().GetPosition();
 		if (m_UseSourceRect)
-			Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y, m_SrcRect);
+			Renderer::GetInstance().RenderTexture(*m_pTexture, GetGameObject()->GetWorldTransform(), m_SrcRect);
 		else
-			Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
+			Renderer::GetInstance().RenderTexture(*m_pTexture, GetGameObject()->GetWorldTransform());
 	}
 }
 

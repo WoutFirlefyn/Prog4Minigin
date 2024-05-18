@@ -38,8 +38,8 @@ void CoilySpawnState::Update()
 void CoilySpawnState::OnEnter()
 { 
 	SpawnState::OnEnter();
-	m_TargetPos = m_pCharacter->GetPosition();
-	m_pCharacter->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
+	m_TargetPos = GetPosition();
+	SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
 }
 
 void CoilyDeathState::Update()

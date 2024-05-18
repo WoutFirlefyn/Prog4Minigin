@@ -37,6 +37,11 @@ struct MovementInfo
 {
 	MovementInfo() = default;
 
+	MovementDirection direction{ MovementDirection::None };
+	glm::vec3 vector{ glm::vec3(0) };
+	std::pair<int, int> indexOffset{ 0,0 };
+	MovementState state{ MovementState::Start };
+
 	static void AddMovementInfo(MovementDirection dir, const glm::vec3& vec, const std::pair<int, int>& offset)
 	{
 		m_MovementInfos[dir] = MovementInfo(dir, vec, offset);
@@ -49,11 +54,6 @@ struct MovementInfo
 			return MovementInfo{};
 		return movementInfoIt->second;
 	}
-
-	MovementDirection direction{ MovementDirection::None };
-	glm::vec3 vector{ glm::vec3(0) };
-	std::pair<int, int> indexOffset{ 0,0 };
-	MovementState state{ MovementState::Start };
 private:
 	MovementInfo(MovementDirection dir, const glm::vec3& vec, const std::pair<int, int>& offset)
 		: direction(dir)
@@ -87,8 +87,6 @@ public:
 
 	void Move(MovementInfo movementInfo);
 
-	glm::vec3 GetPosition() const;
-	void SetPosition(const glm::vec3& pos);
 	Character GetCharacter() const { return m_Character; }
 
 	static std::unique_ptr<dae::Subject<Character, MovementInfo>> MoveStateChanged;

@@ -9,6 +9,21 @@ CharacterState::CharacterState(CharacterComponent* pCharacter)
 {
 }
 
+void CharacterState::SetState(std::unique_ptr<CharacterState>&& pNewState)
+{
+	m_pCharacter->SetState(std::move(pNewState));
+}
+
+glm::vec3 CharacterState::GetPosition() const
+{
+	return m_pCharacter->GetGameObject()->GetLocalPosition();
+}
+
+void CharacterState::SetPosition(const glm::vec3& pos)
+{
+	m_pCharacter->GetGameObject()->SetPosition(pos);
+}
+
 JumpState::JumpState(CharacterComponent* pCharacter, MovementInfo movementInfo)
 	: CharacterState(pCharacter)
 	, m_MovementInfo{ movementInfo }
@@ -24,7 +39,7 @@ void JumpState::OnEnter()
 {
 	m_pCharacterStartedJumping = LevelManagerComponent::CharacterStartedJumping.get();
 	m_pCharacterStartedJumping->AddObserver(this);
-	m_StartPos = m_pCharacter->GetPosition(); 
+	m_StartPos = GetPosition(); 
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
 }
 
@@ -76,7 +91,7 @@ bool JumpState::Jump()
 
 	glm::vec3 currentPos = (1 - t) * (1 - t) * m_StartPos + 2 * (1 - t) * t * control + t * t * endPos;
 
-	m_pCharacter->SetPosition(currentPos);
+	SetPosition(currentPos);
 
 	return t >= 1.f;
 }
@@ -97,7 +112,7 @@ bool SpawnState::Spawn()
 {
 	m_FallLerpValue += dae::GameTime::GetInstance().GetDeltaTime() / m_FallDuration;
 	m_FallLerpValue = std::min(m_FallLerpValue, 1.f);
-	m_pCharacter->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset * (1.f - m_FallLerpValue), 0.f });
+	SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset * (1.f - m_FallLerpValue), 0.f });
 
 	return m_FallLerpValue >= 1.f;
 }

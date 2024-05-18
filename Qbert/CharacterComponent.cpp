@@ -39,17 +39,7 @@ void CharacterComponent::Notify(Character character)
 void CharacterComponent::Move(MovementInfo movementInfo)
 {
 	m_pState->HandleInput(movementInfo);
-}
-
-glm::vec3 CharacterComponent::GetPosition() const
-{
-	return GetGameObject()->GetLocalPosition();
-}
-
-void CharacterComponent::SetPosition(const glm::vec3& pos)
-{
-	GetGameObject()->SetPosition(pos);
-}
+} 
 
 void CharacterComponent::SetState(std::unique_ptr<CharacterState>&& pNewState)
 {

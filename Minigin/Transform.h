@@ -7,9 +7,7 @@ namespace dae
 	{
 	public:
 		Transform() = default;
-		Transform(const glm::vec3& pos);
-		Transform(const glm::vec3& pos, const glm::vec3& rot);
-		Transform(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& scale);
+		Transform(const glm::vec3& pos, const glm::vec3& rot = glm::vec3(0), const glm::vec3& scale = glm::vec3(1));
 
 		const glm::vec3& GetPosition() const { return m_Position; }
 		void SetPosition(float x, float y, float z);
@@ -26,15 +24,15 @@ namespace dae
 
 		Transform operator+(const Transform& rhs) const
 		{
-			return Transform(m_Position + rhs.GetPosition(), m_Rotation + rhs.GetRotation(), m_Scale + rhs.GetScale());
+			return Transform(m_Position + rhs.GetPosition(), m_Rotation + rhs.GetRotation(), m_Scale * rhs.GetScale());
 		}
 		Transform operator-(const Transform& rhs) const
 		{
-			return Transform(m_Position - rhs.GetPosition(), m_Rotation - rhs.GetRotation(), m_Scale - rhs.GetScale());
+			return Transform(m_Position - rhs.GetPosition(), m_Rotation - rhs.GetRotation(), m_Scale / rhs.GetScale());
 		}
 	private:
-		glm::vec3 m_Position{};
-		glm::vec3 m_Rotation{};
-		glm::vec3 m_Scale{};
+		glm::vec3 m_Position{ glm::vec3(0) };
+		glm::vec3 m_Rotation{ glm::vec3(0) };
+		glm::vec3 m_Scale{ glm::vec3(1) };
 	};
 }

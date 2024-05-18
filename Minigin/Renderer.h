@@ -6,6 +6,7 @@
 namespace dae
 {
 	class Texture2D;
+	class Transform;
 	class Renderer final : public Singleton<Renderer>
 	{
 		SDL_Renderer* m_renderer{};
@@ -16,10 +17,9 @@ namespace dae
 		void Render() const;
 		void Destroy();
 
-		void RenderTexture(const Texture2D& texture, float x, float y) const;
-		void RenderTexture(const Texture2D& texture, float x, float y, const glm::vec4& srcRect) const;
-		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
-		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height, const glm::vec4& srcRect) const;
+		void RenderTexture(const Texture2D& texture, float x, float y, const glm::vec4& srcRect = glm::vec4(0)) const;
+		void RenderTexture(const Texture2D& texture, const glm::vec4& dstRect, const glm::vec4& srcRect = glm::vec4(0)) const;
+		void RenderTexture(const Texture2D& texture, const Transform& transform, const glm::vec4& srcRect = glm::vec4(0)) const;
 
 		SDL_Renderer* GetSDLRenderer() const { return m_renderer; }
 
