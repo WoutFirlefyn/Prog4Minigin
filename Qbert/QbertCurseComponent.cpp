@@ -18,6 +18,8 @@ QbertCurseComponent::~QbertCurseComponent()
 void QbertCurseComponent::Init()
 {
 	m_pPlayerDied->AddObserver(this);
+
+	GetGameObject()->SetPosition(m_PosOffset * GetGameObject()->GetWorldScale());
 }
 
 void QbertCurseComponent::Update()

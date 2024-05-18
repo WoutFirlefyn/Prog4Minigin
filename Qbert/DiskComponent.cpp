@@ -36,7 +36,7 @@ void DiskComponent::Update()
 
 	m_PlatformLerpValue = std::min(m_PlatformLerpValue + (deltaTime / m_TimeToReachTop), 1.f);
 
-	glm::vec3 endPos = m_pTopTile->GetWorldPosition();
+	glm::vec3 endPos = m_pTopTile->GetLocalPosition();
 
 	GetGameObject()->SetPosition(m_StartPos + (endPos - m_StartPos) * m_PlatformLerpValue);
 
@@ -55,7 +55,7 @@ void DiskComponent::Update()
 void DiskComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character)
 {
 	m_pCharacter = character;
-	m_StartPos = GetGameObject()->GetWorldPosition();
+	m_StartPos = GetGameObject()->GetLocalPosition();
 	character.second->SetParent(GetGameObject(), true);
 }
 

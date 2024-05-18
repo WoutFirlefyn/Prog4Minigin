@@ -22,7 +22,6 @@ void dae::GraphicsComponent::Render() const
 {
 	if (m_pTexture != nullptr && m_RenderingEnabled)
 	{
-		//const auto& pos = GetGameObject()->GetWorldTransform().GetPosition();
 		if (m_UseSourceRect)
 			Renderer::GetInstance().RenderTexture(*m_pTexture, GetGameObject()->GetWorldTransform(), m_SrcRect);
 		else
@@ -38,6 +37,14 @@ void dae::GraphicsComponent::SetTexture(const std::string& filename)
 void dae::GraphicsComponent::SetTexture(Texture2D* pTexture)
 {
 	m_pTexture = pTexture;
+}
+
+glm::ivec2 dae::GraphicsComponent::GetTextureSize() const
+{
+	if (m_UseSourceRect)
+		return glm::ivec2(m_SrcRect.z, m_SrcRect.w);
+
+	return m_pTexture->GetSize();
 }
 
 

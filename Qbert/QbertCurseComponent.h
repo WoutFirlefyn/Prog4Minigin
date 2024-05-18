@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseComponent.h"
 #include "Observer.h"
+#include <glm/glm.hpp>
 
 enum class MovementState;
 enum class MovementDirection;
@@ -29,6 +30,7 @@ private:
 	dae::Subject<>* m_pPlayerDied{ nullptr };
 	float m_AccumSec{ 0.f };
 	float m_CurseDuration{ 1.f };
+	const glm::vec3 m_PosOffset{ -18.f, -28.f, 0.f };
 };
 
 

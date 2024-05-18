@@ -69,30 +69,23 @@ void LevelManagerComponent::Init()
     TileChanged->AddObserver(this); 
 
     const glm::vec3& scale = GetGameObject()->GetWorldScale();
-    glm::vec3 tileOffset{ 16.f * scale.x, 24.f * scale.y, 0.f };
+
+    glm::ivec2 tileSize = m_Tiles[{0, 0}]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
+    glm::vec3 tileOffset{ tileSize.x * 0.5f * scale.x, tileSize.y * 0.75f * scale.y, 0.f };
 
     for (const auto& [index, pTile] : m_Tiles)
     {
         const auto& [col, row] = index;
+        pTile->SetParent(GetGameObject());
+        glm::vec3 offsetToPos{ tileOffset.x * (col - row), tileOffset.y * (row + col), 0.f };
         if (col >= 0 && row >= 0)
         {
-            m_Tiles[{col, row}]->SetParent(GetGameObject());
-            m_Tiles[{col, row}]->SetPosition(tileOffset.x * (col - row), tileOffset.y * (row + col));
+            pTile->SetPosition(offsetToPos);
             continue;
         }
 
-        glm::vec3 pos = glm::vec3(8,5,0) * scale;
-        if (row < 0)
-        {
-            m_Tiles[{col,row}]->SetParent(m_Tiles[{col, 0}]);
-            pos += glm::vec3{ tileOffset.x, -tileOffset.y, 0 };
-        }
-        else
-        {
-            m_Tiles[{col, row}]->SetParent(m_Tiles[{0, row}]);
-            pos += glm::vec3{ -tileOffset.x, -tileOffset.y, 0 };
-        }
-        m_Tiles[{col, row}]->SetPosition(pos);
+        glm::ivec2 diskSize = pTile->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
+        pTile->SetPosition(glm::vec3{ diskSize.x, diskSize.y, 0.f } * 0.5f * scale + offsetToPos);
     }
 }
 

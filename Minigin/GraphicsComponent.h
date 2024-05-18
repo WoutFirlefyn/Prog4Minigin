@@ -27,10 +27,11 @@ namespace dae
 		void ToggleRendering(bool isEnabled) { m_RenderingEnabled = isEnabled; }
 		Texture2D* GetTexture() const { return m_pTexture; }
 		void ToggleSourceRect(bool useSourceRect) { m_UseSourceRect = useSourceRect; }
-		void SetSourceRect(const glm::vec4& srcRect) { m_SrcRect = srcRect; }
+		void SetSourceRect(const glm::ivec4& srcRect) { m_SrcRect = srcRect; }
+		glm::ivec2 GetTextureSize() const;
 	private:
 		Texture2D* m_pTexture{};
-		glm::vec4 m_SrcRect{};
+		glm::ivec4 m_SrcRect{};
 		bool m_RenderingEnabled{ true };
 		bool m_UseSourceRect{ false };
 	};
