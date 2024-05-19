@@ -32,16 +32,12 @@ void CoilyComponent::Notify(Character character, MovementInfo movementInfo)
 	if (character != m_Character)
 		return;
 
-	switch (movementInfo.state)
+	if (movementInfo.state == MovementState::End)
 	{
-	case MovementState::End:
 		dae::ServiceLocator::GetSoundSystem().Play((m_IsEgg ? dae::Sounds::CoilyEggJump : dae::Sounds::CoilySnakeJump), 0.2f);
 		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRectRelative(0, -1);
 		if (++m_AmountOfJumps == 6)
 			m_IsEgg = false;
-		break;
-	default:
-		break;
 	}
 }
 

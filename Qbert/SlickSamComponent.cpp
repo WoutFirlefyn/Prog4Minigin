@@ -29,12 +29,6 @@ void SlickSamComponent::Notify(Character character, MovementInfo movementInfo)
 	if (character != m_Character)
 		return;
 
-	switch (movementInfo.state)
-	{
-	case MovementState::End:
+	if (movementInfo.state == MovementState::End)
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);
-		break;
-	default:
-		break;
-	}
 }

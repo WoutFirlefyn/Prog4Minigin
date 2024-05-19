@@ -83,7 +83,9 @@ void SlickSamSpawnState::OnEnter()
 
 void SlickSamSpawnState::OnExit()
 {
-	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);
+	MovementInfo movementInfo{};
+	movementInfo.state = MovementState::End;
+	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
 }
 
 void SlickSamDeathState::Update()

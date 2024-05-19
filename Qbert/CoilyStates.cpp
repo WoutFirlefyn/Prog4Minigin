@@ -56,8 +56,9 @@ void CoilySpawnState::OnEnter()
 
 void CoilySpawnState::OnExit()
 {
-	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::CoilyEggJump, 0.2f);
-	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(4, 0);
+	MovementInfo movementInfo{};
+	movementInfo.state = MovementState::End;
+	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
 }
 
 void CoilyDeathState::Update()

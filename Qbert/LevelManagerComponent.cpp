@@ -145,7 +145,6 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
     switch (movementInfo.state)
     {
     case MovementState::Start:
-    {
         TileType nextTileType;
 
         if (nextTilePairIt == m_Tiles.end())
@@ -157,35 +156,27 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
         CharacterStartedJumping->NotifyObservers(character, nextTileType);
         m_MovingCharacters[character] = true;
         break;
-    }
     case MovementState::End:
-    {
         if (currentTilePair.second != nextTilePairIt->second)
         {
             auto pNextTileComponent = nextTilePairIt->second->GetComponent<TileComponent>();
             pNextTileComponent->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character));
             pCurrentTileComponent = pNextTileComponent;
-            ChangeTile(character, pCurrentTileComponent);
         }
+        ChangeTile(character, pCurrentTileComponent);
 
         m_MovingCharacters[character] = false;
         m_CharacterMovedDirtyFlag = true;
-
         break;
-    }
     case MovementState::Fall:
-    {
         if (character == Character::Qbert1 || character == Character::Qbert2)
             return;
 
         m_InactiveCharacters.insert(currentTilePair.second->GetComponent<TileComponent>()->GetCharacter(character));
         break;
-    }
     case MovementState::Disk:
-    {
         nextTilePairIt->second->GetComponent<DiskComponent>()->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character), m_Tiles[{0,0}]);
         break;
-    }
     default:
         return;
     }
