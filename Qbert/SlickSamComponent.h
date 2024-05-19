@@ -4,11 +4,11 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-class SlickSamComponent final : public CharacterComponent
+class SlickSamComponent final : public CharacterComponent, public dae::Observer<Character, MovementInfo>
 {
 public:
 	SlickSamComponent(dae::GameObject* pGameObject, Character character);
-	virtual ~SlickSamComponent() override = default;
+	virtual ~SlickSamComponent() override;
 
 	SlickSamComponent(const SlickSamComponent& other) = delete;
 	SlickSamComponent(SlickSamComponent&& other) noexcept = delete;

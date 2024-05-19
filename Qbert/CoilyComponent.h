@@ -4,7 +4,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-class CoilyComponent final : public CharacterComponent, public dae::Observer<Character>
+class CoilyComponent final : public CharacterComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<Character>
 {
 public:
 	CoilyComponent(dae::GameObject* pGameObject);

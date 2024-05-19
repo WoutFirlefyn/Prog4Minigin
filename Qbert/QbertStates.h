@@ -15,12 +15,13 @@ public:
 	QbertJumpState(CharacterComponent* pCharacter, MovementInfo movementInfo) : JumpState(pCharacter, movementInfo) {}
 	virtual void Update() override;
 	virtual void OnEnter() override;
+	virtual void OnExit() override;
 };
 
 class QbertDeathState : public DeathState
 {
 public:
-	QbertDeathState(CharacterComponent* pCharacter, const glm::vec3& startPos = glm::vec3{})
+	QbertDeathState(CharacterComponent* pCharacter, const glm::vec3& startPos = glm::vec3(0))
 		: DeathState(pCharacter) 
 		, m_StartPos{ startPos }
 	{

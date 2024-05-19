@@ -14,14 +14,14 @@ QbertComponent::QbertComponent(dae::GameObject* pGameObject)
 
 QbertComponent::~QbertComponent()
 {
+	MoveStateChanged->RemoveObserver(this);
 	if (m_pTileChangedSubject)
 		m_pTileChangedSubject->RemoveObserver(this);
 }
 
 void QbertComponent::Init()
 {
-	CharacterComponent::Init();
-
+	MoveStateChanged->AddObserver(this);
 	m_pTileChangedSubject->AddObserver(this);
 
 	m_Character = Character::Qbert1;
@@ -40,11 +40,7 @@ void QbertComponent::Notify(Character character, MovementInfo movementInfo)
 
 	switch (movementInfo.state)
 	{
-	case MovementState::End:
-		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertJump, 0.2f);
-		break;
 	case MovementState::Fall:
-		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertFall, 0.2f);
 		--m_Lives;
 		PlayerDied->NotifyObservers();
 		break;

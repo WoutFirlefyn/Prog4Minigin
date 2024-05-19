@@ -52,11 +52,6 @@ void JumpState::OnExit()
 		m_MovementInfo.state = MovementState::End;
 		break;
 	case TileType::Disk:
-		if (GetCharacter() == Character::Qbert1 || GetCharacter() == Character::Qbert2)
-		{
-			m_MovementInfo.state = MovementState::Disk;
-			break;
-		}
 	case TileType::None:
 		m_MovementInfo.state = MovementState::Fall;
 		break;

@@ -16,12 +16,13 @@ CoilyComponent::CoilyComponent(dae::GameObject* pGameObject)
 
 CoilyComponent::~CoilyComponent()
 {
+	MoveStateChanged->RemoveObserver(this);
 	CharacterSpawned->RemoveObserver(this);
 }
 
 void CoilyComponent::Init()
 {
-	CharacterComponent::Init();
+	MoveStateChanged->AddObserver(this);
 	CharacterSpawned->AddObserver(this);
 	m_Character = Character::Coily;
 	SetState(std::make_unique<CoilySpawnState>(this));

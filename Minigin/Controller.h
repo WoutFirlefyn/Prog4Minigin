@@ -49,7 +49,7 @@ namespace dae
 		bool IsPressedThisFrame(unsigned int button) const;
 		bool IsUpThisFrame(unsigned int button) const;
 		bool IsDown(unsigned int button) const;
-		bool IsThumbsNotInDeadZone() const;
+		bool IsThumbsNotInDeadZone(unsigned int thumb) const;
 	private:
 		class ControllerImpl;
 		std::unique_ptr<ControllerImpl> m_pControllerImpl;

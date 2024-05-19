@@ -66,22 +66,18 @@ private:
 
 enum class TileType;
 class CharacterState;
-class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>
+class CharacterComponent : public dae::BaseComponent
 {
 public:
 	CharacterComponent(dae::GameObject* pGameObject);
-	virtual ~CharacterComponent() override;			
+	virtual ~CharacterComponent() override = default;		
 
 	CharacterComponent(const CharacterComponent& other) = delete;
 	CharacterComponent(CharacterComponent&& other) noexcept = delete;
 	CharacterComponent& operator=(const CharacterComponent& other) = delete;
 	CharacterComponent& operator=(CharacterComponent&& other) noexcept = delete;
 
-	virtual void Init() override;
 	virtual void Update() override;
-
-	// MoveStateChanged
-	virtual void Notify(Character, MovementInfo) = 0;
 
 	void Move(MovementInfo movementInfo);
 

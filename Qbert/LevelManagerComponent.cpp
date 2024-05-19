@@ -191,13 +191,15 @@ void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character, MovementInf
 void LevelManagerComponent::Notify(Character character)
 {
     auto characterObject = m_InactiveCharacters.extract(character);
-
-    m_MovingCharacters[character] = true;
     if (characterObject.empty())
     {
         assert(false && "Character doesn't exist or is already spawned");
         return;
     }
+
+    if (character != Character::Qbert1 && character != Character::Qbert2)
+        m_MovingCharacters[character] = true;
+
     std::pair<int,int> tileIdx{};
     glm::vec3 offset{GetGameObject()->GetLocalScale()};
     switch (character)

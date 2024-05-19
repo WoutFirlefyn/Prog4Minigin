@@ -5,7 +5,8 @@
 #include "GameObject.h"
 #include "LevelManagerComponent.h"
 #include "SpritesheetComponent.h"
-#include <iostream>
+#include "ServiceLocator.h"
+#include "Sounds.h"
 
 void QbertIdleState::HandleInput(MovementInfo movementInfo)
 {
@@ -58,6 +59,26 @@ void QbertJumpState::OnEnter()
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(m_MovementInfo.direction), 0);
 }
 
+void QbertJumpState::OnExit()
+{
+	switch (m_NextTileType)
+	{
+	case TileType::Tile:
+		m_MovementInfo.state = MovementState::End;
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertJump, 0.2f);
+		break;
+	case TileType::Disk:
+		m_MovementInfo.state = MovementState::Disk;
+		break;
+	case TileType::None:
+		m_MovementInfo.state = MovementState::Fall;
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertFall, 0.2f);
+		break;
+	}
+
+	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), m_MovementInfo);
+}
+
 void QbertDeathState::Update()
 {
 	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
@@ -68,7 +89,7 @@ void QbertDeathState::Update()
 
 void QbertDeathState::OnExit()
 {
-	if (m_StartPos != glm::vec3{})
+	if (m_StartPos != glm::vec3(0))
 		GetGameObject()->SetPosition(m_StartPos);
 }
 

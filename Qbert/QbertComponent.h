@@ -4,7 +4,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-class QbertComponent final : public CharacterComponent, public dae::Observer<bool>
+class QbertComponent final : public CharacterComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>
 {
 public:
 	QbertComponent(dae::GameObject* pGameObject);	

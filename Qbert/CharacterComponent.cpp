@@ -11,16 +11,6 @@ CharacterComponent::CharacterComponent(dae::GameObject* pGameObject)
 {
 }
 
-CharacterComponent::~CharacterComponent()
-{
-	MoveStateChanged->RemoveObserver(this);
-}
-
-void CharacterComponent::Init()
-{
-	MoveStateChanged->AddObserver(this);
-}
-
 void CharacterComponent::Update()
 {
 	m_pState->Update();

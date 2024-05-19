@@ -5,6 +5,7 @@
 #include <Xinput.h>
 #include <vector>
 #include <cmath>
+#include <glm/glm.hpp>
 #include "Input.h"
 #include "Command.h"
 #include "Controller.h"
@@ -28,7 +29,7 @@ public:
 	bool IsPressedThisFrame(unsigned int button) const;
 	bool IsUpThisFrame(unsigned int button) const;
 	bool IsDown(unsigned int button) const;
-	bool IsThumbsNotInDeadZone() const;
+	bool IsThumbsNotInDeadZone(unsigned int thumb) const;
 
 	uint8_t GetIndex() const { return m_ControllerIndex; }
 private:
@@ -69,7 +70,7 @@ void dae::Controller::ControllerImpl::ProcessInput()
 				inputAction.pCommand->Execute();
 			break;
 		case InputType::Joystick:
-			if (IsThumbsNotInDeadZone())
+			if (IsThumbsNotInDeadZone(inputAction.Button))
 				inputAction.pCommand->Execute();
 			break;
 		}
@@ -96,14 +97,18 @@ bool dae::Controller::ControllerImpl::IsDown(unsigned int button) const
 	return m_CurrentState.Gamepad.wButtons & button;
 }
 
-bool dae::Controller::ControllerImpl::IsThumbsNotInDeadZone() const
+bool dae::Controller::ControllerImpl::IsThumbsNotInDeadZone(unsigned int thumb) const
 {
-	const SHORT thumbL{ m_CurrentState.Gamepad.sThumbLX };
-	const SHORT thumbR{ m_CurrentState.Gamepad.sThumbRX };
-	const float percentageThumbL{ std::abs(thumbL / static_cast<float>(SHRT_MIN)) };
-	const float percentageThumbR{ std::abs(thumbR / static_cast<float>(SHRT_MAX)) };
+	glm::vec2 thumbPos{};
 
-	return (percentageThumbL > m_DeadzonePercentage) || (percentageThumbR > m_DeadzonePercentage);
+	if (thumb == XINPUT_GAMEPAD_LEFT_THUMB)
+		thumbPos = { m_CurrentState.Gamepad.sThumbLX, m_CurrentState.Gamepad.sThumbLY };
+	else
+		thumbPos = { m_CurrentState.Gamepad.sThumbRX, m_CurrentState.Gamepad.sThumbRY };
+
+	const float thumbOffsetPercentage = glm::length(thumbPos) / static_cast<float>(SHRT_MAX);
+
+	return thumbOffsetPercentage > m_DeadzonePercentage;
 }
 
 dae::Controller::Controller(uint8_t controllerIdx) : m_pControllerImpl{ std::make_unique<ControllerImpl>(controllerIdx) }
@@ -137,7 +142,7 @@ bool dae::Controller::IsDown(unsigned int button) const
 	return m_pControllerImpl->IsDown(button);
 }
 
-bool dae::Controller::IsThumbsNotInDeadZone() const
+bool dae::Controller::IsThumbsNotInDeadZone(unsigned int thumb) const
 {
-	return m_pControllerImpl->IsThumbsNotInDeadZone();
+	return m_pControllerImpl->IsThumbsNotInDeadZone(thumb);
 }
