@@ -16,7 +16,7 @@ public:
 
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
 
-	virtual std::pair<int, int> GetSpawnPosition() const override;
+	virtual glm::ivec2 GetSpawnPosition() const override;
 
 	bool HasSpawnedLeft() const { return m_SpawnedLeft; }
 private:

@@ -43,7 +43,7 @@ void UggWrongwayComponent::Notify(Character character, MovementInfo movementInfo
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);
 }
 
-std::pair<int, int> UggWrongwayComponent::GetSpawnPosition() const
+glm::ivec2 UggWrongwayComponent::GetSpawnPosition() const
 {
 	return m_vSpawnPositions[m_SpawnedLeft];
 }

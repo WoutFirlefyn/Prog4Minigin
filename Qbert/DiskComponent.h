@@ -23,7 +23,7 @@ enum class Character;
 class DiskComponent final : public dae::BaseComponent, public dae::Observer<Disk, Character>
 {
 public:
-	DiskComponent(dae::GameObject* pGameObject);
+	DiskComponent(dae::GameObject* pGameObject, dae::GameObject* pTopTile);
 	virtual ~DiskComponent() override;			
 
 	DiskComponent(const DiskComponent& other) = delete;
@@ -35,9 +35,6 @@ public:
 	virtual void Update() override;
 
 	virtual void Notify(Disk, Character) override;
-
-	//std::pair<Character, dae::GameObject*> GetCharacter();
-	void MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character, dae::GameObject* pTopTile);
 
 	static std::unique_ptr<dae::Subject<Disk, Character>> DiskStateChanged;
 private:

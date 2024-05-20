@@ -47,7 +47,7 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
         auto disk = std::make_unique<dae::GameObject>();
         disk->AddComponent<dae::GraphicsComponent>("Disk Spritesheet.png");
         disk->AddComponent<dae::SpritesheetComponent>(4, 6);
-        disk->AddComponent<DiskComponent>();
+        disk->AddComponent<DiskComponent>(m_Tiles[{0,0}]);
 
         m_Tiles[{col, row}] = scene.Add(std::move(disk));
     }
@@ -79,10 +79,9 @@ void LevelManagerComponent::Init()
 
     for (const auto& [index, pTile] : m_Tiles)
     {
-        const auto& [col, row] = index;
         pTile->SetParent(GetGameObject());
-        glm::vec3 offsetToPos{ tileOffset.x * (col - row), tileOffset.y * (row + col), 0.f };
-        if (col >= 0 && row >= 0)
+        glm::vec3 offsetToPos{ tileOffset.x * (index.x - index.y), tileOffset.y * (index.y + index.x), 0.f };
+        if (index.x >= 0 && index.y >= 0)
         {
             pTile->SetPosition(offsetToPos);
             continue;
@@ -102,19 +101,19 @@ void LevelManagerComponent::LateUpdate()
 
     for (auto it1 = m_Characters.begin(); it1 != m_Characters.end(); ++it1)
         for (auto it2 = std::next(it1); it2 != m_Characters.end(); ++it2)
-            if(it1->second == it2->second)
+            if(it1->second.tileIndex == it2->second.tileIndex && !it1->second.isMoving && !it2->second.isMoving)
                 CharactersCollide->NotifyObservers(it1->first, it2->first);
 }
 
 void LevelManagerComponent::Notify(Character character, MovementInfo movementInfo)
 {
     // maybe check for none found
-    std::pair<int, int> currentTileIdx = m_Characters[character];
+    glm::ivec2 currentTileIdx = m_Characters[character].tileIndex;
     //dae::GameObject* pCurrentTile = m_Tiles[currentTileIdx];
 
     //auto pCurrentTileComponent = pCurrentTile->GetComponent<TileComponent>();
 
-    std::pair<int,int> nextTileIdx = { currentTileIdx.first + movementInfo.indexOffset.first, currentTileIdx.second + movementInfo.indexOffset.second };
+    glm::ivec2 nextTileIdx = currentTileIdx + movementInfo.indexOffset;
     auto nextTilePairIt = m_Tiles.find(nextTileIdx);
 
     switch (movementInfo.state)
@@ -128,24 +127,26 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
             nextTileType = TileType::Tile;
         else
             nextTileType = TileType::Disk;
+        //m_Characters[character] = currentTileIdx;
         CharacterStartedJumping->NotifyObservers(character, nextTileType);
-        m_MovingCharacters[character] = true;
+
+        m_Characters[character].isMoving = true;
         break;
     case MovementState::End:
-        m_Characters[character] = nextTileIdx;
+        m_Characters[character].tileIndex = nextTileIdx;
         LandOnTile(character, nextTilePairIt->second->GetComponent<TileComponent>());
 
-        m_MovingCharacters[character] = false;
+        m_Characters[character].isMoving = false;
         m_CharacterMovedDirtyFlag = true;
         break;
     case MovementState::Fall:
         if (character == Character::Qbert1 || character == Character::Qbert2)
             return;
 
-        m_Characters[character] = { -1,-1 };
+        m_Characters[character].tileIndex = { -1,-1 };
         break;
     case MovementState::Disk:
-        m_Characters[character] = nextTileIdx;
+        m_Characters[character].tileIndex = nextTileIdx;
         DiskComponent::DiskStateChanged->NotifyObservers({ m_Tiles[nextTileIdx], DiskState::Start}, character);
         break;
     default:
@@ -162,9 +163,9 @@ void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character, MovementInf
 void LevelManagerComponent::Notify(Character character, dae::GameObject* pCharacterGameObject)
 {    
     if (character != Character::Qbert1 && character != Character::Qbert2)
-        m_MovingCharacters[character] = true;
+        m_Characters[character].isMoving = true;
 
-    std::pair<int,int> tileIdx{ pCharacterGameObject->GetComponent<CharacterComponent>()->GetSpawnPosition() };
+    glm::ivec2 tileIdx{ pCharacterGameObject->GetComponent<CharacterComponent>()->GetSpawnPosition() };
     glm::vec3 offset{GetGameObject()->GetLocalScale()};
     switch (character)
     {
@@ -187,7 +188,7 @@ void LevelManagerComponent::Notify(Character character, dae::GameObject* pCharac
         return;
     }
     pCharacterGameObject->SetPosition(m_Tiles[tileIdx]->GetWorldPosition() + offset);
-    m_Characters[character] = tileIdx;
+    m_Characters[character].tileIndex = tileIdx;
     //m_Tiles[tileIdx]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(character, pCharacterGameObject));
 }
 
@@ -227,7 +228,7 @@ void LevelManagerComponent::Notify(Disk disk, Character character)
         });
     m_Tiles.erase(it);
 
-    m_Characters[character] = { 0,0 };
+    m_Characters[character].tileIndex = { 0,0 };
 }
 
 void LevelManagerComponent::SubjectDestroyed(dae::Subject<Disk, Character>* pSubject)

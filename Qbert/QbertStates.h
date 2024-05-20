@@ -38,15 +38,14 @@ struct Disk;
 class QbertDiskState : public CharacterState, public dae::Observer<Disk, Character>
 {
 public:
-	QbertDiskState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
+	QbertDiskState(CharacterComponent* pCharacter);
 	virtual ~QbertDiskState() override;
 	virtual void Update() override;
-	virtual void OnEnter() override;
 	virtual void OnExit() override;
 	virtual void Notify(Disk disk, Character character) override;
 	virtual void SubjectDestroyed(dae::Subject<Disk, Character>* pSubject) override;
 private:
-	dae::Subject<Disk, Character>* m_pDiskStateChanged{ nullptr };
+	dae::Subject<Disk, Character>* m_pDiskStateChangedSubject{ nullptr };
 
 	bool m_DiskReachedTop{ false };
 	glm::vec3 m_StartPos{};

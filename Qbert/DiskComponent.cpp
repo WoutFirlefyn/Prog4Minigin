@@ -10,7 +10,10 @@
 
 std::unique_ptr<dae::Subject<Disk, Character>> DiskComponent::DiskStateChanged{ std::make_unique<dae::Subject<Disk, Character>>() };
 
-DiskComponent::DiskComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
+DiskComponent::DiskComponent(dae::GameObject* pGameObject, dae::GameObject* pTopTile)
+	: BaseComponent(pGameObject)
+	, m_pTopTile{ pTopTile }
+	, m_Character{ Character::None }
 {
 }
 
@@ -21,8 +24,8 @@ DiskComponent::~DiskComponent()
 
 void DiskComponent::Init()
 {
-	m_Character = Character::None;
 	DiskStateChanged->AddObserver(this);
+
 	m_pSpritesheetComponent = GetGameObject()->GetComponent<dae::SpritesheetComponent>();
 	assert(m_pSpritesheetComponent);
 	m_pSpritesheetComponent->MoveSourceRect(rand() % 4, 0);
@@ -61,6 +64,12 @@ void DiskComponent::Notify(Disk disk, Character character)
 	case DiskState::Start:
 		m_Character = character;
 		m_StartPos = GetGameObject()->GetLocalPosition();
+
+		const glm::ivec2 tileSize = m_pTopTile->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
+		const glm::ivec2 diskSize = GetGameObject()->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
+		const glm::vec3 offset = (glm::vec3{ tileSize.x * 0.5f, -tileSize.y, 0 } + glm::vec3{ -diskSize.x, diskSize.y, 0 } *0.5f) * GetGameObject()->GetWorldScale();
+		m_EndPos = m_pTopTile->GetLocalPosition() + offset;
+
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLift, 0.2f);
 		break;
 	case DiskState::Stop:
@@ -69,27 +78,6 @@ void DiskComponent::Notify(Disk disk, Character character)
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLand, 0.2f);
 		break;
 	}
-
-}
-
-//std::pair<Character, dae::GameObject*> DiskComponent::GetCharacter()
-//{
-//	auto characterToReturn = m_pCharacter;
-//	m_pCharacter = { Character::None, nullptr };
-//	return characterToReturn;
-//}
-
-void DiskComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject*>&, dae::GameObject* pTopTile)
-{
-	//m_pCharacter = character;
-
-	const glm::ivec2 tileSize = pTopTile->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-	const glm::ivec2 diskSize = GetGameObject()->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-
-	const glm::vec3 offset = (glm::vec3{ tileSize.x * 0.5f, -tileSize.y, 0 } + glm::vec3{ -diskSize.x, diskSize.y, 0 } * 0.5f) * GetGameObject()->GetWorldScale();
-
-	m_EndPos = pTopTile->GetLocalPosition() + offset;
-	//character.second->SetParent(GetGameObject(), true);
 
 }
 

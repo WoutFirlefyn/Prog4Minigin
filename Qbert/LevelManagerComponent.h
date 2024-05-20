@@ -1,19 +1,13 @@
 #pragma once
-
-//-----------------------------------------------------
-// Include Files
-//-----------------------------------------------------
 #include <vector>
 #include <memory>
 #include <unordered_map>
 #include <map>
 #include <mutex>
+#include <glm/glm.hpp>
 #include "BaseComponent.h"
 #include "Observer.h"
 
-//-----------------------------------------------------
-// LevelManagerComponent Class									
-//-----------------------------------------------------
 namespace dae
 {
 	class Scene;
@@ -28,6 +22,12 @@ enum class TileType
 	Tile,
 	Disk,
 	None
+}; 
+
+struct CharacterInfo
+{
+	glm::ivec2 tileIndex{-1};
+	bool isMoving{ false };
 };
 
 class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>, public dae::Observer<Character, dae::GameObject*>, public dae::Observer<Disk, Character>
@@ -68,17 +68,23 @@ private:
 
 	bool AreAllTilesCovered() const;
 	void LandOnTile(Character character, TileComponent* pTileComponent);
-	//bool FindCharacter(Character character, std::pair<std::pair<int, int>, dae::GameObject*>& tile) const;
 
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
 	dae::Subject<Character, dae::GameObject*>* m_pCharacterSpawnedSubject{ nullptr };
 	dae::Subject<Disk, Character>* m_pDiskStateChanged{ nullptr };
 
-	//std::vector<Character> m_vInactiveCharacters;
-	std::unordered_map<Character, bool> m_MovingCharacters;
-
-	std::map<std::pair<int, int>, dae::GameObject*> m_Tiles;
-	std::unordered_map<Character, std::pair<int, int>> m_Characters;
+	// Comparator function for ivec2 to be used in map m_Tiles
+	struct ivec2_compare
+	{
+		bool operator()(const glm::ivec2& lhs, const glm::ivec2& rhs) const
+		{
+			if (lhs.x != rhs.x)
+				return lhs.x < rhs.x;
+			return lhs.y < rhs.y;
+		}
+	};
+	std::map<glm::ivec2, dae::GameObject*, ivec2_compare> m_Tiles;
+	std::unordered_map<Character, CharacterInfo> m_Characters;
 
 	std::vector<dae::GameObject*> m_vInactiveDisks;
 

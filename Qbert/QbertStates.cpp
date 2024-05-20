@@ -97,10 +97,19 @@ void QbertDeathState::OnExit()
 		GetGameObject()->SetPosition(m_StartPos);
 }
 
+QbertDiskState::QbertDiskState(CharacterComponent* pCharacter)
+	: CharacterState(pCharacter)
+	, m_pDiskStateChangedSubject{ DiskComponent::DiskStateChanged.get() }
+
+{
+	if (m_pDiskStateChangedSubject)
+		m_pDiskStateChangedSubject->AddObserver(this);
+}
+
 QbertDiskState::~QbertDiskState()
 {
-	if (m_pDiskStateChanged)
-		m_pDiskStateChanged->RemoveObserver(this);
+	if (m_pDiskStateChangedSubject)
+		m_pDiskStateChangedSubject->RemoveObserver(this);
 }
 
 void QbertDiskState::Update()
@@ -113,12 +122,6 @@ void QbertDiskState::Update()
 
 	if (m_FallLerpValue >= 1.f)
 		return SetState(std::make_unique<QbertIdleState>(m_pCharacter));
-}
-
-void QbertDiskState::OnEnter()
-{
-	m_pDiskStateChanged = DiskComponent::DiskStateChanged.get();
-	m_pDiskStateChanged->AddObserver(this);
 }
 
 void QbertDiskState::OnExit()
@@ -150,8 +153,8 @@ void QbertDiskState::Notify(Disk disk, Character character)
 
 void QbertDiskState::SubjectDestroyed(dae::Subject<Disk, Character>* pSubject)
 {
-	if (m_pDiskStateChanged == pSubject)
-		m_pDiskStateChanged = nullptr;
+	if (m_pDiskStateChangedSubject == pSubject)
+		m_pDiskStateChangedSubject = nullptr;
 }
 
 void QbertSpawnState::Update()
