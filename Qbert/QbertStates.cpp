@@ -76,6 +76,8 @@ void QbertJumpState::OnExit()
 		m_MovementInfo.state = MovementState::Fall;
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::QbertFall, 0.2f);
 		break;
+	default:
+		return;
 	}
 
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
@@ -97,8 +99,8 @@ void QbertDeathState::OnExit()
 
 QbertDiskState::~QbertDiskState()
 {
-	if (m_pDiskReachedTopSubject)
-		m_pDiskReachedTopSubject->RemoveObserver(this);
+	if (m_pDiskStateChanged)
+		m_pDiskStateChanged->RemoveObserver(this);
 }
 
 void QbertDiskState::Update()
@@ -115,8 +117,8 @@ void QbertDiskState::Update()
 
 void QbertDiskState::OnEnter()
 {
-	m_pDiskReachedTopSubject = DiskComponent::DiskReachedTop.get();
-	m_pDiskReachedTopSubject->AddObserver(this);
+	m_pDiskStateChanged = DiskComponent::DiskStateChanged.get();
+	m_pDiskStateChanged->AddObserver(this);
 }
 
 void QbertDiskState::OnExit()
@@ -126,22 +128,30 @@ void QbertDiskState::OnExit()
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
 }
 
-void QbertDiskState::Notify(dae::GameObject*, Character character)
+void QbertDiskState::Notify(Disk disk, Character character)
 {
 	if (m_pCharacter->GetCharacter() != character)
 		return;
 
-	GetGameObject()->SetParent(nullptr);
-	m_DiskReachedTop = true;
-	m_StartPos = GetGameObject()->GetLocalPosition();
+	switch (disk.state)
+	{
+	case DiskState::Start:
+		GetGameObject()->SetParent(disk.pGameObject, true);
+		break;
+	case DiskState::Stop:
+		GetGameObject()->SetParent(nullptr);
+		m_DiskReachedTop = true;
+		m_StartPos = GetGameObject()->GetLocalPosition();
+		m_TargetPos = m_StartPos + glm::vec3{ 0,64,0 };
+		break;
+	}
 
-	m_TargetPos = GetGameObject()->GetLocalPosition() + glm::vec3{ 0,64,0 };
 }
 
-void QbertDiskState::SubjectDestroyed(dae::Subject<dae::GameObject*, Character>* pSubject)
+void QbertDiskState::SubjectDestroyed(dae::Subject<Disk, Character>* pSubject)
 {
-	if (m_pDiskReachedTopSubject == pSubject)
-		m_pDiskReachedTopSubject = nullptr;
+	if (m_pDiskStateChanged == pSubject)
+		m_pDiskStateChanged = nullptr;
 }
 
 void QbertSpawnState::Update()

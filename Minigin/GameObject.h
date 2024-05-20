@@ -83,8 +83,12 @@ namespace dae
 			auto derivedIt = std::find_if(std::execution::par_unseq, m_Components.begin(), m_Components.end(),
 				[&result](const auto& pair)
 				{
-					result = dynamic_cast<T*>(pair.second.get());
-					return result != nullptr;
+					if (auto tempResult = dynamic_cast<T*>(pair.second.get()))
+					{
+						result = tempResult;
+						return true;
+					}
+					return false;
 				}
 			);
 

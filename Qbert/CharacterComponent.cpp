@@ -4,7 +4,7 @@
 #include "GameObject.h"
 
 std::unique_ptr<dae::Subject<Character, MovementInfo>> CharacterComponent::MoveStateChanged{ std::make_unique<dae::Subject<Character, MovementInfo>>() };
-std::unique_ptr<dae::Subject<Character>> CharacterComponent::CharacterSpawned{ std::make_unique<dae::Subject<Character>>() };
+std::unique_ptr<dae::Subject<Character, dae::GameObject*>> CharacterComponent::CharacterSpawned{ std::make_unique<dae::Subject<Character, dae::GameObject*>>() };
 
 CharacterComponent::CharacterComponent(dae::GameObject* pGameObject) 
 	: BaseComponent(pGameObject)

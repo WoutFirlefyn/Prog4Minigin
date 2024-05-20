@@ -45,7 +45,7 @@ void CoilyComponent::Notify(Character character, MovementInfo movementInfo)
 	}
 }
 
-void CoilyComponent::Notify(Character character)
+void CoilyComponent::Notify(Character character, dae::GameObject*)
 {
 	if (m_Character != character)
 		return;

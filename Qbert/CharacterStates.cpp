@@ -89,8 +89,8 @@ bool JumpState::Jump()
 
 void SpawnState::OnEnter()
 {
+	m_pCharacter->CharacterSpawned->NotifyObservers(m_pCharacter->GetCharacter(), GetGameObject());
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
-	m_pCharacter->CharacterSpawned->NotifyObservers(m_pCharacter->GetCharacter());
 }
 
 bool SpawnState::Spawn()

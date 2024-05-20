@@ -88,7 +88,7 @@ public:
 	virtual std::pair<int, int> GetSpawnPosition() const { return m_vSpawnPositions[rand() % m_vSpawnPositions.size()]; }
 
 	static std::unique_ptr<dae::Subject<Character, MovementInfo>> MoveStateChanged;
-	static std::unique_ptr<dae::Subject<Character>> CharacterSpawned;
+	static std::unique_ptr<dae::Subject<Character, dae::GameObject*>> CharacterSpawned;
 protected:
 	Character m_Character{ Character::None };	
 	std::vector<std::pair<int, int>> m_vSpawnPositions{};

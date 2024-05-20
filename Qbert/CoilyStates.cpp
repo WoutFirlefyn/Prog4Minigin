@@ -52,7 +52,7 @@ void CoilySpawnState::OnEnter()
 
 	m_TargetPos = GetGameObject()->GetLocalPosition();
 	m_StartPos = m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f };
-	//GetGameObject()->SetPosition();
+	GetGameObject()->SetPosition(m_StartPos);
 }
 
 void CoilySpawnState::OnExit()
