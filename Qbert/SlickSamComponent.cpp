@@ -19,11 +19,15 @@ SlickSamComponent::SlickSamComponent(dae::GameObject* pGameObject, Character cha
 
 SlickSamComponent::~SlickSamComponent()
 {
-	MoveStateChanged->RemoveObserver(this);
+	if (MoveStateChanged.get())
+		MoveStateChanged->RemoveObserver(this);
 }
 
 void SlickSamComponent::Init()
 {
+	m_vSpawnPositions.push_back({ 1,0 });
+	m_vSpawnPositions.push_back({ 0,1 });
+
 	MoveStateChanged->AddObserver(this);
 	SetState(std::make_unique<SlickSamSpawnState>(this));
 }

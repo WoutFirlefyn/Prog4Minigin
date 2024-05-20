@@ -28,6 +28,7 @@ public:
 protected:
 	bool Spawn();
 
+	glm::vec3 m_StartPos{};
 	glm::vec3 m_TargetPos{};
 	float m_HeightOffset{ 400.f };
 	float m_FallDuration{ 2.f };

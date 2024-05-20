@@ -195,32 +195,28 @@ void LevelManagerComponent::Notify(Character character)
         assert(false && "Character doesn't exist or is already spawned");
         return;
     }
-
+    
     if (character != Character::Qbert1 && character != Character::Qbert2)
         m_MovingCharacters[character] = true;
 
-    std::pair<int,int> tileIdx{};
+    std::pair<int,int> tileIdx{ characterObject.mapped()->GetComponent<CharacterComponent>()->GetSpawnPosition() };
     glm::vec3 offset{GetGameObject()->GetLocalScale()};
     switch (character)
     {
     case Character::Qbert1:
-        tileIdx = { 0,0 };
+    case Character::Qbert2:
         offset *= glm::vec3{ 8, -6, 0 };
         break;
-    case Character::Qbert2:
-        break;
     case Character::Coily:
-        tileIdx = rand() % 2 ? std::make_pair(1,0) : std::make_pair(0,1);
         offset *= glm::vec3{ 8, -20, 0 };
         break;
     case Character::Slick:
     case Character::Sam:
-        tileIdx = rand() % 2 ? std::make_pair(1,0) : std::make_pair(0,1);
         offset *= glm::vec3{ 8, -6, 0 };
         break;
     case Character::Ugg:
-        break;
     case Character::Wrongway:
+        offset *= glm::vec3{ 8, -6, 0 };
         break;
     default:
         return;

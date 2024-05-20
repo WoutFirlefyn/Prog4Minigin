@@ -78,7 +78,17 @@ namespace dae
 			if (HasComponent<T>())
 				return dynamic_cast<T*>((*m_Components.find(typeid(T))).second.get());
 
-			return nullptr;
+			// If component is not found, check for derived components of T
+			T* result = nullptr;
+			auto derivedIt = std::find_if(std::execution::par_unseq, m_Components.begin(), m_Components.end(),
+				[&result](const auto& pair)
+				{
+					result = dynamic_cast<T*>(pair.second.get());
+					return result != nullptr;
+				}
+			);
+
+			return result;
 		}
 
 		template<typename T>

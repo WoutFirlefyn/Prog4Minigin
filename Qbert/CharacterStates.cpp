@@ -97,7 +97,8 @@ bool SpawnState::Spawn()
 {
 	m_FallLerpValue += dae::GameTime::GetInstance().GetDeltaTime() / m_FallDuration;
 	m_FallLerpValue = std::min(m_FallLerpValue, 1.f);
-	GetGameObject()->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset * (1.f - m_FallLerpValue), 0.f });
+	//GetGameObject()->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset * (1.f - m_FallLerpValue), 0.f });
+	GetGameObject()->SetPosition(m_StartPos - (m_StartPos - m_TargetPos) * m_FallLerpValue);
 
 	return m_FallLerpValue >= 1.f;
 }

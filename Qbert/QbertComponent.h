@@ -24,6 +24,7 @@ public:
 	virtual void Notify(bool roundFinished) override;
 	void SubjectDestroyed(dae::Subject<bool>* pSubject);
 
+	virtual std::pair<int, int> GetSpawnPosition() const override {	return { 0,0 };}
 	int GetLives() const { return m_Lives; }
 
 	std::unique_ptr<dae::Subject<>> PlayerDied;

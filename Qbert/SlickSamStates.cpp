@@ -80,7 +80,7 @@ void SlickSamSpawnState::OnEnter()
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, static_cast<int>(m_pCharacter->GetCharacter()) - static_cast<int>(Character::Slick));
 
 	m_TargetPos = GetGameObject()->GetLocalPosition();
-	GetGameObject()->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
+	m_StartPos = m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f };
 }
 
 void SlickSamSpawnState::OnExit()

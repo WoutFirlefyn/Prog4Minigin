@@ -51,7 +51,8 @@ void CoilySpawnState::OnEnter()
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(4, 1);
 
 	m_TargetPos = GetGameObject()->GetLocalPosition();
-	GetGameObject()->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
+	m_StartPos = m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f };
+	//GetGameObject()->SetPosition();
 }
 
 void CoilySpawnState::OnExit()

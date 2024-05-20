@@ -21,6 +21,8 @@ QbertComponent::~QbertComponent()
 
 void QbertComponent::Init()
 {
+	m_vSpawnPositions.push_back({ 0,0 });
+
 	MoveStateChanged->AddObserver(this);
 	m_pTileChangedSubject->AddObserver(this);
 

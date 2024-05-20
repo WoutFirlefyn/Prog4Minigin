@@ -22,6 +22,9 @@ CoilyComponent::~CoilyComponent()
 
 void CoilyComponent::Init()
 {
+	m_vSpawnPositions.push_back({ 1,0 });
+	m_vSpawnPositions.push_back({ 0,1 });
+
 	MoveStateChanged->AddObserver(this);
 	CharacterSpawned->AddObserver(this);
 	m_Character = Character::Coily;

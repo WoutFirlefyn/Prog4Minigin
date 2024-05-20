@@ -96,6 +96,12 @@
     <ClCompile Include="CommandImplementation.cpp">
       <Filter>Source Files\Other</Filter>
     </ClCompile>
+    <ClCompile Include="UggWrongwayComponent.cpp">
+      <Filter>Source Files\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="UggWrongwayStates.cpp">
+      <Filter>Source Files\Characters\States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharacterStates.h">
@@ -154,6 +160,12 @@
     </ClInclude>
     <ClInclude Include="Sounds.h">
       <Filter>Header Files\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="UggWrongwayComponent.h">
+      <Filter>Header Files\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="UggWrongwayStates.h">
+      <Filter>Header Files\Characters\States</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

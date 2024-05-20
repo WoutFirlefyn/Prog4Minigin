@@ -18,6 +18,8 @@ enum class MovementDirection
 	Left = 1,
 	Right = 2,
 	Down = 3,
+	DiagonalRight = 12,
+	DiagonalLeft = 13,
 	None = -1
 };
 
@@ -83,10 +85,13 @@ public:
 
 	Character GetCharacter() const { return m_Character; }
 
+	virtual std::pair<int, int> GetSpawnPosition() const { return m_vSpawnPositions[rand() % m_vSpawnPositions.size()]; }
+
 	static std::unique_ptr<dae::Subject<Character, MovementInfo>> MoveStateChanged;
 	static std::unique_ptr<dae::Subject<Character>> CharacterSpawned;
 protected:
 	Character m_Character{ Character::None };	
+	std::vector<std::pair<int, int>> m_vSpawnPositions{};
 
 	friend class CharacterState;
 	void SetState(std::unique_ptr<CharacterState>&& pNewState);
