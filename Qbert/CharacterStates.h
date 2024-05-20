@@ -18,7 +18,6 @@ protected:
 
 	void SetState(std::unique_ptr<CharacterState>&& pNewState);
 	dae::GameObject* GetGameObject() const;
-	Character GetCharacter() const;
 };
 
 class SpawnState : public CharacterState

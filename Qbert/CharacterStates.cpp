@@ -20,11 +20,6 @@ dae::GameObject* CharacterState::GetGameObject() const
 	return m_pCharacter->GetGameObject();
 }
 
-Character CharacterState::GetCharacter() const
-{
-	return m_pCharacter->m_Character;
-}
-
 JumpState::JumpState(CharacterComponent* pCharacter, MovementInfo movementInfo)
 	: CharacterState(pCharacter)
 	, m_MovementInfo{ movementInfo }
@@ -41,7 +36,7 @@ void JumpState::OnEnter()
 	m_pCharacterStartedJumping = LevelManagerComponent::CharacterStartedJumping.get();
 	m_pCharacterStartedJumping->AddObserver(this);
 	m_StartPos = GetGameObject()->GetLocalPosition(); 
-	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), m_MovementInfo);
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
 }
 
 void JumpState::OnExit()
@@ -57,12 +52,12 @@ void JumpState::OnExit()
 		break;
 	}
 
-	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), m_MovementInfo);
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
 }
 
 void JumpState::Notify(Character character, TileType tileType)
 {
-	if (character == GetCharacter())
+	if (character == m_pCharacter->GetCharacter())
 		m_NextTileType = tileType;
 }
 
@@ -95,7 +90,7 @@ bool JumpState::Jump()
 void SpawnState::OnEnter()
 {
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
-	m_pCharacter->CharacterSpawned->NotifyObservers(GetCharacter());
+	m_pCharacter->CharacterSpawned->NotifyObservers(m_pCharacter->GetCharacter());
 }
 
 bool SpawnState::Spawn()

@@ -20,10 +20,12 @@ void SlickSamIdleState::Update()
 
 void SlickSamIdleState::Notify(Character character, Character otherCharacter)
 {
-	if (character != GetCharacter() && otherCharacter != GetCharacter())
+	Character slickSamCharacter = m_pCharacter->GetCharacter();
+
+	if (character != slickSamCharacter && otherCharacter != slickSamCharacter)
 		return;
 
-	if (otherCharacter == GetCharacter())
+	if (otherCharacter == slickSamCharacter)
 		std::swap(character, otherCharacter);
 
 	switch (otherCharacter)
@@ -33,7 +35,7 @@ void SlickSamIdleState::Notify(Character character, Character otherCharacter)
 	{
 		MovementInfo movementInfo{};
 		movementInfo.state = MovementState::Fall;
-		m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
+		m_pCharacter->MoveStateChanged->NotifyObservers(slickSamCharacter, movementInfo);
 		return SetState(std::make_unique<SlickSamDeathState>(m_pCharacter));
 	}
 	default:
@@ -62,7 +64,7 @@ void SlickSamJumpState::OnEnter()
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect
 	(
 		static_cast<int>(m_MovementInfo.direction) - 2,
-		static_cast<int>(GetCharacter()) - static_cast<int>(Character::Slick)
+		static_cast<int>(m_pCharacter->GetCharacter()) - static_cast<int>(Character::Slick)
 	);
 }
 
@@ -75,7 +77,7 @@ void SlickSamSpawnState::Update()
 void SlickSamSpawnState::OnEnter()
 { 
 	SpawnState::OnEnter();
-	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, static_cast<int>(GetCharacter()) - static_cast<int>(Character::Slick));
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, static_cast<int>(m_pCharacter->GetCharacter()) - static_cast<int>(Character::Slick));
 
 	m_TargetPos = GetGameObject()->GetLocalPosition();
 	GetGameObject()->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset, 0.f });
@@ -85,7 +87,7 @@ void SlickSamSpawnState::OnExit()
 {
 	MovementInfo movementInfo{};
 	movementInfo.state = MovementState::End;
-	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
 }
 
 void SlickSamDeathState::Update()

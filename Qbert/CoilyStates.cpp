@@ -58,7 +58,7 @@ void CoilySpawnState::OnExit()
 {
 	MovementInfo movementInfo{};
 	movementInfo.state = MovementState::End;
-	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
 }
 
 void CoilyDeathState::Update()

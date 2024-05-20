@@ -10,14 +10,15 @@
 #include "Sounds.h"
 #include <algorithm>
 
-//std::unique_ptr<dae::Subject<bool>> LevelManagerComponent::TileChanged{ std::make_unique<dae::Subject<bool>>() };
+std::unique_ptr<dae::Subject<bool>> LevelManagerComponent::TileChanged{ std::make_unique<dae::Subject<bool>>() };
 std::unique_ptr<dae::Subject<Character, TileType>> LevelManagerComponent::CharacterStartedJumping{ std::make_unique<dae::Subject<Character, TileType>>() };
 std::unique_ptr<dae::Subject<Character, Character>> LevelManagerComponent::CharactersCollide{ std::make_unique<dae::Subject<Character, Character>>() };
 int LevelManagerComponent::m_CurrentRound{ 0 };
 LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene) : BaseComponent(pGameObject)
+    , m_pMoveStateChangedSubject{ CharacterComponent::MoveStateChanged.get() }
+    , m_pCharacterSpawnedSubject{ CharacterComponent::CharacterSpawned.get() }
+    , m_pDiskReachedTopSubject{ DiskComponent::DiskReachedTop.get() }
 {
-    TileChanged = std::make_unique<dae::Subject<bool>>();
-
     // Initializing the tiles
     for (int i{}; i < m_LevelLength; ++i)
     {
@@ -60,16 +61,14 @@ LevelManagerComponent::~LevelManagerComponent()
         m_pCharacterSpawnedSubject->RemoveObserver(this);
     if (m_pDiskReachedTopSubject)
         m_pDiskReachedTopSubject->RemoveObserver(this);
-    TileChanged->RemoveObserver(this);
+    if (TileChanged.get())
+        TileChanged->RemoveObserver(this);
 }
 
 void LevelManagerComponent::Init()
 {
-    m_pMoveStateChangedSubject = CharacterComponent::MoveStateChanged.get();
     m_pMoveStateChangedSubject->AddObserver(this);
-    m_pCharacterSpawnedSubject = CharacterComponent::CharacterSpawned.get();
     m_pCharacterSpawnedSubject->AddObserver(this);
-    m_pDiskReachedTopSubject = DiskComponent::DiskReachedTop.get();
     m_pDiskReachedTopSubject->AddObserver(this);
     TileChanged->AddObserver(this); 
 
@@ -163,7 +162,7 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
             pNextTileComponent->MoveCharacterHere(pCurrentTileComponent->GetCharacter(character));
             pCurrentTileComponent = pNextTileComponent;
         }
-        ChangeTile(character, pCurrentTileComponent);
+        LandOnTile(character, pCurrentTileComponent);
 
         m_MovingCharacters[character] = false;
         m_CharacterMovedDirtyFlag = true;
@@ -256,7 +255,7 @@ void LevelManagerComponent::Notify(bool roundFinished)
 
 void LevelManagerComponent::Notify(dae::GameObject* pDisk, Character)
 {
-    auto it = std::find_if(m_Tiles.begin(), m_Tiles.end(), [pDisk](const auto& pair) 
+    auto it = std::find_if(std::execution::par_unseq, m_Tiles.begin(), m_Tiles.end(), [pDisk](const auto& pair) 
         {
             return pair.second == pDisk;
         });
@@ -281,7 +280,7 @@ bool LevelManagerComponent::AreAllTilesCovered() const
     return TileComponent::GetMaxTileStage() * amountOfTiles == m_TilesCovered;
 }
 
-void LevelManagerComponent::ChangeTile(Character character, TileComponent* pTileComponent)
+void LevelManagerComponent::LandOnTile(Character character, TileComponent* pTileComponent)
 {
     int tileChange{};
     switch (character)

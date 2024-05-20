@@ -39,13 +39,18 @@ void QbertCurseComponent::AddObserver(dae::Subject<>* pPlayerDiedSubject)
 
 void QbertCurseComponent::Notify()
 {
-	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
-	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::Swearing, 0.2f);
-	m_AccumSec = 0.f;
+	QbertDied();
 }
 
 void QbertCurseComponent::SubjectDestroyed(dae::Subject<>* pSubject)
 {
 	if (pSubject == m_pPlayerDied)
 		m_pPlayerDied = nullptr;
+}
+
+void QbertCurseComponent::QbertDied()
+{
+	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
+	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::Swearing, 0.2f);
+	m_AccumSec = 0.f;
 }

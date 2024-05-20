@@ -64,11 +64,11 @@ public:
 
 	static std::unique_ptr<dae::Subject<Character, TileType>> CharacterStartedJumping;
 	static std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
-	std::unique_ptr<dae::Subject<bool>> TileChanged;
+	static std::unique_ptr<dae::Subject<bool>> TileChanged;
 private:
 
 	bool AreAllTilesCovered() const;
-	void ChangeTile(Character character, TileComponent* pTileComponent);
+	void LandOnTile(Character character, TileComponent* pTileComponent);
 	bool FindCharacter(Character character, std::pair<std::pair<int, int>, dae::GameObject*>& tile) const;
 
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };

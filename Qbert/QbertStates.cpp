@@ -15,10 +15,12 @@ void QbertIdleState::HandleInput(MovementInfo movementInfo)
 
 void QbertIdleState::Notify(Character character, Character otherCharacter)
 {
-	if (character != GetCharacter() && otherCharacter != GetCharacter())
+	Character qbertCharacter = m_pCharacter->GetCharacter();
+
+	if (character != qbertCharacter && otherCharacter != qbertCharacter)
 		return;
 
-	if (otherCharacter == GetCharacter())
+	if (otherCharacter == qbertCharacter)
 		std::swap(character, otherCharacter);
 
 	switch (otherCharacter)
@@ -29,7 +31,7 @@ void QbertIdleState::Notify(Character character, Character otherCharacter)
 	{
 		MovementInfo movementInfo{};
 		movementInfo.state = MovementState::Fall;
-		m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
+		m_pCharacter->MoveStateChanged->NotifyObservers(qbertCharacter, movementInfo);
 		return SetState(std::make_unique<QbertDeathState>(m_pCharacter));
 	}
 	default:
@@ -76,7 +78,7 @@ void QbertJumpState::OnExit()
 		break;
 	}
 
-	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), m_MovementInfo);
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
 }
 
 void QbertDeathState::Update()
@@ -121,12 +123,12 @@ void QbertDiskState::OnExit()
 {
 	MovementInfo movementInfo{};
 	movementInfo.state = MovementState::End;
-	m_pCharacter->MoveStateChanged->NotifyObservers(GetCharacter(), movementInfo);
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
 }
 
 void QbertDiskState::Notify(dae::GameObject*, Character character)
 {
-	if (GetCharacter() != character)
+	if (m_pCharacter->GetCharacter() != character)
 		return;
 
 	GetGameObject()->SetParent(nullptr);

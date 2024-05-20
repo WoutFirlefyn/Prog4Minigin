@@ -81,6 +81,8 @@ public:
 
 	void Move(MovementInfo movementInfo);
 
+	Character GetCharacter() const { return m_Character; }
+
 	static std::unique_ptr<dae::Subject<Character, MovementInfo>> MoveStateChanged;
 	static std::unique_ptr<dae::Subject<Character>> CharacterSpawned;
 protected:
