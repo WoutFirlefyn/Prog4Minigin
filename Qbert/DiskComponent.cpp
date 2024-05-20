@@ -8,20 +8,24 @@
 #include "ServiceLocator.h"
 #include "Sounds.h"
 
-std::unique_ptr<dae::Subject<dae::GameObject*, Character>> DiskComponent::DiskReachedTop{ std::make_unique<dae::Subject<dae::GameObject*, Character>>() };
+std::unique_ptr<dae::Subject<Disk, Character>> DiskComponent::DiskStateChanged{ std::make_unique<dae::Subject<Disk, Character>>() };
 
-DiskComponent::DiskComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
+DiskComponent::DiskComponent(dae::GameObject* pGameObject, dae::GameObject* pTopTile)
+	: BaseComponent(pGameObject)
+	, m_pTopTile{ pTopTile }
+	, m_Character{ Character::None }
 {
 }
 
 DiskComponent::~DiskComponent()
 {
-	DiskReachedTop->RemoveObserver(this);
+	DiskStateChanged->RemoveObserver(this);
 }
 
 void DiskComponent::Init()
 {
-	DiskReachedTop->AddObserver(this);
+	DiskStateChanged->AddObserver(this);
+
 	m_pSpritesheetComponent = GetGameObject()->GetComponent<dae::SpritesheetComponent>();
 	assert(m_pSpritesheetComponent);
 	m_pSpritesheetComponent->MoveSourceRect(rand() % 4, 0);
@@ -39,7 +43,7 @@ void DiskComponent::Update()
 		m_pSpritesheetComponent->MoveSourceRect((m_pSpritesheetComponent->GetCurrCol() + 1) % 4, 0);
 	}
 
-	if (m_pCharacter.second == nullptr)
+	if (m_Character == Character::None)
 		return;
 
 	m_PlatformLerpValue = std::min(m_PlatformLerpValue + (deltaTime / m_TimeToReachTop), 1.f);
@@ -47,40 +51,34 @@ void DiskComponent::Update()
 	GetGameObject()->SetPosition(m_StartPos + (m_EndPos - m_StartPos) * m_PlatformLerpValue);
 
 	if (m_PlatformLerpValue >= 1.f)
-		DiskReachedTop->NotifyObservers(GetGameObject(), m_pCharacter.first);
+		DiskStateChanged->NotifyObservers({ GetGameObject(), DiskState::Stop }, m_Character);
 }
 
-void DiskComponent::Notify(dae::GameObject* pDisk, Character)
+void DiskComponent::Notify(Disk disk, Character character)
 {
-	if (pDisk != GetGameObject())
+	if (disk.pGameObject != GetGameObject())
 		return;
 
-	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLand, 0.2f);
-	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
-}
+	switch (disk.state)
+	{
+	case DiskState::Start:
+		m_Character = character;
+		m_StartPos = GetGameObject()->GetLocalPosition();
 
-std::pair<Character, dae::GameObject*> DiskComponent::GetCharacter()
-{
-	auto characterToReturn = m_pCharacter;
-	m_pCharacter = { Character::None, nullptr };
-	return characterToReturn;
-}
+		const glm::ivec2 tileSize = m_pTopTile->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
+		const glm::ivec2 diskSize = GetGameObject()->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
+		const glm::vec3 offset = (glm::vec3{ tileSize.x * 0.5f, -tileSize.y, 0 } + glm::vec3{ -diskSize.x, diskSize.y, 0 } *0.5f) * GetGameObject()->GetWorldScale();
+		m_EndPos = m_pTopTile->GetLocalPosition() + offset;
 
-void DiskComponent::MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character, dae::GameObject* pTopTile)
-{
-	m_pCharacter = character;
-	m_StartPos = GetGameObject()->GetLocalPosition();
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLift, 0.2f);
+		break;
+	case DiskState::Stop:
+		m_Character = Character::None;
+		GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLand, 0.2f);
+		break;
+	}
 
-	const glm::vec3 scale = GetGameObject()->GetWorldScale();
-	const glm::ivec2 tileSize = pTopTile->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-	const glm::ivec2 diskSize = GetGameObject()->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-
-	const glm::vec3 offset = (glm::vec3{ tileSize.x * 0.5f, -tileSize.y, 0 } + glm::vec3{ -diskSize.x, diskSize.y, 0 } * 0.5f) * scale;
-
-	m_EndPos = pTopTile->GetLocalPosition() + offset;
-	character.second->SetParent(GetGameObject(), true);
-
-	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLift, 0.2f);
 }
 
 

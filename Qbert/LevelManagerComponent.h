@@ -1,19 +1,13 @@
 #pragma once
-
-//-----------------------------------------------------
-// Include Files
-//-----------------------------------------------------
 #include <vector>
 #include <memory>
 #include <unordered_map>
 #include <map>
 #include <mutex>
+#include <glm/glm.hpp>
 #include "BaseComponent.h"
 #include "Observer.h"
 
-//-----------------------------------------------------
-// LevelManagerComponent Class									
-//-----------------------------------------------------
 namespace dae
 {
 	class Scene;
@@ -21,15 +15,22 @@ namespace dae
 class TileComponent;
 enum class Character;
 struct MovementInfo;
+struct Disk;
 
 enum class TileType
 {
 	Tile,
 	Disk,
 	None
+}; 
+
+struct CharacterInfo
+{
+	glm::ivec2 tileIndex{-1};
+	bool isMoving{ false };
 };
 
-class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>, public dae::Observer<Character>, public dae::Observer<dae::GameObject*, Character>
+class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>, public dae::Observer<Character, dae::GameObject*>, public dae::Observer<Disk, Character>
 {
 public:
 	LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene);
@@ -40,8 +41,6 @@ public:
 	LevelManagerComponent& operator=(const LevelManagerComponent& other) = delete;
 	LevelManagerComponent& operator=(LevelManagerComponent&& other)	noexcept = delete;
 
-	void AddCharacters(const std::unordered_map<Character, dae::GameObject*>& characters) { m_InactiveCharacters = characters; }
-
 	virtual void Init() override;
 	virtual void LateUpdate() override;
 
@@ -50,15 +49,15 @@ public:
 	virtual void SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSubject) override;
 
 	// CharacterSpawned
-	virtual void Notify(Character character) override;
-	virtual void SubjectDestroyed(dae::Subject<Character>* pSubject) override;
+	virtual void Notify(Character character, dae::GameObject* pGameObject) override;
+	virtual void SubjectDestroyed(dae::Subject<Character, dae::GameObject*>* pSubject) override;
 
 	// TileChanged
 	virtual void Notify(bool roundFinished) override;
 
-	// DiskReachedTop
-	virtual void Notify(dae::GameObject* pDisk, Character character) override;
-	virtual void SubjectDestroyed(dae::Subject<dae::GameObject*, Character>* pSubject) override;
+	// DiskStateChanged
+	virtual void Notify(Disk disk, Character character) override;
+	virtual void SubjectDestroyed(dae::Subject<Disk, Character>* pSubject) override;
 
 	static int GetRoundNr() { return m_CurrentRound; }
 
@@ -69,20 +68,26 @@ private:
 
 	bool AreAllTilesCovered() const;
 	void LandOnTile(Character character, TileComponent* pTileComponent);
-	bool FindCharacter(Character character, std::pair<std::pair<int, int>, dae::GameObject*>& tile) const;
 
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
-	dae::Subject<Character>* m_pCharacterSpawnedSubject{ nullptr };
-	dae::Subject<dae::GameObject*, Character>* m_pDiskReachedTopSubject{ nullptr };
+	dae::Subject<Character, dae::GameObject*>* m_pCharacterSpawnedSubject{ nullptr };
+	dae::Subject<Disk, Character>* m_pDiskStateChanged{ nullptr };
 
-	std::unordered_map<Character, dae::GameObject*> m_InactiveCharacters;
-	std::unordered_map<Character, bool> m_MovingCharacters;
-
-	std::map<std::pair<int, int>, dae::GameObject*> m_Tiles;
+	// Comparator function for ivec2 to be used in map m_Tiles
+	struct ivec2_compare
+	{
+		bool operator()(const glm::ivec2& lhs, const glm::ivec2& rhs) const
+		{
+			if (lhs.x != rhs.x)
+				return lhs.x < rhs.x;
+			return lhs.y < rhs.y;
+		}
+	};
+	std::map<glm::ivec2, dae::GameObject*, ivec2_compare> m_Tiles;
+	std::unordered_map<Character, CharacterInfo> m_Characters;
 
 	std::vector<dae::GameObject*> m_vInactiveDisks;
 
-	std::mutex m_CharactersCollideMutex{};
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };
 	static int m_CurrentRound;

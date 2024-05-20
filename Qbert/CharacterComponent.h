@@ -41,10 +41,10 @@ struct MovementInfo
 
 	MovementDirection direction{ MovementDirection::None };
 	glm::vec3 vector{ glm::vec3(0) };
-	std::pair<int, int> indexOffset{ 0,0 };
+	glm::ivec2 indexOffset{ 0,0 };
 	MovementState state{ MovementState::Start };
 
-	static void AddMovementInfo(MovementDirection dir, const glm::vec3& vec, const std::pair<int, int>& offset)
+	static void AddMovementInfo(MovementDirection dir, const glm::vec3& vec, const glm::ivec2& offset)
 	{
 		m_MovementInfos[dir] = MovementInfo(dir, vec, offset);
 	}
@@ -57,7 +57,7 @@ struct MovementInfo
 		return movementInfoIt->second;
 	}
 private:
-	MovementInfo(MovementDirection dir, const glm::vec3& vec, const std::pair<int, int>& offset)
+	MovementInfo(MovementDirection dir, const glm::vec3& vec, const glm::ivec2& offset)
 		: direction(dir)
 		, vector(vec)
 		, indexOffset(offset)
@@ -85,13 +85,13 @@ public:
 
 	Character GetCharacter() const { return m_Character; }
 
-	virtual std::pair<int, int> GetSpawnPosition() const { return m_vSpawnPositions[rand() % m_vSpawnPositions.size()]; }
+	virtual glm::ivec2 GetSpawnPosition() const { return m_vSpawnPositions[rand() % m_vSpawnPositions.size()]; }
 
 	static std::unique_ptr<dae::Subject<Character, MovementInfo>> MoveStateChanged;
-	static std::unique_ptr<dae::Subject<Character>> CharacterSpawned;
+	static std::unique_ptr<dae::Subject<Character, dae::GameObject*>> CharacterSpawned;
 protected:
 	Character m_Character{ Character::None };	
-	std::vector<std::pair<int, int>> m_vSpawnPositions{};
+	std::vector<glm::ivec2> m_vSpawnPositions{};
 
 	friend class CharacterState;
 	void SetState(std::unique_ptr<CharacterState>&& pNewState);
