@@ -38,9 +38,8 @@ protected:
 class IdleState : public CharacterState, dae::Observer<Character, Character>
 {
 public:
-	IdleState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
+	IdleState(CharacterComponent* pCharacter);
 	virtual ~IdleState() override;
-	virtual void OnEnter() override;
 	virtual void Notify(Character, Character) override {}
 	virtual void SubjectDestroyed(dae::Subject<Character, Character>* pSubject) override;
 private:

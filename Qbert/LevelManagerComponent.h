@@ -68,6 +68,7 @@ private:
 
 	bool AreAllTilesCovered() const;
 	void LandOnTile(Character character, TileComponent* pTileComponent);
+	glm::vec3 GetTilePos(glm::ivec2 tileIdx) const;
 
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
 	dae::Subject<Character, dae::GameObject*>* m_pCharacterSpawnedSubject{ nullptr };
@@ -88,6 +89,7 @@ private:
 
 	std::vector<dae::GameObject*> m_vInactiveDisks;
 
+	glm::ivec2 m_TileSize{};
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };
 	static int m_CurrentRound;

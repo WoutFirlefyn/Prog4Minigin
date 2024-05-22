@@ -19,21 +19,13 @@ public:
 
 	virtual void Init() override;
 
-	//bool IsCharacterHere(Character character);
-	//std::pair<Character, dae::GameObject*> GetCharacter(Character character);
-	//void MoveCharacterHere(const std::pair<Character, dae::GameObject*>& character);
-	//std::unordered_map<Character, dae::GameObject*> GetCharacters() const { return m_CharactersHere; }
-
 	bool ChangeTile(int& tilesCovered, int stageChange);
 	void Reset();
 
 	static int GetMaxTileStage() { return m_MaxTileStage; }
 private:
-	//std::unordered_map<Character, dae::GameObject*> m_CharactersHere;
 	int m_TileStage{ 0 };
-	const int m_TileId;
 	static int m_MaxTileStage;
-	static int m_TileCount;
 };
 
 

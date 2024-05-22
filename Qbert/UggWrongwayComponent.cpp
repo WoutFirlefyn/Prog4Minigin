@@ -26,8 +26,8 @@ UggWrongwayComponent::~UggWrongwayComponent()
 void UggWrongwayComponent::Init()
 {
 	m_SpawnedLeft = rand() % 2;
-	m_vSpawnPositions.push_back({ 6,0 });
-	m_vSpawnPositions.push_back({ 0,6 });
+	m_vSpawnPositions.push_back({ 7,0 });
+	m_vSpawnPositions.push_back({ 0,7 });
 
 	MoveStateChanged->AddObserver(this);
 	SetState(std::make_unique<UggWrongwaySpawnState>(this));

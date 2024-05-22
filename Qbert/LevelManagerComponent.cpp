@@ -72,15 +72,14 @@ void LevelManagerComponent::Init()
     m_pDiskStateChanged->AddObserver(this);
     TileChanged->AddObserver(this); 
 
+    m_TileSize = m_Tiles[{0, 0}]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
     const glm::vec3 scale = GetGameObject()->GetWorldScale();
-
-    const glm::ivec2 tileSize = m_Tiles[{0, 0}]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-    const glm::vec3 tileOffset{ tileSize.x * 0.5f * scale.x, tileSize.y * 0.75f * scale.y, 0.f };
+    const glm::vec3 tileOffset{ m_TileSize.x * 0.5f * scale.x, m_TileSize.y * 0.75f * scale.y, 0.f };
 
     for (const auto& [index, pTile] : m_Tiles)
     {
         pTile->SetParent(GetGameObject());
-        glm::vec3 offsetToPos{ tileOffset.x * (index.x - index.y), tileOffset.y * (index.y + index.x), 0.f };
+        glm::vec3 offsetToPos{ GetTilePos(index) };
         if (index.x >= 0 && index.y >= 0)
         {
             pTile->SetPosition(offsetToPos);
@@ -109,40 +108,40 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
 {
     // maybe check for none found
     glm::ivec2 currentTileIdx = m_Characters[character].tileIndex;
-    //dae::GameObject* pCurrentTile = m_Tiles[currentTileIdx];
-
-    //auto pCurrentTileComponent = pCurrentTile->GetComponent<TileComponent>();
 
     glm::ivec2 nextTileIdx = currentTileIdx + movementInfo.indexOffset;
-    auto nextTilePairIt = m_Tiles.find(nextTileIdx);
 
     switch (movementInfo.state)
     {
     case MovementState::Start:
+    {
+        auto nextTilePairIt = m_Tiles.find(nextTileIdx);
         TileType nextTileType;
-
         if (nextTilePairIt == m_Tiles.end())
             nextTileType = TileType::None;
         else if (nextTilePairIt->second->HasComponent<TileComponent>())
             nextTileType = TileType::Tile;
         else
             nextTileType = TileType::Disk;
-        //m_Characters[character] = currentTileIdx;
-        CharacterStartedJumping->NotifyObservers(character, nextTileType);
 
+        CharacterStartedJumping->NotifyObservers(character, nextTileType);
         m_Characters[character].isMoving = true;
         break;
+    }
     case MovementState::End:
+    {
+        auto nextTilePairIt = m_Tiles.find(nextTileIdx);
         m_Characters[character].tileIndex = nextTileIdx;
-        LandOnTile(character, nextTilePairIt->second->GetComponent<TileComponent>());
+        if (nextTilePairIt != m_Tiles.end())
+            LandOnTile(character, nextTilePairIt->second->GetComponent<TileComponent>());
 
         m_Characters[character].isMoving = false;
         m_CharacterMovedDirtyFlag = true;
         break;
+    }
     case MovementState::Fall:
         if (character == Character::Qbert1 || character == Character::Qbert2)
             return;
-
         m_Characters[character].tileIndex = { -1,-1 };
         break;
     case MovementState::Disk:
@@ -187,9 +186,8 @@ void LevelManagerComponent::Notify(Character character, dae::GameObject* pCharac
     default:
         return;
     }
-    pCharacterGameObject->SetPosition(m_Tiles[tileIdx]->GetWorldPosition() + offset);
+    pCharacterGameObject->SetPosition(GetTilePos(tileIdx) + GetGameObject()->GetLocalPosition() + offset);
     m_Characters[character].tileIndex = tileIdx;
-    //m_Tiles[tileIdx]->GetComponent<TileComponent>()->MoveCharacterHere(std::make_pair(character, pCharacterGameObject));
 }
 
 void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character, dae::GameObject*>* pSubject)
@@ -208,11 +206,7 @@ void LevelManagerComponent::Notify(bool roundFinished)
         dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::RoundCompleteTune);
 
         for (const auto& [index, pTile] : m_Tiles)
-        {
-            auto pTileComponent = pTile->GetComponent<TileComponent>();
-            //m_vInactiveCharacters.merge(pTileComponent->GetCharacters());
-            pTileComponent->Reset();
-        }
+            pTile->GetComponent<TileComponent>()->Reset();
     }
 }
 
@@ -262,4 +256,14 @@ void LevelManagerComponent::LandOnTile(Character character, TileComponent* pTile
 
     if (pTileComponent->ChangeTile(m_TilesCovered, tileChange))
         TileChanged->NotifyObservers(AreAllTilesCovered());
+}
+
+glm::vec3 LevelManagerComponent::GetTilePos(glm::ivec2 tileIdx) const
+{
+    const glm::vec3 scale = GetGameObject()->GetWorldScale();
+    const glm::vec3 tileOffset{ m_TileSize.x * 0.5f * scale.x, m_TileSize.y * 0.75f * scale.y, 0.f };
+
+    glm::vec3 offsetToPos{ tileOffset.x * (tileIdx.x - tileIdx.y), tileOffset.y * (tileIdx.y + tileIdx.x), 0.f };
+
+    return offsetToPos;
 }

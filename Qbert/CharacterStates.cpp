@@ -97,22 +97,22 @@ bool SpawnState::Spawn()
 {
 	m_FallLerpValue += dae::GameTime::GetInstance().GetDeltaTime() / m_FallDuration;
 	m_FallLerpValue = std::min(m_FallLerpValue, 1.f);
-	//GetGameObject()->SetPosition(m_TargetPos - glm::vec3{ 0.f, m_HeightOffset * (1.f - m_FallLerpValue), 0.f });
 	GetGameObject()->SetPosition(m_StartPos - (m_StartPos - m_TargetPos) * m_FallLerpValue);
 
 	return m_FallLerpValue >= 1.f;
+}
+
+IdleState::IdleState(CharacterComponent* pCharacter)
+	: CharacterState(pCharacter)
+	, m_pCharactersCollide{ LevelManagerComponent::CharactersCollide.get() }
+{
+	m_pCharactersCollide->AddObserver(this);
 }
 
 IdleState::~IdleState()
 {
 	if (m_pCharactersCollide)
 		m_pCharactersCollide->RemoveObserver(this);
-}
-
-void IdleState::OnEnter()
-{
-	m_pCharactersCollide = LevelManagerComponent::CharactersCollide.get();
-	m_pCharactersCollide->AddObserver(this);
 }
 
 void IdleState::SubjectDestroyed(dae::Subject<Character, Character>* pSubject)
