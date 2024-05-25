@@ -6,8 +6,8 @@
 #include "Sounds.h"
 #include "QbertStates.h"
 
-QbertComponent::QbertComponent(dae::GameObject* pGameObject)
-	: CharacterComponent(pGameObject)
+QbertComponent::QbertComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent)
+	: CharacterComponent(pGameObject, pLevelManagerComponent)
 {
 	PlayerDied = std::make_unique<dae::Subject<>>();
 }
@@ -30,7 +30,7 @@ void QbertComponent::Init()
 	SetState(std::make_unique<QbertSpawnState>(this));
 }
 
-void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character, TileType>*)
+void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject)
 {
 	m_pTileChangedSubject = pTileChangedSubject;
 }

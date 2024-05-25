@@ -18,6 +18,7 @@ protected:
 
 	void SetState(std::unique_ptr<CharacterState>&& pNewState);
 	dae::GameObject* GetGameObject() const;
+	LevelManagerComponent* GetLevelManagerComponent() const;
 };
 
 class SpawnState : public CharacterState
@@ -46,16 +47,12 @@ private:
 	dae::Subject<Character, Character>* m_pCharactersCollide{ nullptr };
 };
 
-class JumpState : public CharacterState, dae::Observer<Character, TileType>
+class JumpState : public CharacterState
 {
 public:
 	JumpState(CharacterComponent* pCharacter, MovementInfo movementInfo);
-	virtual ~JumpState() override;
 	virtual void OnEnter() override;
 	virtual void OnExit() override;
-
-	virtual void Notify(Character character, TileType tileType) override;
-	virtual void SubjectDestroyed(dae::Subject<Character, TileType>* pSubject) override;
 protected:
 	bool Jump();
 	float m_JumpDuration{ 0.4f };
@@ -63,8 +60,6 @@ protected:
 	glm::vec3 m_StartPos{};
 	MovementInfo m_MovementInfo;
 	TileType m_NextTileType{};
-private:
-	dae::Subject<Character, TileType>* m_pCharacterStartedJumping{ nullptr };
 };
 
 class DeathState : public CharacterState

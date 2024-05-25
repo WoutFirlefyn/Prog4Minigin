@@ -20,21 +20,20 @@ dae::GameObject* CharacterState::GetGameObject() const
 	return m_pCharacter->GetGameObject();
 }
 
+LevelManagerComponent* CharacterState::GetLevelManagerComponent() const
+{
+	return m_pCharacter->GetLevelManagerComponent();
+}
+
 JumpState::JumpState(CharacterComponent* pCharacter, MovementInfo movementInfo)
 	: CharacterState(pCharacter)
 	, m_MovementInfo{ movementInfo }
 {
 }
 
-JumpState::~JumpState()
-{
-	m_pCharacterStartedJumping->RemoveObserver(this);
-}
-
 void JumpState::OnEnter()
 {
-	m_pCharacterStartedJumping = LevelManagerComponent::CharacterStartedJumping.get();
-	m_pCharacterStartedJumping->AddObserver(this);
+	m_NextTileType = GetLevelManagerComponent()->GetNextTileType(m_pCharacter->GetCharacter(), m_MovementInfo);
 	m_StartPos = GetGameObject()->GetLocalPosition(); 
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
 }
@@ -53,18 +52,6 @@ void JumpState::OnExit()
 	}
 
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
-}
-
-void JumpState::Notify(Character character, TileType tileType)
-{
-	if (character == m_pCharacter->GetCharacter())
-		m_NextTileType = tileType;
-}
-
-void JumpState::SubjectDestroyed(dae::Subject<Character, TileType>* pSubject)
-{
-	if (pSubject == m_pCharacterStartedJumping)
-		m_pCharacterStartedJumping = nullptr;
 }
 
 bool JumpState::Jump()

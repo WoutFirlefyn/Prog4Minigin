@@ -14,7 +14,11 @@ void CoilyIdleState::Update()
 
 	if (m_AccumSec < m_TimeBetweenJumps)
 		return;
-	MovementInfo movementInfo{ MovementInfo::GetMovementInfo(static_cast<MovementDirection>(CoilyComponent::IsEgg() ? rand() % 2 + 2 : rand() % 4))};
+	MovementInfo movementInfo{};
+	if (CoilyComponent::IsEgg())
+		movementInfo = MovementInfo::GetMovementInfo(static_cast<MovementDirection>(rand() % 2 + 2));
+	else
+		movementInfo = GetLevelManagerComponent()->GetDirectionToNearestQbert();
 	return SetState(std::make_unique<CoilyJumpState>(m_pCharacter, movementInfo));
 }
 

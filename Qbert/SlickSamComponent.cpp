@@ -7,7 +7,8 @@
 #include "Sounds.h"
 #include "SlickSamStates.h"
 
-SlickSamComponent::SlickSamComponent(dae::GameObject* pGameObject, Character character) : CharacterComponent(pGameObject)
+SlickSamComponent::SlickSamComponent(dae::GameObject* pGameObject, Character character, LevelManagerComponent* pLevelManagerComponent) 
+	: CharacterComponent(pGameObject, pLevelManagerComponent)
 {
 	if (character != Character::Slick && character != Character::Sam)
 	{

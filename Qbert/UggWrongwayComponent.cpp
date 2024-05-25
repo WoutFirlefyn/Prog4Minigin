@@ -7,7 +7,8 @@
 #include "Sounds.h"
 #include "UggWrongwayStates.h"
 
-UggWrongwayComponent::UggWrongwayComponent(dae::GameObject* pGameObject, Character character) : CharacterComponent(pGameObject)
+UggWrongwayComponent::UggWrongwayComponent(dae::GameObject* pGameObject, Character character, LevelManagerComponent* pLevelManagerComponent) 
+	: CharacterComponent(pGameObject, pLevelManagerComponent)
 {
 	if (character != Character::Ugg && character != Character::Wrongway)
 	{

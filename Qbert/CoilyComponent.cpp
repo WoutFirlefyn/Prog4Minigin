@@ -9,8 +9,8 @@
 
 bool CoilyComponent::m_IsEgg{ true };
 
-CoilyComponent::CoilyComponent(dae::GameObject* pGameObject) 
-	: CharacterComponent(pGameObject)
+CoilyComponent::CoilyComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent)
+	: CharacterComponent(pGameObject, pLevelManagerComponent)
 {
 }
 

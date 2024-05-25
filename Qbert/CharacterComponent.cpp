@@ -1,13 +1,15 @@
 #include "CharacterComponent.h"
 #include "GraphicsComponent.h"
+#include "LevelManagerComponent.h"
 #include "CharacterStates.h"
 #include "GameObject.h"
 
 std::unique_ptr<dae::Subject<Character, MovementInfo>> CharacterComponent::MoveStateChanged{ std::make_unique<dae::Subject<Character, MovementInfo>>() };
 std::unique_ptr<dae::Subject<Character, dae::GameObject*>> CharacterComponent::CharacterSpawned{ std::make_unique<dae::Subject<Character, dae::GameObject*>>() };
 
-CharacterComponent::CharacterComponent(dae::GameObject* pGameObject) 
+CharacterComponent::CharacterComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent)
 	: BaseComponent(pGameObject)
+	, m_pLevelManagerComponent{ pLevelManagerComponent }
 {
 }
 

@@ -27,14 +27,14 @@ void UggWrongwayJumpState::Update()
 {
 	if (Jump())
 	{
-		switch (m_NextTileType)
-		{
-		case TileType::Tile:
-			return SetState(std::make_unique<UggWrongwayIdleState>(m_pCharacter));
-		case TileType::Disk:
-		case TileType::None:
-			return SetState(std::make_unique<UggWrongwayDeathState>(m_pCharacter));
-		}
+		return SetState(std::make_unique<UggWrongwayIdleState>(m_pCharacter));
+		//switch (m_NextTileType)
+		//{
+		//case TileType::Tile:
+		//case TileType::Disk:
+		//case TileType::None:
+		//	return SetState(std::make_unique<UggWrongwayDeathState>(m_pCharacter));
+		//}
 	}
 }
 

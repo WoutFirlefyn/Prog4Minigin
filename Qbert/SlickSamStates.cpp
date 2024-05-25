@@ -36,6 +36,7 @@ void SlickSamIdleState::Notify(Character character, Character otherCharacter)
 		MovementInfo movementInfo{};
 		movementInfo.state = MovementState::Fall;
 		m_pCharacter->MoveStateChanged->NotifyObservers(slickSamCharacter, movementInfo);
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::SlickSamCaught, 0.2f);
 		return SetState(std::make_unique<SlickSamDeathState>(m_pCharacter));
 	}
 	default:

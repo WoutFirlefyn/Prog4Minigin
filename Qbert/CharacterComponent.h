@@ -56,6 +56,20 @@ struct MovementInfo
 			return MovementInfo{};
 		return movementInfoIt->second;
 	}
+
+	static MovementInfo GetMovementInfo(const glm::ivec2& offset)
+	{
+		auto it = std::find_if(m_MovementInfos.begin(), m_MovementInfos.end(),
+			[&offset](const auto& pair)
+			{
+				return pair.second.indexOffset == offset;
+			});
+
+		if (it == m_MovementInfos.end())
+			return MovementInfo();
+
+		return it->second;
+	}
 private:
 	MovementInfo(MovementDirection dir, const glm::vec3& vec, const glm::ivec2& offset)
 		: direction(dir)
@@ -68,10 +82,11 @@ private:
 
 enum class TileType;
 class CharacterState;
+class LevelManagerComponent;
 class CharacterComponent : public dae::BaseComponent
 {
 public:
-	CharacterComponent(dae::GameObject* pGameObject);
+	CharacterComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);
 	virtual ~CharacterComponent() override = default;		
 
 	CharacterComponent(const CharacterComponent& other) = delete;
@@ -90,12 +105,14 @@ public:
 	static std::unique_ptr<dae::Subject<Character, MovementInfo>> MoveStateChanged;
 	static std::unique_ptr<dae::Subject<Character, dae::GameObject*>> CharacterSpawned;
 protected:
-	Character m_Character{ Character::None };	
+	Character m_Character{ Character::None };
 	std::vector<glm::ivec2> m_vSpawnPositions{};
 
 	friend class CharacterState;
 	void SetState(std::unique_ptr<CharacterState>&& pNewState);
+	LevelManagerComponent* GetLevelManagerComponent() const { return m_pLevelManagerComponent; };
 private:
 	std::unique_ptr<CharacterState> m_pState{ nullptr };
+	LevelManagerComponent* m_pLevelManagerComponent{ nullptr };
 };
 

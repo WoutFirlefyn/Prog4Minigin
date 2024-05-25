@@ -4,7 +4,7 @@
 class UggWrongwayComponent : public CharacterComponent, public dae::Observer<Character, MovementInfo>
 {
 public:
-	UggWrongwayComponent(dae::GameObject* pGameObject, Character character);
+	UggWrongwayComponent(dae::GameObject* pGameObject, Character character, LevelManagerComponent* pLevelManagerComponent);
 	virtual ~UggWrongwayComponent() override;
 
 	UggWrongwayComponent(const UggWrongwayComponent& other) = delete;

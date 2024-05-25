@@ -61,14 +61,16 @@ public:
 
 	static int GetRoundNr() { return m_CurrentRound; }
 
-	static std::unique_ptr<dae::Subject<Character, TileType>> CharacterStartedJumping;
+	TileType GetNextTileType(Character character, MovementInfo movementInfo) const;
+	MovementInfo GetDirectionToNearestQbert() const;
+
 	static std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
 	static std::unique_ptr<dae::Subject<bool>> TileChanged;
 private:
-
 	bool AreAllTilesCovered() const;
 	void LandOnTile(Character character, TileComponent* pTileComponent);
 	glm::vec3 GetTilePos(glm::ivec2 tileIdx) const;
+	int CalculateManhattanDistance(const glm::ivec2& deltaPos) const;
 
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
 	dae::Subject<Character, dae::GameObject*>* m_pCharacterSpawnedSubject{ nullptr };

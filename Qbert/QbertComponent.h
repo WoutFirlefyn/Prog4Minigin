@@ -7,7 +7,7 @@
 class QbertComponent final : public CharacterComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>
 {
 public:
-	QbertComponent(dae::GameObject* pGameObject);	
+	QbertComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);
 	virtual ~QbertComponent() override;				
 
 	QbertComponent(const QbertComponent& other) = delete;
@@ -17,7 +17,7 @@ public:
 
 	virtual void Init() override;
 
-	void AddObserver(dae::Subject<bool>* pTileChangedSubject, dae::Subject<Character, TileType>* pCharacterStartedJumpingSubject);
+	void AddObserver(dae::Subject<bool>* pTileChangedSubject);
 	// MoveStateChanged
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
 	// TileChanged

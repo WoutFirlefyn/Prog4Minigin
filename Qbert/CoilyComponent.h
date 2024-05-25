@@ -7,7 +7,7 @@
 class CoilyComponent final : public CharacterComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<Character, dae::GameObject*>
 {
 public:
-	CoilyComponent(dae::GameObject* pGameObject);
+	CoilyComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);
 	virtual ~CoilyComponent() override;
 
 	CoilyComponent(const CoilyComponent& other) = delete;
