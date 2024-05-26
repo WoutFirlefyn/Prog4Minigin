@@ -16,10 +16,10 @@ public:
 	CoilyComponent& operator=(CoilyComponent&& other) noexcept = delete;
 
 	virtual void Init() override;
+	virtual void LateUpdate() override;
 
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
 	virtual void Notify(Character character, dae::GameObject* pCharacterGameObject) override;
-	virtual void Notify(bool roundFinished) override;
 
 	static bool IsEgg() { return m_IsEgg; }
 private:

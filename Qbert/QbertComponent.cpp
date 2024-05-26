@@ -27,9 +27,13 @@ void QbertComponent::Init()
 	SetState(std::make_unique<QbertSpawnState>(this));
 }
 
-void QbertComponent::AddObserver(dae::Subject<bool>* /*pTileChangedSubject*/)
+void QbertComponent::LateUpdate()
 {
-	//m_pTileChangedSubject = pTileChangedSubject;
+	if (m_ResetCharacter)
+	{
+		m_ResetCharacter = false;
+		SetState(std::make_unique<QbertResetState>(this), false);
+	}
 }
 
 void QbertComponent::Notify(Character character, MovementInfo movementInfo)
@@ -46,10 +50,4 @@ void QbertComponent::Notify(Character character, MovementInfo movementInfo)
 	default:
 		break;
 	}
-}
-
-void QbertComponent::Notify(bool roundFinished)
-{
-	if (roundFinished)
-		SetState(std::make_unique<QbertResetState>(this), false);
 }

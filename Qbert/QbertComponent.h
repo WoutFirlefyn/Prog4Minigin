@@ -4,7 +4,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-class QbertComponent final : public CharacterComponent, public dae::Observer<Character, MovementInfo>/*, public dae::Observer<bool>*/
+class QbertComponent final : public CharacterComponent, public dae::Observer<Character, MovementInfo>
 {
 public:
 	QbertComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);
@@ -16,20 +16,15 @@ public:
 	QbertComponent& operator=(QbertComponent&& other) noexcept = delete;
 
 	virtual void Init() override;
-
-	void AddObserver(dae::Subject<bool>* pTileChangedSubject);
+	virtual void LateUpdate() override;
+	
 	// MoveStateChanged
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
-	// TileChanged
-	virtual void Notify(bool roundFinished) override;
-	//virtual void Notify(bool roundFinished) override;
-	//void SubjectDestroyed(dae::Subject<bool>* pSubject);
 
 	int GetLives() const { return m_Lives; }
 
 	std::unique_ptr<dae::Subject<>> PlayerDied;
 private:
-	//dae::Subject<bool>* m_pTileChangedSubject{ nullptr };
 	int m_Lives{ 3 };
 };
 

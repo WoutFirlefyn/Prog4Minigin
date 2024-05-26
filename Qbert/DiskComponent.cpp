@@ -3,6 +3,7 @@
 #include "GraphicsComponent.h"
 #include "TileComponent.h"
 #include "CharacterComponent.h"
+#include "LevelManagerComponent.h"
 #include "GameObject.h"
 #include "GameTime.h"
 #include "ServiceLocator.h"
@@ -40,7 +41,7 @@ void DiskComponent::Update()
 	if (m_AccumSec > secondsPerFrame)
 	{
 		m_AccumSec -= secondsPerFrame;
-		m_pSpritesheetComponent->MoveSourceRect((m_pSpritesheetComponent->GetCurrCol() + 1) % 4, 0);
+		m_pSpritesheetComponent->MoveSourceRect((m_pSpritesheetComponent->GetCurrCol() + 1) % 4, LevelManagerComponent::GetRoundNr());
 	}
 
 	if (m_Character == Character::None)

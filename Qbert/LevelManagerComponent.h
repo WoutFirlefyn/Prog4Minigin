@@ -91,7 +91,8 @@ private:
 
 	std::vector<dae::GameObject*> m_vInactiveDisks;
 
-	glm::ivec2 m_TileSize{};
+	glm::ivec2 m_TileSize{0};
+	glm::ivec2 m_DiskSize{0};
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };
 	static int m_CurrentRound;

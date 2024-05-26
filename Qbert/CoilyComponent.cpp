@@ -31,6 +31,15 @@ void CoilyComponent::Init()
 	SetState(std::make_unique<CoilySpawnState>(this));
 }
 
+void CoilyComponent::LateUpdate()
+{
+	if (m_ResetCharacter)
+	{
+		m_ResetCharacter = false;
+		SetState(std::make_unique<CoilyResetState>(this), false);
+	}
+}
+
 void CoilyComponent::Notify(Character character, MovementInfo movementInfo)
 {
 	if (character != m_Character)
@@ -52,10 +61,4 @@ void CoilyComponent::Notify(Character character, dae::GameObject*)
 
 	m_IsEgg = true;
 	m_AmountOfJumps = 0;
-}
-
-void CoilyComponent::Notify(bool roundFinished)
-{
-	if (roundFinished)
-		SetState(std::make_unique<CoilyResetState>(this), false);
 }

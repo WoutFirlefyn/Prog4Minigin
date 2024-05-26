@@ -12,6 +12,7 @@ public:
 	virtual void Update() {}
 	virtual void OnEnter() {}
 	virtual void OnExit() {}
+
 protected:
 	CharacterState(CharacterComponent* pCharacter) : m_pCharacter{ pCharacter } {}
 	CharacterComponent* m_pCharacter{ nullptr };
@@ -76,6 +77,6 @@ protected:
 	bool Wait();
 private:
 	float m_AccumSec{};
-	float m_PauseDuration{ 1.f };
+	float m_PauseDuration{ 2.5f };
 };
 

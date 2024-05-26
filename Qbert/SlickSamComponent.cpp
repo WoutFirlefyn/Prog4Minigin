@@ -33,6 +33,15 @@ void SlickSamComponent::Init()
 	SetState(std::make_unique<SlickSamSpawnState>(this));
 }
 
+void SlickSamComponent::LateUpdate()
+{
+	if (m_ResetCharacter)
+	{
+		m_ResetCharacter = false;
+		SetState(std::make_unique<SlickSamResetState>(this), false);
+	}
+}
+
 // MoveStateChanged
 void SlickSamComponent::Notify(Character character, MovementInfo movementInfo)
 {
@@ -41,10 +50,4 @@ void SlickSamComponent::Notify(Character character, MovementInfo movementInfo)
 
 	if (movementInfo.state == MovementState::End)
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);
-}
-
-void SlickSamComponent::Notify(bool roundFinished)
-{
-	if (roundFinished)
-		SetState(std::make_unique<SlickSamResetState>(this), false);
 }

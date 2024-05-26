@@ -97,8 +97,8 @@ public:
 	virtual void Update() override;
 
 	// TileChanged
-	virtual void Notify(bool roundFinished) = 0;
-	void SubjectDestroyed(dae::Subject<bool>* pSubject);
+	virtual void Notify(bool roundFinished) override;
+	virtual void SubjectDestroyed(dae::Subject<bool>* pSubject) override;
 
 	void Move(MovementInfo movementInfo);
 
@@ -111,6 +111,7 @@ public:
 protected:
 	Character m_Character{ Character::None };
 	std::vector<glm::ivec2> m_vSpawnPositions{};
+	bool m_ResetCharacter{ false };
 
 	friend class CharacterState;
 	void SetState(std::unique_ptr<CharacterState>&& pNewState, bool callOnExit = true);

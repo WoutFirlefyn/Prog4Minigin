@@ -34,6 +34,15 @@ void UggWrongwayComponent::Init()
 	SetState(std::make_unique<UggWrongwaySpawnState>(this));
 }
 
+void UggWrongwayComponent::LateUpdate()
+{
+	if (m_ResetCharacter)
+	{
+		m_ResetCharacter = false;
+		SetState(std::make_unique<UggWrongwayResetState>(this), false);
+	}
+}
+
 // MoveStateChanged
 void UggWrongwayComponent::Notify(Character character, MovementInfo movementInfo)
 {
@@ -42,12 +51,6 @@ void UggWrongwayComponent::Notify(Character character, MovementInfo movementInfo
 
 	if (movementInfo.state == MovementState::End)
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);	
-}
-
-void UggWrongwayComponent::Notify(bool roundFinished)
-{
-	if (roundFinished)
-		SetState(std::make_unique<UggWrongwayResetState>(this), false);
 }
 
 glm::ivec2 UggWrongwayComponent::GetSpawnPosition() const
