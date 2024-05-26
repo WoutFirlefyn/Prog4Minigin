@@ -41,7 +41,7 @@ void UggWrongwayComponent::Notify(Character character, MovementInfo movementInfo
 		return;
 
 	if (movementInfo.state == MovementState::End)
-		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);
+		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);	
 }
 
 glm::ivec2 UggWrongwayComponent::GetSpawnPosition() const

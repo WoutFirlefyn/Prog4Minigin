@@ -20,21 +20,16 @@ void UggWrongwayIdleState::Update()
 		vDirections = { MovementDirection::Up, MovementDirection::DiagonalRight };
 	else
 		vDirections = { MovementDirection::Left, MovementDirection::DiagonalLeft };
-	return SetState(std::make_unique<UggWrongwayJumpState>(m_pCharacter, MovementInfo::GetMovementInfo(vDirections[rand() % vDirections.size()])));
+	return SetState(std::make_unique<UggWrongwayJumpState>(m_pCharacter, MovementInfo::GetMovementInfo(vDirections[rand() % vDirections.size()]), m_AmountOfJumps));
 }
 
 void UggWrongwayJumpState::Update()
 {
 	if (Jump())
 	{
-		return SetState(std::make_unique<UggWrongwayIdleState>(m_pCharacter));
-		//switch (m_NextTileType)
-		//{
-		//case TileType::Tile:
-		//case TileType::Disk:
-		//case TileType::None:
-		//	return SetState(std::make_unique<UggWrongwayDeathState>(m_pCharacter));
-		//}
+		if (m_AmountOfJumps == 7)
+			return SetState(std::make_unique<UggWrongwayDeathState>(m_pCharacter));
+		return SetState(std::make_unique<UggWrongwayIdleState>(m_pCharacter, m_AmountOfJumps));
 	}
 }
 
@@ -48,10 +43,19 @@ void UggWrongwayJumpState::OnEnter()
 	);
 }
 
+void UggWrongwayJumpState::OnExit()
+{
+	if (m_AmountOfJumps == 7)
+		m_MovementInfo.state = MovementState::Fall;
+	else
+		m_MovementInfo.state = MovementState::End;
+	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
+}
+
 void UggWrongwaySpawnState::Update()
 {
 	if (Spawn())
-		return SetState(std::make_unique<UggWrongwayIdleState>(m_pCharacter));
+		return SetState(std::make_unique<UggWrongwayIdleState>(m_pCharacter, 0));
 }
 
 void UggWrongwaySpawnState::OnEnter()

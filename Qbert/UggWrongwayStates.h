@@ -4,9 +4,14 @@
 class UggWrongwayIdleState : public IdleState
 {
 public:
-	UggWrongwayIdleState(CharacterComponent* pCharacter) : IdleState(pCharacter) {}
+	UggWrongwayIdleState(CharacterComponent* pCharacter, int amountOfJumps) 
+		: IdleState(pCharacter)
+		, m_AmountOfJumps{ amountOfJumps }
+	{
+	}
 	virtual void Update() override;
 private:
+	int m_AmountOfJumps{};
 	float m_AccumSec{ 0.f };
 	float m_TimeBetweenJumps{ 1.f };
 };
@@ -14,9 +19,16 @@ private:
 class UggWrongwayJumpState : public JumpState
 {
 public:
-	UggWrongwayJumpState(CharacterComponent* pCharacter, MovementInfo movementInfo) : JumpState(pCharacter, movementInfo) {}
+	UggWrongwayJumpState(CharacterComponent* pCharacter, MovementInfo movementInfo, int amountOfJumps)
+		: JumpState(pCharacter, movementInfo)
+		, m_AmountOfJumps{ ++amountOfJumps }
+	{
+	}
 	virtual void Update() override;
 	virtual void OnEnter() override;
+	virtual void OnExit() override;
+private:
+	int m_AmountOfJumps{};
 };
 
 class UggWrongwaySpawnState : public SpawnState

@@ -269,16 +269,23 @@ MovementInfo LevelManagerComponent::GetDirectionToNearestQbert() const
         if (CalculateManhattanDistance(deltaTileIdx) > CalculateManhattanDistance(deltaTileIdx2))
             deltaTileIdx = deltaTileIdx2;
     }
+    glm::ivec2 option1 = { (deltaTileIdx.x < 0) ? 1 : -1, 0 };
+    glm::ivec2 option2 = { 0, (deltaTileIdx.y < 0) ? 1 : -1 };
 
     if (std::abs(deltaTileIdx.x) > std::abs(deltaTileIdx.y)) 
+        deltaTileIdx = option1;
+    else if (std::abs(deltaTileIdx.x) < std::abs(deltaTileIdx.y))
+        deltaTileIdx = option2;
+    else
     {
-        deltaTileIdx.x = (deltaTileIdx.x < 0) ? 1 : -1;
-        deltaTileIdx.y = 0;
-    }
-    else 
-    {
-        deltaTileIdx.x = 0;
-        deltaTileIdx.y = (deltaTileIdx.y < 0) ? 1 : -1;
+        bool chooseOption1First = rand() % 2 == 0;
+        glm::ivec2 firstChoice = chooseOption1First ? option1 : option2;
+        glm::ivec2 secondChoice = chooseOption1First ? option2 : option1;
+
+        if (m_Tiles.find(coilyTilePairIt->second.tileIndex + firstChoice) != m_Tiles.end())
+            deltaTileIdx = firstChoice;
+        else
+            deltaTileIdx = secondChoice;
     }
 
     return MovementInfo::GetMovementInfo(deltaTileIdx);
