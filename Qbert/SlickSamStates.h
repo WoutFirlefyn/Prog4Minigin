@@ -39,3 +39,10 @@ private:
 	float m_AccumSec{};
 	float m_RespawnDelay{ 5.f };
 };
+
+class SlickSamResetState : public ResetState
+{
+public:
+	SlickSamResetState(CharacterComponent* pCharacter) : ResetState(pCharacter) {}
+	virtual void Update() override;
+};

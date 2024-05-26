@@ -5,11 +5,6 @@
 #include "LevelManagerComponent.h"
 #include "GraphicsComponent.h"
 
-CharacterState::CharacterState(CharacterComponent* pCharacter)
-	: m_pCharacter{ pCharacter }
-{
-}
-
 void CharacterState::SetState(std::unique_ptr<CharacterState>&& pNewState)
 {
 	m_pCharacter->SetState(std::move(pNewState));
@@ -106,4 +101,10 @@ void IdleState::SubjectDestroyed(dae::Subject<Character, Character>* pSubject)
 {
 	if (m_pCharactersCollide == pSubject)
 		m_pCharactersCollide = nullptr;
+}
+
+bool ResetState::Wait()
+{
+	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
+	return m_AccumSec >= m_PauseDuration;
 }

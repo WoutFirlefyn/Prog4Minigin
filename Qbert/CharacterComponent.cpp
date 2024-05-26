@@ -11,6 +11,14 @@ CharacterComponent::CharacterComponent(dae::GameObject* pGameObject, LevelManage
 	: BaseComponent(pGameObject)
 	, m_pLevelManagerComponent{ pLevelManagerComponent }
 {
+	m_pTileChangedSubject = m_pLevelManagerComponent->TileChanged.get();
+	m_pTileChangedSubject->AddObserver(this);
+}
+
+CharacterComponent::~CharacterComponent()
+{
+	if(m_pTileChangedSubject)
+		m_pTileChangedSubject->RemoveObserver(this);
 }
 
 void CharacterComponent::Update()
@@ -18,14 +26,20 @@ void CharacterComponent::Update()
 	m_pState->Update();
 }
 
+void CharacterComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
+{
+	if (pSubject == m_pTileChangedSubject)
+		m_pTileChangedSubject = nullptr;
+}
+
 void CharacterComponent::Move(MovementInfo movementInfo)
 {
 	m_pState->HandleInput(movementInfo);
 } 
 
-void CharacterComponent::SetState(std::unique_ptr<CharacterState>&& pNewState)
+void CharacterComponent::SetState(std::unique_ptr<CharacterState>&& pNewState, bool callOnExit)
 {
-	if (m_pState)
+	if (m_pState && callOnExit)
 		m_pState->OnExit();
 	m_pState = std::move(pNewState);
 	if (m_pState)

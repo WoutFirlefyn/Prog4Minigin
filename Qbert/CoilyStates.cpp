@@ -79,3 +79,9 @@ void CoilyDeathState::OnEnter()
 	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::CoilyFall, 0.2f);
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
 }
+
+void CoilyResetState::Update()
+{
+	if (Wait())
+		return SetState(std::make_unique<CoilySpawnState>(m_pCharacter));
+}

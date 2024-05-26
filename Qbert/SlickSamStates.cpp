@@ -104,3 +104,9 @@ void SlickSamDeathState::OnEnter()
 {
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
 }
+
+void SlickSamResetState::Update()
+{
+	if (Wait())
+		return SetState(std::make_unique<SlickSamSpawnState>(m_pCharacter));
+}

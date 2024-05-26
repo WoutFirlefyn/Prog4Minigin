@@ -53,3 +53,9 @@ void CoilyComponent::Notify(Character character, dae::GameObject*)
 	m_IsEgg = true;
 	m_AmountOfJumps = 0;
 }
+
+void CoilyComponent::Notify(bool roundFinished)
+{
+	if (roundFinished)
+		SetState(std::make_unique<CoilyResetState>(this), false);
+}

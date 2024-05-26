@@ -83,11 +83,11 @@ private:
 enum class TileType;
 class CharacterState;
 class LevelManagerComponent;
-class CharacterComponent : public dae::BaseComponent
+class CharacterComponent : public dae::BaseComponent, public dae::Observer<bool>
 {
 public:
 	CharacterComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);
-	virtual ~CharacterComponent() override = default;		
+	virtual ~CharacterComponent() override;		
 
 	CharacterComponent(const CharacterComponent& other) = delete;
 	CharacterComponent(CharacterComponent&& other) noexcept = delete;
@@ -95,6 +95,10 @@ public:
 	CharacterComponent& operator=(CharacterComponent&& other) noexcept = delete;
 
 	virtual void Update() override;
+
+	// TileChanged
+	virtual void Notify(bool roundFinished) = 0;
+	void SubjectDestroyed(dae::Subject<bool>* pSubject);
 
 	void Move(MovementInfo movementInfo);
 
@@ -109,10 +113,11 @@ protected:
 	std::vector<glm::ivec2> m_vSpawnPositions{};
 
 	friend class CharacterState;
-	void SetState(std::unique_ptr<CharacterState>&& pNewState);
+	void SetState(std::unique_ptr<CharacterState>&& pNewState, bool callOnExit = true);
 	LevelManagerComponent* GetLevelManagerComponent() const { return m_pLevelManagerComponent; };
 private:
 	std::unique_ptr<CharacterState> m_pState{ nullptr };
 	LevelManagerComponent* m_pLevelManagerComponent{ nullptr };
+	dae::Subject<bool>* m_pTileChangedSubject{ nullptr };
 };
 

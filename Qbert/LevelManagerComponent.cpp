@@ -204,8 +204,14 @@ void LevelManagerComponent::Notify(bool roundFinished)
 
         dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::RoundCompleteTune);
 
+        //for (auto& [character, index] : m_Characters)
+        //    index =
+
         for (const auto& [index, pTile] : m_Tiles)
-            pTile->GetComponent<TileComponent>()->Reset();
+        {
+            if (pTile->HasComponent<TileComponent>())
+                pTile->GetComponent<TileComponent>()->Reset();
+        }
     }
 }
 

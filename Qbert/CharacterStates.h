@@ -13,7 +13,7 @@ public:
 	virtual void OnEnter() {}
 	virtual void OnExit() {}
 protected:
-	CharacterState(CharacterComponent* pCharacter);
+	CharacterState(CharacterComponent* pCharacter) : m_pCharacter{ pCharacter } {}
 	CharacterComponent* m_pCharacter{ nullptr };
 
 	void SetState(std::unique_ptr<CharacterState>&& pNewState);
@@ -66,5 +66,16 @@ class DeathState : public CharacterState
 {
 public:
 	DeathState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
+};
+
+class ResetState : public CharacterState
+{
+public:
+	ResetState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
+protected:
+	bool Wait();
+private:
+	float m_AccumSec{};
+	float m_PauseDuration{ 1.f };
 };
 

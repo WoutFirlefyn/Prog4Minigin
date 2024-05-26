@@ -19,6 +19,7 @@ public:
 
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
 	virtual void Notify(Character character, dae::GameObject* pCharacterGameObject) override;
+	virtual void Notify(bool roundFinished) override;
 
 	static bool IsEgg() { return m_IsEgg; }
 private:

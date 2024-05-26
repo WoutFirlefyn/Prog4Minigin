@@ -61,3 +61,10 @@ public:
 	virtual void Update() override;
 	virtual void OnEnter() override;
 };
+
+class QbertResetState : public ResetState
+{
+public:
+	QbertResetState(CharacterComponent* pCharacter) : ResetState(pCharacter) {}
+	virtual void Update() override;
+};

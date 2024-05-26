@@ -42,3 +42,9 @@ void SlickSamComponent::Notify(Character character, MovementInfo movementInfo)
 	if (movementInfo.state == MovementState::End)
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);
 }
+
+void SlickSamComponent::Notify(bool roundFinished)
+{
+	if (roundFinished)
+		SetState(std::make_unique<SlickSamResetState>(this), false);
+}

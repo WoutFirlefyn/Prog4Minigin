@@ -38,3 +38,10 @@ private:
 	float m_AccumSec{};
 	float m_RespawnDelay{ 5.f };
 };
+
+class CoilyResetState : public ResetState
+{
+public:
+	CoilyResetState(CharacterComponent* pCharacter) : ResetState(pCharacter) {}
+	virtual void Update() override;
+};

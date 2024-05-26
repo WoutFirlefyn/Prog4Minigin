@@ -61,10 +61,11 @@ void UggWrongwaySpawnState::Update()
 void UggWrongwaySpawnState::OnEnter()
 {
 	SpawnState::OnEnter();
-	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(!GetGameObject()->GetComponent<UggWrongwayComponent>()->HasSpawnedLeft(), static_cast<int>(m_pCharacter->GetCharacter()) - static_cast<int>(Character::Ugg));
+	bool hasSpawnedLeft = GetGameObject()->GetComponent<UggWrongwayComponent>()->HasSpawnedLeft();
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(!hasSpawnedLeft, static_cast<int>(m_pCharacter->GetCharacter()) - static_cast<int>(Character::Ugg));
 
 	m_TargetPos = GetGameObject()->GetLocalPosition();
-	m_StartPos = m_TargetPos - glm::vec3{ -m_HeightOffset, -m_HeightOffset, 0.f };
+	m_StartPos = m_TargetPos + glm::vec3{ (hasSpawnedLeft ? -m_HeightOffset : m_HeightOffset), m_HeightOffset, 0.f };
 	GetGameObject()->SetPosition(m_StartPos);
 }
 
@@ -86,4 +87,10 @@ void UggWrongwayDeathState::Update()
 void UggWrongwayDeathState::OnEnter()
 {
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
+}
+
+void UggWrongwayResetState::Update()
+{
+	if (Wait())
+		return SetState(std::make_unique<UggWrongwaySpawnState>(m_pCharacter));
 }

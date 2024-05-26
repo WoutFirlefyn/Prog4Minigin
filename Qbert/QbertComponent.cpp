@@ -15,8 +15,6 @@ QbertComponent::QbertComponent(dae::GameObject* pGameObject, LevelManagerCompone
 QbertComponent::~QbertComponent()
 {
 	MoveStateChanged->RemoveObserver(this);
-	if (m_pTileChangedSubject)
-		m_pTileChangedSubject->RemoveObserver(this);
 }
 
 void QbertComponent::Init()
@@ -24,15 +22,14 @@ void QbertComponent::Init()
 	m_vSpawnPositions.push_back({ 0,0 });
 
 	MoveStateChanged->AddObserver(this);
-	m_pTileChangedSubject->AddObserver(this);
 
 	m_Character = Character::Qbert1;
 	SetState(std::make_unique<QbertSpawnState>(this));
 }
 
-void QbertComponent::AddObserver(dae::Subject<bool>* pTileChangedSubject)
+void QbertComponent::AddObserver(dae::Subject<bool>* /*pTileChangedSubject*/)
 {
-	m_pTileChangedSubject = pTileChangedSubject;
+	//m_pTileChangedSubject = pTileChangedSubject;
 }
 
 void QbertComponent::Notify(Character character, MovementInfo movementInfo)
@@ -54,11 +51,5 @@ void QbertComponent::Notify(Character character, MovementInfo movementInfo)
 void QbertComponent::Notify(bool roundFinished)
 {
 	if (roundFinished)
-		GetGameObject()->SetPosition(308, 193);
-}
-
-void QbertComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
-{
-	if (pSubject == m_pTileChangedSubject)
-		m_pTileChangedSubject = nullptr;
+		SetState(std::make_unique<QbertResetState>(this), false);
 }

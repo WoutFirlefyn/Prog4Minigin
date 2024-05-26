@@ -44,6 +44,12 @@ void UggWrongwayComponent::Notify(Character character, MovementInfo movementInfo
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);	
 }
 
+void UggWrongwayComponent::Notify(bool roundFinished)
+{
+	if (roundFinished)
+		SetState(std::make_unique<UggWrongwayResetState>(this), false);
+}
+
 glm::ivec2 UggWrongwayComponent::GetSpawnPosition() const
 {
 	return m_vSpawnPositions[m_SpawnedLeft];

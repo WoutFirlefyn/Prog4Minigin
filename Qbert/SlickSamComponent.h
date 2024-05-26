@@ -18,5 +18,6 @@ public:
 	virtual void Init() override;
 
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
+	virtual void Notify(bool roundFinished) override;
 };
 
