@@ -20,10 +20,11 @@ namespace dae
 	class SpritesheetComponent;
 }
 enum class Character;
-class DiskComponent final : public dae::BaseComponent, public dae::Observer<Disk, Character>
+class LevelManagerComponent;
+class DiskComponent final : public dae::BaseComponent, public dae::Observer<Disk, Character>, public dae::Observer<>
 {
 public:
-	DiskComponent(dae::GameObject* pGameObject, dae::GameObject* pTopTile);
+	DiskComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);
 	virtual ~DiskComponent() override;			
 
 	DiskComponent(const DiskComponent& other) = delete;
@@ -36,10 +37,15 @@ public:
 
 	virtual void Notify(Disk, Character) override;
 
+	virtual void Notify() override;
+	virtual void SubjectDestroyed(dae::Subject<>* pSubject) override;
+
 	static std::unique_ptr<dae::Subject<Disk, Character>> DiskStateChanged;
 private:
+	dae::Subject<>* m_pNewRoundStarted{ nullptr };
+
 	dae::SpritesheetComponent* m_pSpritesheetComponent{ nullptr };
-	dae::GameObject* m_pTopTile{ nullptr };
+	LevelManagerComponent* m_pLevelManagerComponent{ nullptr };
 	glm::vec3 m_StartPos{};
 	glm::vec3 m_EndPos{};
 	Character m_Character{};

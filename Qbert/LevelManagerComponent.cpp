@@ -38,21 +38,12 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
     // Initializing disks
     for (int i{}; i < m_AmountOfDisks; ++i)
     {
-        int row, col;
-        do
-        {
-            row = rand() % m_LevelLength;
-            col = -1;
-            if (rand() % 2 == 1)
-                std::swap(row, col);
-        } while (m_Tiles.count({ col,row }));
-
         auto disk = std::make_unique<dae::GameObject>();
         disk->AddComponent<dae::GraphicsComponent>("Disk Spritesheet.png");
         disk->AddComponent<dae::SpritesheetComponent>(4, 6);
-        disk->AddComponent<DiskComponent>(m_Tiles[{0,0}]);
+        disk->AddComponent<DiskComponent>(this);
 
-        m_Tiles[{col, row}] = scene.Add(std::move(disk));
+        m_Tiles[GetNewDiskIndex()] = scene.Add(std::move(disk));
     }
 }
 
@@ -259,18 +250,45 @@ MovementInfo LevelManagerComponent::GetDirectionToNearestQbert() const
             deltaTileIdx = deltaTileIdx2;
     }
 
-    if (std::abs(deltaTileIdx.x) > std::abs(deltaTileIdx.y)) 
-        deltaTileIdx = { (deltaTileIdx.x < 0) ? 1 : -1, 0 };
+    glm::ivec2 option1 = { (deltaTileIdx.x < 0) ? 1 : -1, 0 };
+    glm::ivec2 option2 = { 0, (deltaTileIdx.y < 0) ? 1 : -1 };
+
+    if (std::abs(deltaTileIdx.x) > std::abs(deltaTileIdx.y))
+        deltaTileIdx = option1;
+    else if (std::abs(deltaTileIdx.x) < std::abs(deltaTileIdx.y))
+        deltaTileIdx = option2;
     else
-        deltaTileIdx = { 0, (deltaTileIdx.y < 0) ? 1 : -1 };
+    {
+        bool chooseOption1First = rand() % 2 == 0;
+        glm::ivec2 firstChoice = chooseOption1First ? option1 : option2;
+        glm::ivec2 secondChoice = chooseOption1First ? option2 : option1;
+
+        if (m_Tiles.find(coilyTilePairIt->second.tileIndex + firstChoice) != m_Tiles.end())
+            deltaTileIdx = firstChoice;
+        else
+            deltaTileIdx = secondChoice;
+    }
 
     return MovementInfo::GetMovementInfo(deltaTileIdx);
 }
 
+glm::ivec2 LevelManagerComponent::GetNewDiskIndex() const
+{
+    glm::ivec2 idx;
+    do
+    {
+        idx.x = rand() % m_LevelLength;
+        idx.y = -1;
+        if (rand() % 2 == 1)
+            std::swap(idx.y, idx.x);
+    } while (m_Tiles.count({ idx.x,idx.y }));
+    return idx;
+}
+
 bool LevelManagerComponent::AreAllTilesCovered() const
 { 
-    //const int amountOfTiles = m_LevelLength * (m_LevelLength + 1) / 2;
-    return rand() % 4 == 0;/*TileComponent::GetMaxTileStage() * amountOfTiles == m_TilesCovered;*/
+    const int amountOfTiles = m_LevelLength * (m_LevelLength + 1) / 2;
+    return TileComponent::GetMaxTileStage() * amountOfTiles == m_TilesCovered;
 }
 
 void LevelManagerComponent::LandOnTile(Character character, TileComponent* pTileComponent)

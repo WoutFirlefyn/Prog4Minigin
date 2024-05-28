@@ -62,7 +62,9 @@ public:
 
 	static int GetRoundNr() { return m_CurrentRound; }
 	static bool IsRoundOver() { return m_RoundOver; }
+	glm::ivec2 GetTileSize() const { return m_TileSize; }
 
+	glm::vec3 GetTilePos(glm::ivec2 tileIdx) const;
 	TileType GetNextTileType(Character character, MovementInfo movementInfo) const;
 	MovementInfo GetDirectionToNearestQbert() const;
 
@@ -70,9 +72,9 @@ public:
 	std::unique_ptr<dae::Subject<bool>> TileChanged;
 	std::unique_ptr<dae::Subject<>> NewRoundStarted;
 private:
+	glm::ivec2 GetNewDiskIndex() const;
 	bool AreAllTilesCovered() const;
 	void LandOnTile(Character character, TileComponent* pTileComponent);
-	glm::vec3 GetTilePos(glm::ivec2 tileIdx) const;
 	int CalculateManhattanDistance(const glm::ivec2& deltaPos) const;
 
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };

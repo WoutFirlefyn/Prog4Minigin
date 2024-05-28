@@ -11,16 +11,20 @@
 
 std::unique_ptr<dae::Subject<Disk, Character>> DiskComponent::DiskStateChanged{ std::make_unique<dae::Subject<Disk, Character>>() };
 
-DiskComponent::DiskComponent(dae::GameObject* pGameObject, dae::GameObject* pTopTile)
+DiskComponent::DiskComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent)
 	: BaseComponent(pGameObject)
-	, m_pTopTile{ pTopTile }
+	, m_pLevelManagerComponent{ pLevelManagerComponent }
 	, m_Character{ Character::None }
 {
+	m_pNewRoundStarted = pLevelManagerComponent->NewRoundStarted.get();
+	m_pNewRoundStarted->AddObserver(this);
 }
 
 DiskComponent::~DiskComponent()
 {
 	DiskStateChanged->RemoveObserver(this);
+	if (m_pNewRoundStarted)
+		m_pNewRoundStarted->RemoveObserver(this);
 }
 
 void DiskComponent::Init()
@@ -67,22 +71,35 @@ void DiskComponent::Notify(Disk disk, Character character)
 	{
 	case DiskState::Start:
 		m_Character = character;
-		m_StartPos = GetGameObject()->GetLocalPosition();
 
-		const glm::ivec2 tileSize = m_pTopTile->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-		const glm::ivec2 diskSize = GetGameObject()->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-		const glm::vec3 offset = (glm::vec3{ tileSize.x * 0.5f, -tileSize.y, 0 } + glm::vec3{ -diskSize.x, diskSize.y, 0 } *0.5f) * GetGameObject()->GetWorldScale();
-		m_EndPos = m_pTopTile->GetLocalPosition() + offset;
+		m_StartPos = GetGameObject()->GetLocalPosition();
+		const glm::ivec2 tileSize = m_pLevelManagerComponent->GetTileSize();
+		m_EndPos = m_pLevelManagerComponent->GetTilePos({ -1,-1 }) + glm::vec3{ 0, tileSize.y / 2.f, 0 } *GetGameObject()->GetWorldScale();
 
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLift, 0.2f);
 		break;
 	case DiskState::Stop:
 		m_Character = Character::None;
+
 		GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
+
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLand, 0.2f);
 		break;
 	}
 
+}
+
+void DiskComponent::Notify()
+{
+	m_pSpritesheetComponent->MoveSourceRect(rand(), LevelManagerComponent::GetRoundNr());
+	m_Character = Character::None;
+	m_PlatformLerpValue = 0.f;
+}
+
+void DiskComponent::SubjectDestroyed(dae::Subject<>* pSubject)
+{
+	if (pSubject == m_pNewRoundStarted)
+		m_pNewRoundStarted = nullptr;
 }
 
 

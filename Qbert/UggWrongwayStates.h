@@ -10,6 +10,7 @@ public:
 	{
 	}
 	virtual void Update() override;
+	virtual void OnExit() override;
 private:
 	int m_AmountOfJumps{};
 	float m_AccumSec{ 0.f };

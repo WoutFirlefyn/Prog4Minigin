@@ -10,6 +10,9 @@
 
 void UggWrongwayIdleState::Update()
 {
+	if (m_AmountOfJumps == 7)
+		return SetState(std::make_unique<UggWrongwayDeathState>(m_pCharacter));
+
 	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
 	
 	if (m_AccumSec < m_TimeBetweenJumps)
@@ -23,14 +26,20 @@ void UggWrongwayIdleState::Update()
 	return SetState(std::make_unique<UggWrongwayJumpState>(m_pCharacter, MovementInfo::GetMovementInfo(vDirections[rand() % vDirections.size()]), m_AmountOfJumps));
 }
 
+void UggWrongwayIdleState::OnExit()
+{
+	if (m_AmountOfJumps == 7)
+	{
+		MovementInfo movementInfo{};
+		movementInfo.state = MovementState::Fall;
+		m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), movementInfo);
+	}
+}
+
 void UggWrongwayJumpState::Update()
 {
 	if (Jump())
-	{
-		if (m_AmountOfJumps == 7)
-			return SetState(std::make_unique<UggWrongwayDeathState>(m_pCharacter));
 		return SetState(std::make_unique<UggWrongwayIdleState>(m_pCharacter, m_AmountOfJumps));
-	}
 }
 
 void UggWrongwayJumpState::OnEnter()
@@ -45,10 +54,7 @@ void UggWrongwayJumpState::OnEnter()
 
 void UggWrongwayJumpState::OnExit()
 {
-	if (m_AmountOfJumps == 7)
-		m_MovementInfo.state = MovementState::Fall;
-	else
-		m_MovementInfo.state = MovementState::End;
+	m_MovementInfo.state = MovementState::End;
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
 }
 
