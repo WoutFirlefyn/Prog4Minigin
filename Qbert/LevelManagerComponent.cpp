@@ -8,16 +8,20 @@
 #include "DiskComponent.h"
 #include "ServiceLocator.h"
 #include "Sounds.h"
+#include "GameTime.h"
 #include <algorithm>
 
-std::unique_ptr<dae::Subject<bool>> LevelManagerComponent::TileChanged{ std::make_unique<dae::Subject<bool>>() };
 std::unique_ptr<dae::Subject<Character, Character>> LevelManagerComponent::CharactersCollide{ std::make_unique<dae::Subject<Character, Character>>() };
 int LevelManagerComponent::m_CurrentRound{ 0 };
+bool LevelManagerComponent::m_RoundOver{ false };
 LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene) : BaseComponent(pGameObject)
     , m_pMoveStateChangedSubject{ CharacterComponent::MoveStateChanged.get() }
     , m_pCharacterSpawnedSubject{ CharacterComponent::CharacterSpawned.get() }
     , m_pDiskStateChanged{ DiskComponent::DiskStateChanged.get() }
 {
+    TileChanged = std::make_unique<dae::Subject<bool>>();
+    NewRoundStarted = std::make_unique<dae::Subject<>>();
+
     // Initializing the tiles
     for (int i{}; i < m_LevelLength; ++i)
     {
@@ -26,7 +30,7 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
             auto tile = std::make_unique<dae::GameObject>();
             tile->AddComponent<dae::GraphicsComponent>("Qbert Cubes.png");
             tile->AddComponent<dae::SpritesheetComponent>(6, 3);
-            tile->AddComponent<TileComponent>();
+            tile->AddComponent<TileComponent>(this);
             m_Tiles[{j, i}] = scene.Add(std::move(tile));
         }
     }
@@ -80,6 +84,21 @@ void LevelManagerComponent::Init()
 
         pTile->SetParent(GetGameObject());
         pTile->SetPosition(GetTilePos(index));
+    }
+}
+
+void LevelManagerComponent::Update()
+{
+    if (!m_RoundOver)
+        return;
+
+    m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
+
+    if (m_AccumSec >= m_RoundOverDelay)
+    {
+        m_RoundOver = false;
+        m_AccumSec = 0;
+        NewRoundStarted->NotifyObservers();
     }
 }
 
@@ -148,23 +167,15 @@ void LevelManagerComponent::Notify(Character character, dae::GameObject* pCharac
         m_Characters[character].isMoving = true;
 
     glm::ivec2 tileIdx{ pCharacterGameObject->GetComponent<CharacterComponent>()->GetSpawnPosition() };
-    glm::vec3 offset{GetGameObject()->GetLocalScale()};
-    switch (character)
-    {
-    case Character::Qbert1:
-    case Character::Qbert2:
-    case Character::Slick:
-    case Character::Sam:
-    case Character::Ugg:
-    case Character::Wrongway:
-        offset *= glm::vec3{ 8, -6, 0 };
-        break;
-    case Character::Coily:
-        offset *= glm::vec3{ 8, -20, 0 };
-        break;
-    default:
-        return;
-    }
+    glm::vec3 offset{};
+
+    if (character == Character::Coily)
+        offset = glm::vec3{ 8, -20, 0 };
+    else
+        offset = glm::vec3{ 8, -6, 0 };
+
+    offset *= GetGameObject()->GetLocalScale();
+
     pCharacterGameObject->SetPosition(GetTilePos(tileIdx) + GetGameObject()->GetLocalPosition() + offset);
     m_Characters[character].tileIndex = tileIdx;
 }
@@ -179,16 +190,11 @@ void LevelManagerComponent::Notify(bool roundFinished)
 {
     if (roundFinished)
     {
+        m_RoundOver = true;
         ++m_CurrentRound;
         m_TilesCovered = 0;
 
         dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::RoundCompleteTune);
-
-        for (const auto& [index, pTile] : m_Tiles)
-        {
-            if (pTile->HasComponent<TileComponent>())
-                pTile->GetComponent<TileComponent>()->Reset();
-        }
     }
 }
 
@@ -252,32 +258,19 @@ MovementInfo LevelManagerComponent::GetDirectionToNearestQbert() const
         if (CalculateManhattanDistance(deltaTileIdx) > CalculateManhattanDistance(deltaTileIdx2))
             deltaTileIdx = deltaTileIdx2;
     }
-    glm::ivec2 option1 = { (deltaTileIdx.x < 0) ? 1 : -1, 0 };
-    glm::ivec2 option2 = { 0, (deltaTileIdx.y < 0) ? 1 : -1 };
 
     if (std::abs(deltaTileIdx.x) > std::abs(deltaTileIdx.y)) 
-        deltaTileIdx = option1;
-    else if (std::abs(deltaTileIdx.x) < std::abs(deltaTileIdx.y))
-        deltaTileIdx = option2;
+        deltaTileIdx = { (deltaTileIdx.x < 0) ? 1 : -1, 0 };
     else
-    {
-        bool chooseOption1First = rand() % 2 == 0;
-        glm::ivec2 firstChoice = chooseOption1First ? option1 : option2;
-        glm::ivec2 secondChoice = chooseOption1First ? option2 : option1;
-
-        if (m_Tiles.find(coilyTilePairIt->second.tileIndex + firstChoice) != m_Tiles.end())
-            deltaTileIdx = firstChoice;
-        else
-            deltaTileIdx = secondChoice;
-    }
+        deltaTileIdx = { 0, (deltaTileIdx.y < 0) ? 1 : -1 };
 
     return MovementInfo::GetMovementInfo(deltaTileIdx);
 }
 
 bool LevelManagerComponent::AreAllTilesCovered() const
 { 
-    const int amountOfTiles = m_LevelLength * (m_LevelLength + 1) / 2;
-    return TileComponent::GetMaxTileStage() * amountOfTiles == m_TilesCovered;
+    //const int amountOfTiles = m_LevelLength * (m_LevelLength + 1) / 2;
+    return rand() % 4 == 0;/*TileComponent::GetMaxTileStage() * amountOfTiles == m_TilesCovered;*/
 }
 
 void LevelManagerComponent::LandOnTile(Character character, TileComponent* pTileComponent)

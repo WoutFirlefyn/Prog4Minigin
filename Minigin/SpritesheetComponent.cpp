@@ -9,6 +9,8 @@ dae::SpritesheetComponent::SpritesheetComponent(GameObject* pGameObject, int spr
 {
 	m_pGraphicsComponent = GetGameObject()->GetComponent<GraphicsComponent>();
 	auto size = m_pGraphicsComponent->GetTexture()->GetSize();
+	m_ColCount = spriteCols;
+	m_RowCount = spriteRows;
 	m_SpriteWidth = size.x / spriteCols;
 	m_SpriteHeight = size.y / spriteRows;
 	m_pGraphicsComponent->ToggleSourceRect(true);
@@ -17,14 +19,14 @@ dae::SpritesheetComponent::SpritesheetComponent(GameObject* pGameObject, int spr
 
 void dae::SpritesheetComponent::MoveSourceRect(int cols, int rows)
 {
-	m_CurrCol = cols;
-	m_CurrRow = rows;
+	m_CurrCol = cols % m_ColCount;
+	m_CurrRow = rows % m_RowCount;
 	m_pGraphicsComponent->SetSourceRect({ static_cast<float>(m_SpriteWidth * m_CurrCol), static_cast<float>(m_SpriteHeight * m_CurrRow), m_SpriteWidth, m_SpriteHeight });
 }
 
 void dae::SpritesheetComponent::MoveSourceRectRelative(int cols, int rows)
 {
-	m_CurrCol += cols;
-	m_CurrRow += rows;
+	m_CurrCol = (m_CurrCol + cols) % m_ColCount;
+	m_CurrRow = (m_CurrRow + rows) % m_RowCount;
 	m_pGraphicsComponent->SetSourceRect({ static_cast<float>(m_SpriteWidth * m_CurrCol), static_cast<float>(m_SpriteHeight * m_CurrRow), m_SpriteWidth, m_SpriteHeight });
 }

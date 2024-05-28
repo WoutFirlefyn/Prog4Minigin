@@ -107,6 +107,9 @@ void SlickSamDeathState::OnEnter()
 
 void SlickSamResetState::Update()
 {
-	if (Wait())
+	if (m_NewRoundStarted)
+	{
+		m_NewRoundStarted = false;
 		return SetState(std::make_unique<SlickSamSpawnState>(m_pCharacter));
+	}
 }

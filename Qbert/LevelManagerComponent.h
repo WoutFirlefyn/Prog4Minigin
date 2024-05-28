@@ -26,7 +26,7 @@ enum class TileType
 
 struct CharacterInfo
 {
-	glm::ivec2 tileIndex{-1};
+	glm::ivec2 tileIndex{ -1 };
 	bool isMoving{ false };
 };
 
@@ -42,6 +42,7 @@ public:
 	LevelManagerComponent& operator=(LevelManagerComponent&& other)	noexcept = delete;
 
 	virtual void Init() override;
+	virtual void Update() override;
 	virtual void LateUpdate() override;
 
 	// MoveStateChanged
@@ -60,12 +61,14 @@ public:
 	virtual void SubjectDestroyed(dae::Subject<Disk, Character>* pSubject) override;
 
 	static int GetRoundNr() { return m_CurrentRound; }
+	static bool IsRoundOver() { return m_RoundOver; }
 
 	TileType GetNextTileType(Character character, MovementInfo movementInfo) const;
 	MovementInfo GetDirectionToNearestQbert() const;
 
 	static std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
-	static std::unique_ptr<dae::Subject<bool>> TileChanged;
+	std::unique_ptr<dae::Subject<bool>> TileChanged;
+	std::unique_ptr<dae::Subject<>> NewRoundStarted;
 private:
 	bool AreAllTilesCovered() const;
 	void LandOnTile(Character character, TileComponent* pTileComponent);
@@ -91,12 +94,16 @@ private:
 
 	std::vector<dae::GameObject*> m_vInactiveDisks;
 
-	glm::ivec2 m_TileSize{0};
-	glm::ivec2 m_DiskSize{0};
+	glm::ivec2 m_TileSize{ 0 };
+	glm::ivec2 m_DiskSize{ 0 };
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };
 	static int m_CurrentRound;
 	int m_AmountOfDisks{ 2 };
 	bool m_CharacterMovedDirtyFlag{ false };
+
+	static bool m_RoundOver;
+	float m_AccumSec{};
+	float m_RoundOverDelay{ 2.5f };
 };
 

@@ -29,11 +29,14 @@ void DiskComponent::Init()
 
 	m_pSpritesheetComponent = GetGameObject()->GetComponent<dae::SpritesheetComponent>();
 	assert(m_pSpritesheetComponent);
-	m_pSpritesheetComponent->MoveSourceRect(rand() % 4, 0);
+	m_pSpritesheetComponent->MoveSourceRect(rand(), 0);
 }
 
 void DiskComponent::Update()
 {
+	if (LevelManagerComponent::IsRoundOver())
+		return;
+
 	float deltaTime = dae::GameTime::GetInstance().GetDeltaTime();
 	m_AccumSec += deltaTime;
 
@@ -41,7 +44,7 @@ void DiskComponent::Update()
 	if (m_AccumSec > secondsPerFrame)
 	{
 		m_AccumSec -= secondsPerFrame;
-		m_pSpritesheetComponent->MoveSourceRect((m_pSpritesheetComponent->GetCurrCol() + 1) % 4, LevelManagerComponent::GetRoundNr());
+		m_pSpritesheetComponent->MoveSourceRectRelative(1, 0);
 	}
 
 	if (m_Character == Character::None)

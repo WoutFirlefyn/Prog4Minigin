@@ -103,8 +103,25 @@ void IdleState::SubjectDestroyed(dae::Subject<Character, Character>* pSubject)
 		m_pCharactersCollide = nullptr;
 }
 
-bool ResetState::Wait()
+ResetState::ResetState(CharacterComponent* pCharacter) : CharacterState(pCharacter)
 {
-	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
-	return m_AccumSec >= m_PauseDuration;
+	m_pNewRoundStarted = GetLevelManagerComponent()->NewRoundStarted.get();
+	m_pNewRoundStarted->AddObserver(this);
+}
+
+ResetState::~ResetState()
+{
+	if (m_pNewRoundStarted)
+		m_pNewRoundStarted->RemoveObserver(this);
+}
+
+void ResetState::SubjectDestroyed(dae::Subject<>* pSubject)
+{
+	if (pSubject == m_pNewRoundStarted)
+		m_pNewRoundStarted = nullptr;
+}
+
+void ResetState::Notify()
+{
+	m_NewRoundStarted = true;
 }

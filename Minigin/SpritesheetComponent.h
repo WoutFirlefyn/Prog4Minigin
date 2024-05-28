@@ -27,6 +27,8 @@ namespace dae
 		int m_SpriteHeight{};
 		int m_CurrRow{ 0 };
 		int m_CurrCol{ 0 };
+		int m_RowCount{ 0 };
+		int m_ColCount{ 0 };
 	};
 }
 
