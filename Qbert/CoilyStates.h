@@ -7,6 +7,9 @@ public:
 	CoilyIdleState(CharacterComponent* pCharacter) : IdleState(pCharacter) {}
 	virtual void Update() override;
 private:
+	MovementInfo GetDirectionToNearestQbert() const;
+	int CalculateTileDistance(const glm::ivec2& deltaPos) const;
+
 	float m_AccumSec{ 0.f };
 	float m_TimeBetweenJumps{ 1.f };
 };

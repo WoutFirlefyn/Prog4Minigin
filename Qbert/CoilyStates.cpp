@@ -18,8 +18,59 @@ void CoilyIdleState::Update()
 	if (CoilyComponent::IsEgg())
 		movementInfo = MovementInfo::GetMovementInfo(static_cast<MovementDirection>(rand() % 2 + 2));
 	else
-		movementInfo = GetLevelManagerComponent()->GetDirectionToNearestQbert();
+		movementInfo = GetDirectionToNearestQbert();
 	return SetState(std::make_unique<CoilyJumpState>(m_pCharacter, movementInfo));
+}
+
+MovementInfo CoilyIdleState::GetDirectionToNearestQbert() const
+{
+	auto coilyTilePair = GetLevelManagerComponent()->GetCharacter(Character::Coily);
+	auto qbert1TilePair = GetLevelManagerComponent()->GetCharacter(Character::Qbert1);
+	auto qbert2TilePair = GetLevelManagerComponent()->GetCharacter(Character::Qbert2);
+
+	if (coilyTilePair.first == Character::None || qbert1TilePair.first == Character::None)
+	{
+		assert(false);
+		return MovementInfo{};
+	}
+
+	glm::ivec2 deltaTileIdx = coilyTilePair.second.tileIndex - qbert1TilePair.second.tileIndex;
+
+	if (CalculateTileDistance(deltaTileIdx) == 0)
+		deltaTileIdx = coilyTilePair.second.tileIndex - qbert1TilePair.second.previousTileIndex;
+
+	if (qbert2TilePair.first != Character::None)
+	{
+		glm::ivec2 deltaTileIdx2 = coilyTilePair.second.tileIndex - qbert2TilePair.second.tileIndex;
+		if (CalculateTileDistance(deltaTileIdx) == 0)
+			deltaTileIdx = coilyTilePair.second.tileIndex - qbert2TilePair.second.previousTileIndex;
+		if (CalculateTileDistance(deltaTileIdx) > CalculateTileDistance(deltaTileIdx2))
+			deltaTileIdx = deltaTileIdx2;
+	}
+
+	MovementInfo option1 = MovementInfo::GetMovementInfo((deltaTileIdx.x < 0) ? MovementDirection::Right : MovementDirection::Left);
+	MovementInfo option2 = MovementInfo::GetMovementInfo((deltaTileIdx.y < 0) ? MovementDirection::Down : MovementDirection::Up);
+
+	if (std::abs(deltaTileIdx.x) > std::abs(deltaTileIdx.y))
+		return option1;
+	else if (std::abs(deltaTileIdx.x) < std::abs(deltaTileIdx.y))
+		return option2;
+	else
+	{
+		if (rand() % 2 == 0)
+			std::swap(option1, option2);
+
+		auto& tiles = GetLevelManagerComponent()->GetTiles();
+		if (tiles.find(coilyTilePair.second.tileIndex + option1.indexOffset) != tiles.end())
+			return option1;
+		else
+			return option2;
+	}
+}
+
+int CoilyIdleState::CalculateTileDistance(const glm::ivec2& deltaPos) const
+{
+	return std::abs(deltaPos.x) + std::abs(deltaPos.y);
 }
 
 void CoilyJumpState::Update()

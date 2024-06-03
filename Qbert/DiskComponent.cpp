@@ -86,11 +86,11 @@ void DiskComponent::Notify(Disk disk, Character character)
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLand, 0.2f);
 		break;
 	}
-
 }
 
 void DiskComponent::Notify()
 {
+	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
 	m_pSpritesheetComponent->MoveSourceRect(rand(), LevelManagerComponent::GetRoundNr());
 	m_Character = Character::None;
 	m_PlatformLerpValue = 0.f;

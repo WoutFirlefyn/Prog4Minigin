@@ -86,7 +86,7 @@ bool SpawnState::Spawn()
 
 IdleState::IdleState(CharacterComponent* pCharacter)
 	: CharacterState(pCharacter)
-	, m_pCharactersCollide{ LevelManagerComponent::CharactersCollide.get() }
+	, m_pCharactersCollide{ GetLevelManagerComponent()->CharactersCollide.get()}
 {
 	m_pCharactersCollide->AddObserver(this);
 }

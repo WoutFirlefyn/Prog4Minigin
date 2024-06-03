@@ -28,9 +28,21 @@ struct CharacterInfo
 {
 	glm::ivec2 tileIndex{ -1 };
 	bool isMoving{ false };
+	glm::ivec2 previousTileIndex{ 0 };
 };
 
-class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>, public dae::Observer<Character, dae::GameObject*>, public dae::Observer<Disk, Character>
+// Comparator function for ivec2 to be used in map m_Tiles
+struct ivec2_compare
+{
+	bool operator()(const glm::ivec2& lhs, const glm::ivec2& rhs) const
+	{
+		if (lhs.x != rhs.x)
+			return lhs.x < rhs.x;
+		return lhs.y < rhs.y;
+	}
+};
+
+class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>, public dae::Observer<Character, dae::GameObject*>, public dae::Observer<Disk, Character>, public dae::Observer<>
 {
 public:
 	LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene);
@@ -60,37 +72,31 @@ public:
 	virtual void Notify(Disk disk, Character character) override;
 	virtual void SubjectDestroyed(dae::Subject<Disk, Character>* pSubject) override;
 
+	// NewRoundStarted
+	virtual void Notify() override;
+
 	static int GetRoundNr() { return m_CurrentRound; }
 	static bool IsRoundOver() { return m_RoundOver; }
 	glm::ivec2 GetTileSize() const { return m_TileSize; }
 
 	glm::vec3 GetTilePos(glm::ivec2 tileIdx) const;
 	TileType GetNextTileType(Character character, MovementInfo movementInfo) const;
-	MovementInfo GetDirectionToNearestQbert() const;
+	int GetAmountOfActiveDisks() const;
+	std::pair<Character, CharacterInfo> GetCharacter(Character character) const;
+	const std::map<glm::ivec2, dae::GameObject*, ivec2_compare>& GetTiles() const { return m_Tiles; }
 
-	static std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
+	std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
 	std::unique_ptr<dae::Subject<bool>> TileChanged;
 	std::unique_ptr<dae::Subject<>> NewRoundStarted;
 private:
 	glm::ivec2 GetNewDiskIndex() const;
 	bool AreAllTilesCovered() const;
 	void LandOnTile(Character character, TileComponent* pTileComponent);
-	int CalculateManhattanDistance(const glm::ivec2& deltaPos) const;
 
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
 	dae::Subject<Character, dae::GameObject*>* m_pCharacterSpawnedSubject{ nullptr };
 	dae::Subject<Disk, Character>* m_pDiskStateChanged{ nullptr };
 
-	// Comparator function for ivec2 to be used in map m_Tiles
-	struct ivec2_compare
-	{
-		bool operator()(const glm::ivec2& lhs, const glm::ivec2& rhs) const
-		{
-			if (lhs.x != rhs.x)
-				return lhs.x < rhs.x;
-			return lhs.y < rhs.y;
-		}
-	};
 	std::map<glm::ivec2, dae::GameObject*, ivec2_compare> m_Tiles;
 	std::unordered_map<Character, CharacterInfo> m_Characters;
 

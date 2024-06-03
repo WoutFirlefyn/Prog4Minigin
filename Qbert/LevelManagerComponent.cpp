@@ -11,7 +11,6 @@
 #include "GameTime.h"
 #include <algorithm>
 
-std::unique_ptr<dae::Subject<Character, Character>> LevelManagerComponent::CharactersCollide{ std::make_unique<dae::Subject<Character, Character>>() };
 int LevelManagerComponent::m_CurrentRound{ 0 };
 bool LevelManagerComponent::m_RoundOver{ false };
 LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene) : BaseComponent(pGameObject)
@@ -21,6 +20,7 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
 {
     TileChanged = std::make_unique<dae::Subject<bool>>();
     NewRoundStarted = std::make_unique<dae::Subject<>>();
+    CharactersCollide = std::make_unique<dae::Subject<Character, Character>>();
 
     // Initializing the tiles
     for (int i{}; i < m_LevelLength; ++i)
@@ -34,7 +34,7 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
             m_Tiles[{j, i}] = scene.Add(std::move(tile));
         }
     }
-
+    
     // Initializing disks
     for (int i{}; i < m_AmountOfDisks; ++i)
     {
@@ -57,6 +57,8 @@ LevelManagerComponent::~LevelManagerComponent()
         m_pDiskStateChanged->RemoveObserver(this);
     if (TileChanged.get())
         TileChanged->RemoveObserver(this);
+    if (NewRoundStarted.get())
+        NewRoundStarted->RemoveObserver(this);
 }
 
 void LevelManagerComponent::Init()
@@ -65,6 +67,7 @@ void LevelManagerComponent::Init()
     m_pCharacterSpawnedSubject->AddObserver(this);
     m_pDiskStateChanged->AddObserver(this);
     TileChanged->AddObserver(this); 
+    NewRoundStarted->AddObserver(this); 
 
     m_TileSize = m_Tiles[{0, 0}]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
 
@@ -119,6 +122,7 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
     {
     case MovementState::Start:
         characterPairIt->second.isMoving = true;
+        characterPairIt->second.previousTileIndex = characterPairIt->second.tileIndex;
         characterPairIt->second.tileIndex += movementInfo.indexOffset;
         break;
     case MovementState::End:
@@ -133,11 +137,9 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
     }
     case MovementState::Fall:
         if (character == Character::Qbert1 || character == Character::Qbert2)
-        {
             characterPairIt->second.tileIndex -= movementInfo.indexOffset;
-            break;
-        }
-        characterPairIt->second.tileIndex = { -1,-1 };
+        else
+            characterPairIt->second.tileIndex = { -1,-1 };
         break;
     case MovementState::Disk:
         DiskComponent::DiskStateChanged->NotifyObservers({ m_Tiles[characterPairIt->second.tileIndex], DiskState::Start}, character);
@@ -196,11 +198,10 @@ void LevelManagerComponent::Notify(Disk disk, Character character)
         return;
 
     m_vInactiveDisks.push_back(disk.pGameObject);
-    auto it = std::find_if(m_Tiles.begin(), m_Tiles.end(), [&disk](const auto& pair) 
+    m_Tiles.erase(std::find_if(m_Tiles.begin(), m_Tiles.end(), [&disk](const auto& pair)
         {
             return pair.second == disk.pGameObject;
-        });
-    m_Tiles.erase(it);
+        }));
 
     m_Characters[character].tileIndex = { 0,0 };
 }
@@ -209,6 +210,26 @@ void LevelManagerComponent::SubjectDestroyed(dae::Subject<Disk, Character>* pSub
 {
     if (pSubject == m_pDiskStateChanged)
         m_pDiskStateChanged = nullptr;
+}
+
+void LevelManagerComponent::Notify()
+{
+    std::erase_if(m_Tiles, [&](auto tilePair) 
+        {
+            if (tilePair.second->HasComponent<DiskComponent>()) 
+            {
+                m_vInactiveDisks.push_back(tilePair.second);
+                return true;
+            }
+            return false;
+        });
+
+    for (dae::GameObject* pDisk : m_vInactiveDisks)
+    {
+        glm::ivec2 newIdx = GetNewDiskIndex();
+        m_Tiles[newIdx] = pDisk;
+        pDisk->SetPosition(GetTilePos(newIdx));
+    }
 }
 
 TileType LevelManagerComponent::GetNextTileType(Character character, MovementInfo movementInfo) const
@@ -230,54 +251,27 @@ TileType LevelManagerComponent::GetNextTileType(Character character, MovementInf
     return TileType::Disk;
 }
 
-MovementInfo LevelManagerComponent::GetDirectionToNearestQbert() const
+int LevelManagerComponent::GetAmountOfActiveDisks() const
 {
-    auto coilyTilePairIt = m_Characters.find(Character::Coily);
-    auto qbert1TilePairIt = m_Characters.find(Character::Qbert1);
-    auto qbert2TilePairIt = m_Characters.find(Character::Qbert2);
+    return static_cast<int>(std::count_if(std::execution::par_unseq, m_Tiles.begin(), m_Tiles.end(), [](auto tilePair)
+        {
+            return tilePair.second->HasComponent<DiskComponent>();
+        }));
+}
 
-    if (coilyTilePairIt == m_Characters.end() || qbert1TilePairIt == m_Characters.end())
-    {
-        assert(false);
-        return MovementInfo{};
-    }
+std::pair<Character, CharacterInfo> LevelManagerComponent::GetCharacter(Character character) const
+{
+    auto it = m_Characters.find(character);
 
-    glm::ivec2 deltaTileIdx = coilyTilePairIt->second.tileIndex - qbert1TilePairIt->second.tileIndex;
+    if (it == m_Characters.end())
+        return { Character::None, CharacterInfo{} };
 
-    if (qbert2TilePairIt != m_Characters.end())
-    {
-        glm::ivec2 deltaTileIdx2 = coilyTilePairIt->second.tileIndex - qbert2TilePairIt->second.tileIndex;
-        if (CalculateManhattanDistance(deltaTileIdx) > CalculateManhattanDistance(deltaTileIdx2))
-            deltaTileIdx = deltaTileIdx2;
-    }
-
-    MovementInfo option1 = MovementInfo::GetMovementInfo((deltaTileIdx.x < 0) ? MovementDirection::Right : MovementDirection::Left);
-    MovementInfo option2 = MovementInfo::GetMovementInfo((deltaTileIdx.y < 0) ? MovementDirection::Down  : MovementDirection::Up);
-
-    if (std::abs(deltaTileIdx.x) > std::abs(deltaTileIdx.y))
-        return option1;
-    else if (std::abs(deltaTileIdx.x) < std::abs(deltaTileIdx.y))
-        return option2;
-    else
-    {
-        if (rand() % 2 == 0)
-            std::swap(option1, option2);
-        
-        if (m_Tiles.find(coilyTilePairIt->second.tileIndex + option1.indexOffset) != m_Tiles.end())
-            return option1;
-        else
-            return option2;
-    }
+    return *it;
 }
 
 glm::ivec2 LevelManagerComponent::GetNewDiskIndex() const
 {
-    int diskCount = static_cast<int>(std::count_if(std::execution::par, m_Tiles.begin(), m_Tiles.end(), [](auto tilePair)
-        {
-            return tilePair.second->HasComponent<DiskComponent>();
-        }));
-
-    if (diskCount >= m_LevelLength * 2)
+    if (GetAmountOfActiveDisks() >= m_LevelLength * 2)
         return { -1,-1 };
 
     glm::ivec2 idx{};
@@ -329,9 +323,4 @@ glm::vec3 LevelManagerComponent::GetTilePos(glm::ivec2 tileIdx) const
         offsetToPos += glm::vec3{ m_DiskSize.x, m_DiskSize.y, 0.f } * 0.5f * scale;
 
     return offsetToPos;
-}
-
-int LevelManagerComponent::CalculateManhattanDistance(const glm::ivec2& deltaPos) const
-{
-    return std::abs(deltaPos.x) + std::abs(deltaPos.y);
 }
