@@ -108,38 +108,39 @@ void LevelManagerComponent::LateUpdate()
 
 void LevelManagerComponent::Notify(Character character, MovementInfo movementInfo)
 {
-    auto currentTilePairIt = m_Characters.find(character);
-    if (currentTilePairIt == m_Characters.end())
+    auto characterPairIt = m_Characters.find(character);
+    if (characterPairIt == m_Characters.end())
     {
         assert(false);
         return;
     }
-    glm::ivec2 nextTileIdx = currentTilePairIt->second.tileIndex + movementInfo.indexOffset;
 
     switch (movementInfo.state)
     {
     case MovementState::Start:
-        m_Characters[character].isMoving = true;
+        characterPairIt->second.isMoving = true;
+        characterPairIt->second.tileIndex += movementInfo.indexOffset;
         break;
     case MovementState::End:
     {
-        m_Characters[character].tileIndex = nextTileIdx;
-        m_Characters[character].isMoving = false;
+        characterPairIt->second.isMoving = false;
         m_CharacterMovedDirtyFlag = true;
 
-        auto nextTilePairIt = m_Tiles.find(nextTileIdx);
+        auto nextTilePairIt = m_Tiles.find(characterPairIt->second.tileIndex);
         if (nextTilePairIt != m_Tiles.end())
             LandOnTile(character, nextTilePairIt->second->GetComponent<TileComponent>());
         break;
     }
     case MovementState::Fall:
         if (character == Character::Qbert1 || character == Character::Qbert2)
+        {
+            characterPairIt->second.tileIndex -= movementInfo.indexOffset;
             break;
-        m_Characters[character].tileIndex = { -1,-1 };
+        }
+        characterPairIt->second.tileIndex = { -1,-1 };
         break;
     case MovementState::Disk:
-        m_Characters[character].tileIndex = nextTileIdx;
-        DiskComponent::DiskStateChanged->NotifyObservers({ m_Tiles[nextTileIdx], DiskState::Start}, character);
+        DiskComponent::DiskStateChanged->NotifyObservers({ m_Tiles[characterPairIt->second.tileIndex], DiskState::Start}, character);
         break;
     default:
         return;
@@ -250,31 +251,36 @@ MovementInfo LevelManagerComponent::GetDirectionToNearestQbert() const
             deltaTileIdx = deltaTileIdx2;
     }
 
-    glm::ivec2 option1 = { (deltaTileIdx.x < 0) ? 1 : -1, 0 };
-    glm::ivec2 option2 = { 0, (deltaTileIdx.y < 0) ? 1 : -1 };
+    MovementInfo option1 = MovementInfo::GetMovementInfo((deltaTileIdx.x < 0) ? MovementDirection::Right : MovementDirection::Left);
+    MovementInfo option2 = MovementInfo::GetMovementInfo((deltaTileIdx.y < 0) ? MovementDirection::Down  : MovementDirection::Up);
 
     if (std::abs(deltaTileIdx.x) > std::abs(deltaTileIdx.y))
-        deltaTileIdx = option1;
+        return option1;
     else if (std::abs(deltaTileIdx.x) < std::abs(deltaTileIdx.y))
-        deltaTileIdx = option2;
+        return option2;
     else
     {
-        bool chooseOption1First = rand() % 2 == 0;
-        glm::ivec2 firstChoice = chooseOption1First ? option1 : option2;
-        glm::ivec2 secondChoice = chooseOption1First ? option2 : option1;
-
-        if (m_Tiles.find(coilyTilePairIt->second.tileIndex + firstChoice) != m_Tiles.end())
-            deltaTileIdx = firstChoice;
+        if (rand() % 2 == 0)
+            std::swap(option1, option2);
+        
+        if (m_Tiles.find(coilyTilePairIt->second.tileIndex + option1.indexOffset) != m_Tiles.end())
+            return option1;
         else
-            deltaTileIdx = secondChoice;
+            return option2;
     }
-
-    return MovementInfo::GetMovementInfo(deltaTileIdx);
 }
 
 glm::ivec2 LevelManagerComponent::GetNewDiskIndex() const
 {
-    glm::ivec2 idx;
+    int diskCount = static_cast<int>(std::count_if(std::execution::par, m_Tiles.begin(), m_Tiles.end(), [](auto tilePair)
+        {
+            return tilePair.second->HasComponent<DiskComponent>();
+        }));
+
+    if (diskCount >= m_LevelLength * 2)
+        return { -1,-1 };
+
+    glm::ivec2 idx{};
     do
     {
         idx.x = rand() % m_LevelLength;
@@ -320,9 +326,7 @@ glm::vec3 LevelManagerComponent::GetTilePos(glm::ivec2 tileIdx) const
     glm::vec3 offsetToPos{ tileOffset.x * (tileIdx.x - tileIdx.y), tileOffset.y * (tileIdx.y + tileIdx.x), 0.f };
 
     if (tileIdx.x < 0 || tileIdx.y < 0)
-    {
         offsetToPos += glm::vec3{ m_DiskSize.x, m_DiskSize.y, 0.f } * 0.5f * scale;
-    }
 
     return offsetToPos;
 }

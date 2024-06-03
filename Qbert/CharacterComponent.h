@@ -57,19 +57,19 @@ struct MovementInfo
 		return movementInfoIt->second;
 	}
 
-	static MovementInfo GetMovementInfo(const glm::ivec2& offset)
-	{
-		auto it = std::find_if(m_MovementInfos.begin(), m_MovementInfos.end(),
-			[&offset](const auto& pair)
-			{
-				return pair.second.indexOffset == offset;
-			});
+	//static MovementInfo GetMovementInfo(const glm::ivec2& offset)
+	//{
+	//	auto it = std::find_if(m_MovementInfos.begin(), m_MovementInfos.end(),
+	//		[&offset](const auto& pair)
+	//		{
+	//			return pair.second.indexOffset == offset;
+	//		});
 
-		if (it == m_MovementInfos.end())
-			return MovementInfo();
+	//	if (it == m_MovementInfos.end())
+	//		return MovementInfo();
 
-		return it->second;
-	}
+	//	return it->second;
+	//}
 private:
 	MovementInfo(MovementDirection dir, const glm::vec3& vec, const glm::ivec2& offset)
 		: direction(dir)
