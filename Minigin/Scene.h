@@ -26,13 +26,12 @@ namespace dae
 		Scene& operator=(Scene&& other) = delete;
 
 	private: 
-		explicit Scene(const std::string& name);
+		explicit Scene();
 		void CheckForDestroyedObjects();
 
-		std::string m_name;
-		std::vector <std::unique_ptr<GameObject>> m_vObjects{};
+		std::vector<std::unique_ptr<GameObject>> m_vObjects{};
 
-		static unsigned int m_idCounter; 
+		bool m_IsInitialized{ false };
 	};
 
 }

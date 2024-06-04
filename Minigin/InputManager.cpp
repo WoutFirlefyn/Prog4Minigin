@@ -26,7 +26,7 @@ bool dae::InputManager::ProcessInput()
 					inputAction.pCommand->Execute();
 			}
 		}
-		if (e.type == SDL_KEYUP) // FIX THIS
+		if (e.type == SDL_KEYUP)
 		{
 			for (const auto& inputAction : m_vKeyboardInputAction)
 			{

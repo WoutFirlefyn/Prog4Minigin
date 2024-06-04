@@ -2,6 +2,7 @@
 //#define STEAM
 #include <string>
 #include <functional>
+#include <glm/glm.hpp>
 
 namespace dae
 {
@@ -16,5 +17,7 @@ namespace dae
 		Minigin(Minigin&& other) = delete;
 		Minigin& operator=(const Minigin& other) = delete;
 		Minigin& operator=(Minigin&& other) = delete;
+
+		static const glm::ivec2 m_WindowSize;
 	};
 }

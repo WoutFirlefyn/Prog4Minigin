@@ -52,20 +52,3 @@ std::shared_ptr<dae::Font> dae::ResourceManager::LoadFont(const std::string& fil
 {
 	return std::make_shared<Font>(m_DataPath + file, size);
 }
-
-dae::Texture2D* dae::LoggingResourceManager::LoadTexture(const std::string& file)
-{
-	std::cout << "Loading texture with name: " << file << std::endl;
-	return m_pResourceManager->LoadTexture(file);
-}
-
-std::unique_ptr<dae::Texture2D> dae::LoggingResourceManager::LoadTexture(Font* font, const glm::vec4& color, const std::string& text)
-{
-	return m_pResourceManager->LoadTexture(font, color, text);
-}
-
-std::shared_ptr<dae::Font> dae::LoggingResourceManager::LoadFont(const std::string& file, unsigned int size) const
-{
-	std::cout << "Loading font with name: " << file << " and fontsize: " << size << std::endl;
-	return m_pResourceManager->LoadFont(file, size);
-}

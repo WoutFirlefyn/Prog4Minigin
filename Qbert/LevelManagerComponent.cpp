@@ -13,7 +13,7 @@
 
 int LevelManagerComponent::m_CurrentRound{ 0 };
 bool LevelManagerComponent::m_RoundOver{ false };
-LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene) : BaseComponent(pGameObject)
+LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
     , m_pMoveStateChangedSubject{ CharacterComponent::MoveStateChanged.get() }
     , m_pCharacterSpawnedSubject{ CharacterComponent::CharacterSpawned.get() }
     , m_pDiskStateChanged{ DiskComponent::DiskStateChanged.get() }
@@ -21,6 +21,8 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
     TileChanged = std::make_unique<dae::Subject<bool>>();
     NewRoundStarted = std::make_unique<dae::Subject<>>();
     CharactersCollide = std::make_unique<dae::Subject<Character, Character>>();
+
+    dae::Scene& scene = dae::SceneManager::GetInstance().GetScene("Level");
 
     // Initializing the tiles
     for (int i{}; i < m_LevelLength; ++i)
@@ -34,6 +36,8 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
             m_Tiles[{j, i}] = scene.Add(std::move(tile));
         }
     }
+
+    m_TileSize = m_Tiles[{0, 0}]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
     
     // Initializing disks
     for (int i{}; i < m_AmountOfDisks; ++i)
@@ -42,6 +46,9 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
         disk->AddComponent<dae::GraphicsComponent>("Disk Spritesheet.png");
         disk->AddComponent<dae::SpritesheetComponent>(4, 6);
         disk->AddComponent<DiskComponent>(this);
+
+        if (m_DiskSize == glm::ivec2{ 0 })
+            m_DiskSize = disk->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
 
         m_Tiles[GetNewDiskIndex()] = scene.Add(std::move(disk));
     }
@@ -69,13 +76,8 @@ void LevelManagerComponent::Init()
     TileChanged->AddObserver(this); 
     NewRoundStarted->AddObserver(this); 
 
-    m_TileSize = m_Tiles[{0, 0}]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-
     for (const auto& [index, pTile] : m_Tiles)
     {
-        if (m_DiskSize == glm::ivec2{ 0 } && pTile->HasComponent<DiskComponent>())
-            m_DiskSize = pTile->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-
         pTile->SetParent(GetGameObject());
         pTile->SetPosition(GetTilePos(index));
     }
@@ -137,7 +139,7 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
     }
     case MovementState::Fall:
         if (character == Character::Qbert1 || character == Character::Qbert2)
-            characterPairIt->second.tileIndex -= movementInfo.indexOffset;
+            characterPairIt->second.tileIndex -= movementInfo.indexOffset; // replace with characterPairIt->second.tileIndex = movementInfo.previousTileIndex; when possible
         else
             characterPairIt->second.tileIndex = { -1,-1 };
         break;

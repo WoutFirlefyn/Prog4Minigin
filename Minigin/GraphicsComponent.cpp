@@ -11,11 +11,8 @@
 dae::GraphicsComponent::GraphicsComponent(GameObject* pGameObject, const std::string& filename, bool renderingEnabled) : BaseComponent(pGameObject)
 	, m_RenderingEnabled{ renderingEnabled }
 {
-	SetTexture(filename);
-}
-
-dae::GraphicsComponent::GraphicsComponent(GameObject* pGameObject) : BaseComponent(pGameObject)
-{
+	if (filename != "")
+		SetTexture(filename);
 }
 
 void dae::GraphicsComponent::Render() const

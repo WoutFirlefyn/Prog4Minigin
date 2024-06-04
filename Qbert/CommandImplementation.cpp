@@ -10,10 +10,7 @@ MoveCommand::MoveCommand(dae::GameObject* pGameObject, const MovementInfo& movem
 	, m_pCharacterComponent{ nullptr }
 	, m_MovementInfo{ movementInfo }
 {
-	if (pGameObject->HasComponent<QbertComponent>())
-		m_pCharacterComponent = pGameObject->GetComponent<QbertComponent>();
-	else if (pGameObject->HasComponent<CoilyComponent>())
-		m_pCharacterComponent = pGameObject->GetComponent<CoilyComponent>();
+	m_pCharacterComponent = pGameObject->GetComponent<CharacterComponent>();
 }
 
 void MoveCommand::Execute()

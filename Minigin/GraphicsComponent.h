@@ -6,14 +6,12 @@
 
 namespace dae
 {
-	class GameObject;
 	class Texture2D;
 
 	class GraphicsComponent final : public BaseComponent
 	{
 	public:
-		GraphicsComponent(GameObject* pGameObject, const std::string& name, bool renderingEnabled = true);
-		GraphicsComponent(GameObject* pGameObject);		
+		GraphicsComponent(GameObject* pGameObject, const std::string& name = "", bool renderingEnabled = true);
 		virtual ~GraphicsComponent() override = default;
  
 		GraphicsComponent(const GraphicsComponent& other) = delete;

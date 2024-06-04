@@ -42,8 +42,6 @@ namespace dae
 		{
 			for (auto& pObserver : m_vObservers)
 				pObserver->Notify(args...);
-			//for (int i{}; i < m_vObservers.size(); ++i)
-			//	m_vObservers[i]->Notify(args...);
 		}
 	private:
 		std::vector<Observer<Args...>*> m_vObservers{};

@@ -2,26 +2,26 @@
 #include "GameObject.h"
 #include <algorithm>
 
-using namespace dae;
+//unsigned int Scene::m_idCounter = 0;
 
-unsigned int Scene::m_idCounter = 0;
+dae::Scene::Scene() = default;
 
-Scene::Scene(const std::string& name) : m_name(name) {}
+dae::Scene::~Scene() = default;
 
-Scene::~Scene() = default;
-
-GameObject* Scene::Add(std::unique_ptr<GameObject>&& object)
+dae::GameObject* dae::Scene::Add(std::unique_ptr<GameObject>&& object)
 {
 	m_vObjects.emplace_back(std::move(object));
+	if (m_IsInitialized)
+		m_vObjects.back()->Init();
 	return m_vObjects.back().get();
 }
 
-void Scene::Remove(std::unique_ptr<GameObject>&& object)
+void dae::Scene::Remove(std::unique_ptr<GameObject>&& object)
 {
 	m_vObjects.erase(std::remove(m_vObjects.begin(), m_vObjects.end(), object), m_vObjects.end());
 }
 
-void Scene::RemoveAll()
+void dae::Scene::RemoveAll()
 {
 	m_vObjects.clear();
 }
@@ -30,9 +30,11 @@ void dae::Scene::Init()
 {
 	for (auto& pObject : m_vObjects)
 		pObject->Init();
+
+	m_IsInitialized = true;
 }
 
-void Scene::Update()
+void dae::Scene::Update()
 {
 	for(auto& pObject : m_vObjects)
 		if (!pObject->IsDestroyed())
@@ -41,7 +43,7 @@ void Scene::Update()
 	CheckForDestroyedObjects();
 }
 
-void Scene::FixedUpdate()
+void dae::Scene::FixedUpdate()
 {
 	for(auto& pObject : m_vObjects)
 		if (!pObject->IsDestroyed())
@@ -59,7 +61,7 @@ void dae::Scene::LateUpdate()
 	CheckForDestroyedObjects();
 }
 
-void Scene::Render() const
+void dae::Scene::Render() const
 {
 	for (const auto& pObject : m_vObjects)
 		pObject->Render();

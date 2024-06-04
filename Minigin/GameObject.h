@@ -8,11 +8,11 @@
 #include <execution>
 #include <iostream>
 #include "Transform.h"
-#include "BaseComponent.h"
 
 namespace dae
 {
 	class Texture2D;
+	class BaseComponent;
 
 	class GameObject final
 	{

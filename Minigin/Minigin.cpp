@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <glm/glm.hpp>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -50,7 +51,7 @@ void PrintSDLVersion()
 	printf("We are linking against SDL_ttf version %u.%u.%u.\n",
 		version.major, version.minor, version.patch);
 }
-
+const glm::ivec2 dae::Minigin::m_WindowSize{ 640, 480 };
 dae::Minigin::Minigin()
 {
 	srand(static_cast<unsigned int>(time(NULL)));
@@ -65,10 +66,11 @@ dae::Minigin::Minigin()
 		"Programming 4 assignment",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		640,
-		480,
+		m_WindowSize.x,
+		m_WindowSize.y,
 		SDL_WINDOW_OPENGL
 	);
+	
 	if (g_window == nullptr) 
 	{
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
@@ -124,9 +126,9 @@ void dae::Minigin::Run(const std::function<void()>& load)
 			lag -= FIXED_TIME_STEP;
 		}
 		sceneManager.Update();
+		sceneManager.LateUpdate();
 		renderer.Render();
 		sceneManager.RenderGUI();
-		sceneManager.LateUpdate();
 
 		const auto sleepTime = currentTime + milliseconds(MS_PER_FRAME) - high_resolution_clock::now();
 		std::this_thread::sleep_for(sleepTime);

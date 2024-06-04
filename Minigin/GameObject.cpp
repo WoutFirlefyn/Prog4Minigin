@@ -1,56 +1,45 @@
-#include <string>
 #include "GameObject.h"
 #include "ResourceManager.h"
 #include "Renderer.h"
+#include "BaseComponent.h"
 #include <algorithm>
+#include <string>
 
 dae::GameObject::~GameObject() = default;
 
 void dae::GameObject::Init()
 {
 	for (auto& pComponents : m_Components)
-	{
 		pComponents.second->Init();
-	}
 }
 
 void dae::GameObject::Update()
 {
 	for (auto& pComponents : m_Components)
-	{
 		pComponents.second->Update();
-	}
 }
 void dae::GameObject::FixedUpdate() 
 {
 	for (auto& pComponents : m_Components)
-	{
 		pComponents.second->FixedUpdate();
-	}
 }
 
 void dae::GameObject::LateUpdate()
 {
 	for (auto& pComponents : m_Components)
-	{
 		pComponents.second->LateUpdate();
-	}
 }
 
 void dae::GameObject::Render() const
 {
 	for (auto& pComponents : m_Components)
-	{
 		pComponents.second->Render();
-	}
 }
 
 void dae::GameObject::RenderGUI()
 {
 	for (auto& pComponents : m_Components)
-	{
 		pComponents.second->RenderGUI();
-	}
 }
 
 void dae::GameObject::SetPosition(float x, float y)
