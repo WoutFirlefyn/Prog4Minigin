@@ -226,7 +226,6 @@ void LevelManagerComponent::Notify()
 
     for (dae::GameObject* pDisk : m_vInactiveDisks)
     {
-        pDisk->GetComponent<DiskComponent>()->Reset();
         glm::ivec2 newIdx = GetNewDiskIndex();
         m_Tiles[newIdx] = pDisk;
         pDisk->SetPosition(GetTilePos(newIdx));

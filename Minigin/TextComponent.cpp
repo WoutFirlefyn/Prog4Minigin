@@ -10,15 +10,15 @@
 #include "ResourceManager.h"
 #include "ServiceLocator.h"
 
-dae::TextComponent::TextComponent(GameObject* pGameObject, const std::string& text, std::shared_ptr<Font> pFont) : BaseComponent(pGameObject)
-	, m_NeedsUpdate{ true }
+dae::TextComponent::TextComponent(GameObject* pGameObject, std::shared_ptr<Font> pFont, const std::string& text) : BaseComponent(pGameObject)
 	, m_Text{ text }
 	, m_pFont{ pFont }
 {
-}
-
-dae::TextComponent::TextComponent(GameObject* pGameObject, std::shared_ptr<Font> pFont) : TextComponent(pGameObject, " ", pFont)
-{
+	if (text != "")
+	{
+		m_pTexture = ServiceLocator::GetResourceManager().LoadTexture(m_pFont.get(), m_Color, m_Text);
+		GetGameObject()->GetComponent<GraphicsComponent>()->SetTexture(m_pTexture.get());
+	}
 }
 
 void dae::TextComponent::Update()
@@ -36,5 +36,13 @@ void dae::TextComponent::SetText(const std::string& text)
 	if (m_Text == text)
 		return;
 	m_Text = text;
+	m_NeedsUpdate = true;
+}
+
+void dae::TextComponent::SetColor(const glm::vec4& color)
+{
+	if (m_Color == color)
+		return;
+	m_Color = color;
 	m_NeedsUpdate = true;
 }

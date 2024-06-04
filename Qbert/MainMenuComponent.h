@@ -11,7 +11,7 @@ enum class Gamemode
 class MainMenuComponent : public dae::BaseComponent
 {
 public:
-	MainMenuComponent(dae::GameObject* pGameObject);
+	MainMenuComponent(dae::GameObject* pGameObject, const std::vector<dae::GameObject*>& vText, dae::GameObject* pArrow);
 	virtual ~MainMenuComponent() override = default;
 
 	MainMenuComponent(const MainMenuComponent& other) = delete;

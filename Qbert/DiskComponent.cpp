@@ -16,12 +16,16 @@ DiskComponent::DiskComponent(dae::GameObject* pGameObject, LevelManagerComponent
 	, m_pLevelManagerComponent{ pLevelManagerComponent }
 	, m_Character{ Character::None }
 {
+	m_pNewRoundStarted = pLevelManagerComponent->NewRoundStarted.get();
+	m_pNewRoundStarted->AddObserver(this);
 }
 
 DiskComponent::~DiskComponent()
 {
 	if (DiskStateChanged)
 		DiskStateChanged->RemoveObserver(this);
+	if (m_pNewRoundStarted)
+		m_pNewRoundStarted->RemoveObserver(this);
 }
 
 void DiskComponent::Init()
@@ -85,12 +89,18 @@ void DiskComponent::Notify(Disk disk, Character character)
 	}
 }
 
-void DiskComponent::Reset()
+void DiskComponent::Notify()
 {
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
 	m_pSpritesheetComponent->MoveSourceRect(rand(), LevelManagerComponent::GetRoundNr());
 	m_Character = Character::None;
 	m_PlatformLerpValue = 0.f;
+}
+
+void DiskComponent::SubjectDestroyed(dae::Subject<>* pSubject)
+{
+	if (pSubject == m_pNewRoundStarted)
+		m_pNewRoundStarted = nullptr;
 }
 
 
