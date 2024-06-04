@@ -214,6 +214,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClCompile Include="LevelManagerComponent.cpp" />
     <ClCompile Include="LivesComponent.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MainMenuComponent.cpp" />
     <ClCompile Include="QbertComponent.cpp" />
     <ClCompile Include="QbertCurseComponent.cpp" />
     <ClCompile Include="QbertStates.cpp" />
@@ -236,6 +237,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="GraphComponent.h" />
     <ClInclude Include="LevelManagerComponent.h" />
     <ClInclude Include="LivesComponent.h" />
+    <ClInclude Include="MainMenuComponent.h" />
     <ClInclude Include="QbertComponent.h" />
     <ClInclude Include="QbertCurseComponent.h" />
     <ClInclude Include="QbertStates.h" />

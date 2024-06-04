@@ -13,7 +13,7 @@
 
 int LevelManagerComponent::m_CurrentRound{ 0 };
 bool LevelManagerComponent::m_RoundOver{ false };
-LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
+LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene) : BaseComponent(pGameObject)
     , m_pMoveStateChangedSubject{ CharacterComponent::MoveStateChanged.get() }
     , m_pCharacterSpawnedSubject{ CharacterComponent::CharacterSpawned.get() }
     , m_pDiskStateChanged{ DiskComponent::DiskStateChanged.get() }
@@ -21,8 +21,6 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject) : Bas
     TileChanged = std::make_unique<dae::Subject<bool>>();
     NewRoundStarted = std::make_unique<dae::Subject<>>();
     CharactersCollide = std::make_unique<dae::Subject<Character, Character>>();
-
-    dae::Scene& scene = dae::SceneManager::GetInstance().GetScene("Level");
 
     // Initializing the tiles
     for (int i{}; i < m_LevelLength; ++i)
@@ -216,9 +214,9 @@ void LevelManagerComponent::SubjectDestroyed(dae::Subject<Disk, Character>* pSub
 
 void LevelManagerComponent::Notify()
 {
-    std::erase_if(m_Tiles, [&](auto tilePair) 
+    std::erase_if(m_Tiles, [&](auto& tilePair)
         {
-            if (tilePair.second->HasComponent<DiskComponent>()) 
+            if (tilePair.second->HasComponent<DiskComponent>())
             {
                 m_vInactiveDisks.push_back(tilePair.second);
                 return true;
@@ -228,10 +226,12 @@ void LevelManagerComponent::Notify()
 
     for (dae::GameObject* pDisk : m_vInactiveDisks)
     {
+        pDisk->GetComponent<DiskComponent>()->Reset();
         glm::ivec2 newIdx = GetNewDiskIndex();
         m_Tiles[newIdx] = pDisk;
         pDisk->SetPosition(GetTilePos(newIdx));
     }
+    m_vInactiveDisks.clear();
 }
 
 TileType LevelManagerComponent::GetNextTileType(Character character, MovementInfo movementInfo) const
@@ -255,7 +255,7 @@ TileType LevelManagerComponent::GetNextTileType(Character character, MovementInf
 
 int LevelManagerComponent::GetAmountOfActiveDisks() const
 {
-    return static_cast<int>(std::count_if(std::execution::par_unseq, m_Tiles.begin(), m_Tiles.end(), [](auto tilePair)
+    return static_cast<int>(std::count_if(m_Tiles.begin(), m_Tiles.end(), [](auto& tilePair)
         {
             return tilePair.second->HasComponent<DiskComponent>();
         }));
@@ -283,7 +283,7 @@ glm::ivec2 LevelManagerComponent::GetNewDiskIndex() const
         idx.y = -1;
         if (rand() % 2 == 1)
             std::swap(idx.y, idx.x);
-    } while (m_Tiles.count({ idx.x,idx.y }));
+    } while (m_Tiles.contains({ idx.x,idx.y }));
     return idx;
 }
 

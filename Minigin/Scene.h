@@ -33,5 +33,4 @@ namespace dae
 
 		bool m_IsInitialized{ false };
 	};
-
 }

@@ -59,6 +59,7 @@ void QbertJumpState::OnEnter()
 {
 	JumpState::OnEnter();
 	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(m_MovementInfo.direction), 0);
+	m_JumpDuration = 0.1f;
 }
 
 void QbertJumpState::OnExit()

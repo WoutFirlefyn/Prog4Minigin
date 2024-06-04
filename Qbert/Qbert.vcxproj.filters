@@ -37,6 +37,12 @@
     <Filter Include="Header Files\Other">
       <UniqueIdentifier>{0c870680-e444-4edb-ad23-2a4a34a36f30}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{118bd103-da30-42c3-849d-798e667cfdf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI">
+      <UniqueIdentifier>{92126311-bf56-4ffd-a3f8-86c3c7893e2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -54,19 +60,10 @@
     <ClCompile Include="SlickSamStates.cpp">
       <Filter>Source Files\Characters\States</Filter>
     </ClCompile>
-    <ClCompile Include="ScoreComponent.cpp">
-      <Filter>Source Files\Other</Filter>
-    </ClCompile>
     <ClCompile Include="RotateComponent.cpp">
       <Filter>Source Files\Other</Filter>
     </ClCompile>
-    <ClCompile Include="LivesComponent.cpp">
-      <Filter>Source Files\Other</Filter>
-    </ClCompile>
     <ClCompile Include="GraphComponent.cpp">
-      <Filter>Source Files\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="FPSComponent.cpp">
       <Filter>Source Files\Other</Filter>
     </ClCompile>
     <ClCompile Include="CharacterComponent.cpp">
@@ -102,6 +99,18 @@
     <ClCompile Include="UggWrongwayStates.cpp">
       <Filter>Source Files\Characters\States</Filter>
     </ClCompile>
+    <ClCompile Include="MainMenuComponent.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSComponent.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="LivesComponent.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreComponent.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharacterStates.h">
@@ -116,19 +125,10 @@
     <ClInclude Include="SlickSamStates.h">
       <Filter>Header Files\Characters\States</Filter>
     </ClInclude>
-    <ClInclude Include="FPSComponent.h">
-      <Filter>Header Files\Other</Filter>
-    </ClInclude>
     <ClInclude Include="GraphComponent.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
-    <ClInclude Include="LivesComponent.h">
-      <Filter>Header Files\Other</Filter>
-    </ClInclude>
     <ClInclude Include="RotateComponent.h">
-      <Filter>Header Files\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="ScoreComponent.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
     <ClInclude Include="CharacterComponent.h">
@@ -166,6 +166,18 @@
     </ClInclude>
     <ClInclude Include="UggWrongwayStates.h">
       <Filter>Header Files\Characters\States</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenuComponent.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSComponent.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreComponent.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="LivesComponent.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

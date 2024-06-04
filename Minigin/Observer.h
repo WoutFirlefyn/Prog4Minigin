@@ -36,7 +36,8 @@ namespace dae
 		}
 		void RemoveObserver(Observer<Args...>* pObserver)
 		{
-			m_vObservers.erase(std::remove(m_vObservers.begin(), m_vObservers.end(), pObserver), m_vObservers.end());
+			if (m_vObservers.size() > 0)
+				m_vObservers.erase(std::remove(m_vObservers.begin(), m_vObservers.end(), pObserver), m_vObservers.end());
 		}
 		void NotifyObservers(Args... args)
 		{

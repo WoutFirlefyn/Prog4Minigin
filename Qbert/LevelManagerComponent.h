@@ -45,7 +45,7 @@ struct ivec2_compare
 class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>, public dae::Observer<Character, dae::GameObject*>, public dae::Observer<Disk, Character>, public dae::Observer<>
 {
 public:
-	LevelManagerComponent(dae::GameObject* pGameObject);
+	LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene);
 	virtual ~LevelManagerComponent() override;
 
 	LevelManagerComponent(const LevelManagerComponent& other) = delete;

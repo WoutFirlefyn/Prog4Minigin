@@ -3,8 +3,7 @@
 
 void dae::SceneManager::Init()
 {
-	for (auto& [name, pScene] : m_Scenes)
-		pScene->Init();
+	m_Scenes.at(m_CurrentScene)->Init();
 }
 
 void dae::SceneManager::Update()
@@ -54,4 +53,12 @@ void dae::SceneManager::SetCurrentScene(const std::string& name)
 		return;
 	}
 	m_CurrentScene = name;
+}
+
+dae::Scene& dae::SceneManager::GetCurrentScene() const
+{
+	auto scenePairIt = m_Scenes.find(m_CurrentScene);
+	if (scenePairIt == m_Scenes.end())
+		assert(false && "No active scene");
+	return *scenePairIt->second;
 }

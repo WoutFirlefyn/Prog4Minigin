@@ -13,6 +13,7 @@ namespace dae
 		Scene& CreateScene(const std::string& name);
 		Scene& GetScene(const std::string& name) const;
 		void SetCurrentScene(const std::string& name);
+		Scene& GetCurrentScene() const;
 
 		void Init();
 		void Update();
@@ -26,5 +27,7 @@ namespace dae
 
 		std::unordered_map<std::string, std::shared_ptr<Scene>> m_Scenes;
 		std::string m_CurrentScene{};
+
+		bool m_IsInitialized{ false };
 	};
 }
