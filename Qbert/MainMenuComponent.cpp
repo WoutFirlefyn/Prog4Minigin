@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "Sounds.h"
 #include "ServiceLocator.h"
+#include "Game.h"
 
 MainMenuComponent::MainMenuComponent(dae::GameObject* pGameObject, const std::vector<dae::GameObject*>& vText, dae::GameObject* pArrow)
 	: BaseComponent(pGameObject)
@@ -27,12 +28,12 @@ MainMenuComponent::MainMenuComponent(dae::GameObject* pGameObject, const std::ve
 
 void MainMenuComponent::ChangeGamemode(int offset)
 {
-    int newModeIndex = (static_cast<int>(m_CurrentGamemode) + offset) % 3;
+    int newModeIndex = (static_cast<int>(m_SelectedScene) + offset) % 3;
 
     if (newModeIndex < 0)
         newModeIndex += 3;
 
-    m_CurrentGamemode = static_cast<Gamemode>(newModeIndex);
+    m_SelectedScene = static_cast<SceneType>(newModeIndex);
     glm::ivec2 arrowSize = m_pArrow->GetComponent<dae::GraphicsComponent>()->GetTextureSize() * 2;
     glm::ivec2 textSize = m_vModes[newModeIndex]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
     m_pArrow->SetPosition(m_vModes[newModeIndex]->GetLocalPosition() - glm::vec3{ 20, textSize.y / 2.f, 0 } + glm::vec3{ 0, arrowSize.y / 1.25f, 0 });
@@ -42,5 +43,5 @@ void MainMenuComponent::ChangeGamemode(int offset)
 
 void MainMenuComponent::SelectGamemode()
 {
-    dae::SceneManager::GetInstance().SetCurrentScene("Level");
+    Game::GetInstance().SetScene(m_SelectedScene);
 }

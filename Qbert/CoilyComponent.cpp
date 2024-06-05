@@ -14,14 +14,6 @@ CoilyComponent::CoilyComponent(dae::GameObject* pGameObject, LevelManagerCompone
 	: CharacterComponent(pGameObject, pLevelManagerComponent)
 	, m_VersusMode{ versusModeEnabled }
 {
-	//if (m_VersusMode)
-	//{
-	//	auto& input = dae::InputManager::GetInstance();
-	//	input.BindCommand(std::make_unique<MoveCommand>(this, MovementInfo::GetMovementInfo(MovementDirection::Up)), SDL_SCANCODE_UP, dae::InputType::Down, "Level");
-	//	input.BindCommand(std::make_unique<MoveCommand>(this, MovementInfo::GetMovementInfo(MovementDirection::Left)), SDL_SCANCODE_LEFT, dae::InputType::Down, "Level");
-	//	input.BindCommand(std::make_unique<MoveCommand>(this, MovementInfo::GetMovementInfo(MovementDirection::Down)), SDL_SCANCODE_DOWN, dae::InputType::Down, "Level");
-	//	input.BindCommand(std::make_unique<MoveCommand>(this, MovementInfo::GetMovementInfo(MovementDirection::Right)), SDL_SCANCODE_RIGHT, dae::InputType::Down, "Level");
-	//}
 }
 
 CoilyComponent::~CoilyComponent()

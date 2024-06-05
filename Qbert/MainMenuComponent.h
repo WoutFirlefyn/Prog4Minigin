@@ -1,12 +1,7 @@
 #pragma once
 #include "BaseComponent.h"
 
-enum class Gamemode
-{
-	Solo = 0,
-	Coop = 1,
-	Versus = 2
-};
+enum class SceneType;
 
 class MainMenuComponent : public dae::BaseComponent
 {
@@ -26,5 +21,5 @@ public:
 private:
 	std::vector<dae::GameObject*> m_vModes;
 	dae::GameObject* m_pArrow{ nullptr };
-	Gamemode m_CurrentGamemode{};
+	SceneType m_SelectedScene{};
 };

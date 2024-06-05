@@ -72,7 +72,7 @@ void LevelManagerComponent::Init()
     m_pCharacterSpawnedSubject->AddObserver(this);
     m_pDiskStateChanged->AddObserver(this);
     TileChanged->AddObserver(this); 
-    NewRoundStarted->AddObserver(this); 
+    NewRoundStarted->AddObserver(this);
 
     for (const auto& [index, pTile] : m_Tiles)
     {

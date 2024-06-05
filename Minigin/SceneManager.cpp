@@ -35,6 +35,8 @@ void dae::SceneManager::RenderGUI()
 
 dae::Scene& dae::SceneManager::CreateScene(const std::string& name)
 {
+	if (m_Scenes.contains(name))
+		std::cout << "Overwriting existing scene\n";
 	m_Scenes[name] = std::unique_ptr<Scene>(new Scene());
 	return *m_Scenes[name];
 }
@@ -55,8 +57,6 @@ void dae::SceneManager::SetCurrentScene(const std::string& name)
 		return;
 	}
 	m_CurrentScene = name;
-
-	m_Scenes[m_CurrentScene]->Init();
 }
 
 dae::Scene& dae::SceneManager::GetCurrentScene() const

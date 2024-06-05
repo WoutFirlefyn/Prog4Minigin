@@ -10,6 +10,7 @@ namespace dae
 		virtual ~SoundSystem() = default;
 		virtual void Play(const Sounds soundId, const float volume = 1.f) = 0;
 		virtual void LoadSound(const std::string& fileName, Sounds soundId) = 0;
+		virtual void ClearSounds() = 0;
 	};
 
 	class LoggingSoundSystem final : public SoundSystem 
@@ -27,6 +28,11 @@ namespace dae
 			m_pSoundSystem->LoadSound(fileName, soundId);
 			std::cout << "Loading " << fileName << " with ID: " << static_cast<SoundId>(soundId) << std::endl;
 		}
+		virtual void ClearSounds() override
+		{
+			m_pSoundSystem->ClearSounds();
+			std::cout << "Unloading all loaded sounds\n";
+		}
 	private:
 		std::unique_ptr<SoundSystem> m_pSoundSystem;
 	};
@@ -34,7 +40,8 @@ namespace dae
 	class NullSoundSystem final : public SoundSystem
 	{
 		virtual void Play(const Sounds, const float) override {}
-		virtual void LoadSound(const std::string&, Sounds) override {};
+		virtual void LoadSound(const std::string&, Sounds) override {}
+		virtual void ClearSounds() override {}
 	};
 }
 

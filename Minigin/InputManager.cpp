@@ -13,8 +13,6 @@ bool dae::InputManager::ProcessInput()
 {
 	const Uint8* pKeyboardState = SDL_GetKeyboardState(nullptr);
 	
-	std::string sceneName = dae::SceneManager::GetInstance().GetCurrentSceneName();
-	
 	SDL_Event e;
 	
 	while (SDL_PollEvent(&e)) 
@@ -25,7 +23,7 @@ bool dae::InputManager::ProcessInput()
 		{
 			for (const auto& inputAction : m_vKeyboardInputAction)
 			{
-				if (inputAction.InputType == InputType::Pressed && pKeyboardState[inputAction.Button] && inputAction.SceneName == sceneName)
+				if (inputAction.InputType == InputType::Pressed && pKeyboardState[inputAction.Button])
 					inputAction.pCommand->Execute();
 			}
 		}
@@ -33,7 +31,7 @@ bool dae::InputManager::ProcessInput()
 		{
 			for (const auto& inputAction : m_vKeyboardInputAction)
 			{
-				if (inputAction.InputType == InputType::Released && pKeyboardState[inputAction.Button] && inputAction.SceneName == sceneName)
+				if (inputAction.InputType == InputType::Released && pKeyboardState[inputAction.Button])
 					inputAction.pCommand->Execute();
 			}
 		}
@@ -42,7 +40,7 @@ bool dae::InputManager::ProcessInput()
 
 	for (const auto& inputAction : m_vKeyboardInputAction)
 	{
-		if (inputAction.InputType == InputType::Down && pKeyboardState[inputAction.Button] && inputAction.SceneName == sceneName)
+		if (inputAction.InputType == InputType::Down && pKeyboardState[inputAction.Button])
 			inputAction.pCommand->Execute();
 	}
 
@@ -52,13 +50,13 @@ bool dae::InputManager::ProcessInput()
 	return true;
 }
 
-void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType, const std::string& sceneName)
+void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType)
 {
 	assert(pCommand);
-	m_vKeyboardInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType, sceneName));
+	m_vKeyboardInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType));
 }
 
-void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, ControllerButton button, InputType triggerType, const std::string& sceneName, uint8_t controllerIdx)
+void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, ControllerButton button, InputType triggerType, uint8_t controllerIdx)
 {
 	assert(pCommand);
 
@@ -66,10 +64,17 @@ void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, Control
 	{
 		if (controllerIdx >= m_vControllers.size())
 			AddController(static_cast<int>(controllerIdx) - static_cast<int>(m_vControllers.size()) + 1);
-		m_vControllers[controllerIdx]->BindCommand(std::move(pCommand), button, triggerType, sceneName);
+		m_vControllers[controllerIdx]->BindCommand(std::move(pCommand), button, triggerType);
 	}
 	else
 		assert(false && "Trying to bind a command to a controller that doesn't exist");
+}
+
+void dae::InputManager::ClearInputActions()
+{
+	m_vKeyboardInputAction.clear();
+	for (auto& pController : m_vControllers)
+		pController->ClearInputActions();
 }
 
 void dae::InputManager::AddController(int amount)

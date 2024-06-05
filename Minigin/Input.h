@@ -14,17 +14,15 @@ namespace dae
 	};
 	struct InputAction
 	{
-		InputAction(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType inputType, const std::string& sceneName)
+		InputAction(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType inputType)
 			: pCommand{ std::move(pCommand) }
 			, Button{ button }
 			, InputType{ inputType }
-			, SceneName{ sceneName }
 		{
 		}
 
 		std::unique_ptr<Command> pCommand;
 		unsigned int Button;
 		InputType InputType;
-		std::string SceneName;
 	};
 }

@@ -33,6 +33,7 @@ public:
 	void Play(const dae::Sounds id, const float volume = 1.f);
 	void ProcessSounds();
 	void LoadSound(const std::string& fileName, dae::Sounds soundId);
+	void ClearSounds();
 private:
 	struct DeleteSound
 	{
@@ -111,6 +112,11 @@ void dae::SDLSoundSystem::SDLSoundSystemImpl::LoadSound(const std::string& fileN
 	m_vSounds.emplace(soundId, std::unique_ptr<Mix_Chunk, DeleteSound>(m, DeleteSound()));
 }
 
+void dae::SDLSoundSystem::SDLSoundSystemImpl::ClearSounds()
+{
+	m_vSounds.clear();
+}
+
 void dae::SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds()
 {
 	while (true)
@@ -143,4 +149,9 @@ void dae::SDLSoundSystem::Play(const dae::Sounds soundId, const float volume)
 void dae::SDLSoundSystem::LoadSound(const std::string& fileName, dae::Sounds soundId)
 {
 	m_pSDLSoundSystemImpl->LoadSound(fileName, soundId);
+}
+
+void dae::SDLSoundSystem::ClearSounds()
+{
+	m_pSDLSoundSystemImpl->ClearSounds();
 }

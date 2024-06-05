@@ -210,6 +210,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClCompile Include="CommandImplementation.cpp" />
     <ClCompile Include="DiskComponent.cpp" />
     <ClCompile Include="FPSComponent.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GraphComponent.cpp" />
     <ClCompile Include="LevelManagerComponent.cpp" />
     <ClCompile Include="LivesComponent.cpp" />
@@ -234,6 +235,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="CommandImplementation.h" />
     <ClInclude Include="DiskComponent.h" />
     <ClInclude Include="FPSComponent.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="GraphComponent.h" />
     <ClInclude Include="LevelManagerComponent.h" />
     <ClInclude Include="LivesComponent.h" />
