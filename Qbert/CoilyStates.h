@@ -1,15 +1,18 @@
 #pragma once
 #include "CharacterStates.h"
 
+class CoilyComponent;
 class CoilyIdleState : public IdleState
 {
 public:
-	CoilyIdleState(CharacterComponent* pCharacter) : IdleState(pCharacter) {}
+	CoilyIdleState(CharacterComponent* pCharacter);
 	virtual void Update() override;
+	virtual void HandleInput(MovementInfo) override;
 private:
 	MovementInfo GetDirectionToNearestQbert() const;
 	int CalculateTileDistance(const glm::ivec2& deltaPos) const;
 
+	CoilyComponent* m_pCoilyComponent{ nullptr };
 	float m_AccumSec{ 0.f };
 	float m_TimeBetweenJumps{ 1.f };
 };

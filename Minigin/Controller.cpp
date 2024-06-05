@@ -24,7 +24,7 @@ public:
 	ControllerImpl& operator=(ControllerImpl&& other) noexcept = delete;
 
 	void ProcessInput();
-	void BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType);
+	void BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType, const std::string& sceneName);
 
 	bool IsPressedThisFrame(unsigned int button) const;
 	bool IsUpThisFrame(unsigned int button) const;
@@ -53,8 +53,12 @@ void dae::Controller::ControllerImpl::ProcessInput()
 	m_ButtonsPressedThisFrame = buttonChanges & m_CurrentState.Gamepad.wButtons;
 	m_ButtonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
 
+	std::string sceneName = dae::SceneManager::GetInstance().GetCurrentSceneName();
 	for (const InputAction& inputAction : m_vControllerInputAction)
 	{
+		if (inputAction.SceneName != sceneName)
+			continue;
+
 		switch (inputAction.InputType)
 		{
 		case InputType::Down:
@@ -77,9 +81,9 @@ void dae::Controller::ControllerImpl::ProcessInput()
 	}
 }
 
-void dae::Controller::ControllerImpl::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType)
+void dae::Controller::ControllerImpl::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType, const std::string& sceneName)
 {
-	m_vControllerInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType));
+	m_vControllerInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType, sceneName));
 }
 
 bool dae::Controller::ControllerImpl::IsPressedThisFrame(unsigned int button) const
@@ -122,9 +126,9 @@ void dae::Controller::ProcessInput()
 	m_pControllerImpl->ProcessInput();
 }
 
-void dae::Controller::BindCommand(std::unique_ptr<Command>&& pCommand, ControllerButton button, InputType triggerType)
+void dae::Controller::BindCommand(std::unique_ptr<Command>&& pCommand, ControllerButton button, InputType triggerType, const std::string& sceneName)
 {
-	m_pControllerImpl->BindCommand(std::move(pCommand), static_cast<unsigned int>(button), triggerType);
+	m_pControllerImpl->BindCommand(std::move(pCommand), static_cast<unsigned int>(button), triggerType, sceneName);
 }
 
 bool dae::Controller::IsPressedThisFrame(unsigned int button) const

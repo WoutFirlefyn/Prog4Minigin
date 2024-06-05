@@ -1,3 +1,4 @@
+#include <SDL.h>
 #include "CoilyComponent.h"
 #include "GameObject.h"
 #include "GameTime.h"
@@ -6,12 +7,21 @@
 #include "GraphicsComponent.h"
 #include "Sounds.h"
 #include "CoilyStates.h"
+#include "CommandImplementation.h"
+#include "InputManager.h"
 
-bool CoilyComponent::m_IsEgg{ true };
-
-CoilyComponent::CoilyComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent)
+CoilyComponent::CoilyComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent, bool versusModeEnabled)
 	: CharacterComponent(pGameObject, pLevelManagerComponent)
+	, m_VersusMode{ versusModeEnabled }
 {
+	//if (m_VersusMode)
+	//{
+	//	auto& input = dae::InputManager::GetInstance();
+	//	input.BindCommand(std::make_unique<MoveCommand>(this, MovementInfo::GetMovementInfo(MovementDirection::Up)), SDL_SCANCODE_UP, dae::InputType::Down, "Level");
+	//	input.BindCommand(std::make_unique<MoveCommand>(this, MovementInfo::GetMovementInfo(MovementDirection::Left)), SDL_SCANCODE_LEFT, dae::InputType::Down, "Level");
+	//	input.BindCommand(std::make_unique<MoveCommand>(this, MovementInfo::GetMovementInfo(MovementDirection::Down)), SDL_SCANCODE_DOWN, dae::InputType::Down, "Level");
+	//	input.BindCommand(std::make_unique<MoveCommand>(this, MovementInfo::GetMovementInfo(MovementDirection::Right)), SDL_SCANCODE_RIGHT, dae::InputType::Down, "Level");
+	//}
 }
 
 CoilyComponent::~CoilyComponent()
@@ -50,7 +60,10 @@ void CoilyComponent::Notify(Character character, MovementInfo movementInfo)
 		dae::ServiceLocator::GetSoundSystem().Play((m_IsEgg ? dae::Sounds::CoilyEggJump : dae::Sounds::CoilySnakeJump), 0.2f);
 		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRectRelative(0, -1);
 		if (++m_AmountOfJumps == 6)
+		{
 			m_IsEgg = false;
+			GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(static_cast<int>(movementInfo.direction), 0);
+		}
 	}
 }
 

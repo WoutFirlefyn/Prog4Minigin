@@ -1,12 +1,11 @@
 #include "CommandImplementation.h"
 #include "GameObject.h"
-#include "QbertComponent.h"
 #include "CharacterComponent.h"
-#include "CoilyComponent.h"
+#include "MainMenuComponent.h"
 #include <iostream>
 
 MoveCommand::MoveCommand(dae::GameObject* pGameObject, const MovementInfo& movementInfo)
-	: GameObjectCommand{ pGameObject }
+	: GameObjectCommand(pGameObject)
 	, m_pCharacterComponent{ nullptr }
 	, m_MovementInfo{ movementInfo }
 {
@@ -16,4 +15,20 @@ MoveCommand::MoveCommand(dae::GameObject* pGameObject, const MovementInfo& movem
 void MoveCommand::Execute()
 {
 	m_pCharacterComponent->Move(m_MovementInfo);
+}
+
+ChangeGamemodeCommand::ChangeGamemodeCommand(dae::GameObject* pGameObject, int gamemodeOffset)
+	: GameObjectCommand(pGameObject)
+	, m_GamemodeOffset{ gamemodeOffset }
+{
+}
+
+void ChangeGamemodeCommand::Execute()
+{
+	GetGameObject()->GetComponent<MainMenuComponent>()->ChangeGamemode(m_GamemodeOffset);
+}
+
+void SelectGamemodeCommand::Execute()
+{
+	GetGameObject()->GetComponent<MainMenuComponent>()->SelectGamemode();
 }

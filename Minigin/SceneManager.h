@@ -14,6 +14,7 @@ namespace dae
 		Scene& GetScene(const std::string& name) const;
 		void SetCurrentScene(const std::string& name);
 		Scene& GetCurrentScene() const;
+		std::string GetCurrentSceneName() const { return m_CurrentScene; }
 
 		void Init();
 		void Update();

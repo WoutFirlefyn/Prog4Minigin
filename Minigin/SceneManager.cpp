@@ -4,6 +4,8 @@
 void dae::SceneManager::Init()
 {
 	m_Scenes.at(m_CurrentScene)->Init();
+	//for (auto& [name, pScene] : m_Scenes)
+	//	pScene->Init();
 }
 
 void dae::SceneManager::Update()
@@ -53,6 +55,8 @@ void dae::SceneManager::SetCurrentScene(const std::string& name)
 		return;
 	}
 	m_CurrentScene = name;
+
+	m_Scenes[m_CurrentScene]->Init();
 }
 
 dae::Scene& dae::SceneManager::GetCurrentScene() const

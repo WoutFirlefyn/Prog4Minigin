@@ -28,6 +28,9 @@ void dae::Scene::RemoveAll()
 
 void dae::Scene::Init()
 {
+	if (m_IsInitialized)
+		return;
+
 	for (auto& pObject : m_vObjects)
 		pObject->Init();
 

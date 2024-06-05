@@ -8,6 +8,12 @@
 #include "Sounds.h"
 #include "ServiceLocator.h"
 
+CoilyIdleState::CoilyIdleState(CharacterComponent* pCharacter) : IdleState(pCharacter) 
+{
+	m_pCoilyComponent = dynamic_cast<CoilyComponent*>(m_pCharacter);
+	assert(m_pCoilyComponent);
+}
+
 void CoilyIdleState::Update()
 {
 	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
@@ -15,11 +21,24 @@ void CoilyIdleState::Update()
 	if (m_AccumSec < m_TimeBetweenJumps)
 		return;
 	MovementInfo movementInfo{};
-	if (CoilyComponent::IsEgg())
+	if (m_pCoilyComponent->IsEgg())
 		movementInfo = MovementInfo::GetMovementInfo(static_cast<MovementDirection>(rand() % 2 + 2));
 	else
+	{
+		if (m_pCoilyComponent->VersusModeEnabled())
+			return;
 		movementInfo = GetDirectionToNearestQbert();
+	}
+
 	return SetState(std::make_unique<CoilyJumpState>(m_pCharacter, movementInfo));
+}
+
+void CoilyIdleState::HandleInput(MovementInfo movementInfo)
+{
+	if (m_pCoilyComponent->VersusModeEnabled()
+		&& !m_pCoilyComponent->IsEgg()
+		&& m_AccumSec >= m_TimeBetweenJumps)
+		return SetState(std::make_unique<CoilyJumpState>(m_pCharacter, movementInfo));
 }
 
 MovementInfo CoilyIdleState::GetDirectionToNearestQbert() const
@@ -91,7 +110,10 @@ void CoilyJumpState::Update()
 void CoilyJumpState::OnEnter()
 {
 	JumpState::OnEnter();
-	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(CoilyComponent::IsEgg() ? 4 : static_cast<int>(m_MovementInfo.direction), 1);
+
+	CoilyComponent* pCoilyComponent = dynamic_cast<CoilyComponent*>(m_pCharacter);
+	assert(pCoilyComponent);
+	GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(pCoilyComponent->IsEgg() ? 4 : static_cast<int>(m_MovementInfo.direction), 1);
 }
 
 void CoilySpawnState::Update()

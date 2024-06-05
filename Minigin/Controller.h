@@ -1,13 +1,6 @@
 #pragma once
-
-//-----------------------------------------------------
-// Include Files
-//-----------------------------------------------------
 #include <memory>
-
-//-----------------------------------------------------
-// Controller Class									
-//-----------------------------------------------------
+#include <string>
 
 namespace dae
 {
@@ -44,7 +37,7 @@ namespace dae
 		Controller& operator=(Controller&& other) noexcept = delete;
 
 		void ProcessInput();
-		void BindCommand(std::unique_ptr<Command>&& pCommand, ControllerButton button, InputType triggerType);
+		void BindCommand(std::unique_ptr<Command>&& pCommand, ControllerButton button, InputType triggerType, const std::string& sceneName);
 
 		bool IsPressedThisFrame(unsigned int button) const;
 		bool IsUpThisFrame(unsigned int button) const;

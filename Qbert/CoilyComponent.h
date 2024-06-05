@@ -7,7 +7,7 @@
 class CoilyComponent final : public CharacterComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<Character, dae::GameObject*>
 {
 public:
-	CoilyComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);
+	CoilyComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent, bool versusModeEnabled = false);
 	virtual ~CoilyComponent() override;
 
 	CoilyComponent(const CoilyComponent& other) = delete;
@@ -21,10 +21,12 @@ public:
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
 	virtual void Notify(Character character, dae::GameObject* pCharacterGameObject) override;
 
-	static bool IsEgg() { return m_IsEgg; }
+	bool IsEgg() const { return m_IsEgg; }
+	bool VersusModeEnabled() const { return m_VersusMode; }
 private:
-	static bool m_IsEgg;
+	bool m_IsEgg{ true };
 	int m_AmountOfJumps{ 0 };
+	bool m_VersusMode{ false };
 };
 
 

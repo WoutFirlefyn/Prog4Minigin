@@ -13,3 +13,21 @@ private:
 	MovementInfo m_MovementInfo{};
 };
 
+class ChangeGamemodeCommand : public dae::GameObjectCommand
+{
+public:
+	ChangeGamemodeCommand(dae::GameObject* pGameObject, int gamemodeOffset);
+
+	virtual void Execute() override;
+private:
+	int m_GamemodeOffset{};
+};
+
+class SelectGamemodeCommand : public dae::GameObjectCommand
+{
+public:
+	SelectGamemodeCommand(dae::GameObject* pGameObject) : GameObjectCommand(pGameObject) {}
+
+	virtual void Execute() override;
+};
+

@@ -21,7 +21,7 @@ public:
 
 	//virtual void Init() override;
 	//virtual void Update() override;
-	void ChangeGamemode(int);
+	void ChangeGamemode(int offset);
 	void SelectGamemode();
 private:
 	std::vector<dae::GameObject*> m_vModes;
