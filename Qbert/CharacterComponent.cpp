@@ -26,13 +26,13 @@ void CharacterComponent::Update()
 	m_pState->Update();
 }
 
-void CharacterComponent::Notify(bool roundFinished)
+void CharacterComponent::Notify(Character, bool roundFinished)
 {
 	if (roundFinished)
 		m_ResetCharacter = true;
 }
 
-void CharacterComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
+void CharacterComponent::SubjectDestroyed(dae::Subject<Character, bool>* pSubject)
 {
 	if (pSubject == m_pTileChangedSubject)
 		m_pTileChangedSubject = nullptr;

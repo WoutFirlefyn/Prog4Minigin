@@ -18,7 +18,7 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
     , m_pCharacterSpawnedSubject{ CharacterComponent::CharacterSpawned.get() }
     , m_pDiskStateChanged{ DiskComponent::DiskStateChanged.get() }
 {
-    TileChanged = std::make_unique<dae::Subject<bool>>();
+    TileChanged = std::make_unique<dae::Subject<Character, bool>>();
     NewRoundStarted = std::make_unique<dae::Subject<>>();
     CharactersCollide = std::make_unique<dae::Subject<Character, Character>>();
 
@@ -180,7 +180,7 @@ void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character, dae::GameOb
         m_pCharacterSpawnedSubject = nullptr;
 }
 
-void LevelManagerComponent::Notify(bool roundFinished)
+void LevelManagerComponent::Notify(Character, bool roundFinished)
 {
     if (roundFinished)
     {
@@ -313,7 +313,7 @@ void LevelManagerComponent::LandOnTile(Character character, TileComponent* pTile
     }
 
     if (pTileComponent->ChangeTile(m_TilesCovered, tileChange))
-        TileChanged->NotifyObservers(AreAllTilesCovered());
+        TileChanged->NotifyObservers(character, AreAllTilesCovered());
 }
 
 glm::vec3 LevelManagerComponent::GetTilePos(glm::ivec2 tileIdx) const

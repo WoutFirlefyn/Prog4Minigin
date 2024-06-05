@@ -6,8 +6,8 @@ enum class SceneType
 	Solo = 0,
 	Coop = 1,
 	Versus = 2,
-	MainMenu,
-	Highscore
+	MainMenu = 3,
+	Highscore = 4
 };
 
 class Game final : public dae::Singleton<Game>

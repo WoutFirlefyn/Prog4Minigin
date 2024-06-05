@@ -11,7 +11,7 @@ namespace dae
 enum class Character;
 enum class MovementDirection;
 class LevelManagerComponent;
-class TileComponent final : public dae::BaseComponent, public dae::Observer<bool>, public dae::Observer<>
+class TileComponent final : public dae::BaseComponent, public dae::Observer<Character, bool>, public dae::Observer<>
 {
 public:
 	TileComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);	
@@ -25,8 +25,8 @@ public:
 	virtual void Init() override;
 	virtual void Update() override;
 
-	virtual void Notify(bool roundFinished) override;
-	virtual void SubjectDestroyed(dae::Subject<bool>* pSubject) override;
+	virtual void Notify(Character, bool roundFinished) override;
+	virtual void SubjectDestroyed(dae::Subject<Character, bool>* pSubject) override;
 	virtual void Notify() override;
 	virtual void SubjectDestroyed(dae::Subject<>* pSubject) override;
 
@@ -34,7 +34,7 @@ public:
 
 	static int GetMaxTileStage() { return m_MaxTileStage; }
 private:
-	dae::Subject<bool>* m_pTileChanged{ nullptr };
+	dae::Subject<Character, bool>* m_pTileChanged{ nullptr };
 	dae::Subject<>* m_pNewRoundStarted{ nullptr };
 	dae::SpritesheetComponent* m_pSpritesheetComponent{ nullptr };
 

@@ -431,11 +431,21 @@ void Game::LoadCoop()
 	}
 
 	// Score 1
-	auto scoreDisplay = std::make_unique<dae::GameObject>();
-	scoreDisplay->AddComponent<dae::GraphicsComponent>();
-	scoreDisplay->AddComponent<dae::TextComponent>(font);
-	scoreDisplay->AddComponent<ScoreComponent>(pLevelManagerComponent);
-	scoreDisplay->SetPosition(10, 50);
+	auto score1Display = std::make_unique<dae::GameObject>();
+	score1Display->AddComponent<dae::GraphicsComponent>();
+	score1Display->AddComponent<dae::TextComponent>(font);
+	score1Display->AddComponent<ScoreComponent>(pLevelManagerComponent, Character::Qbert1);
+	score1Display->SetPosition(10, 50);
+
+	// Score 2
+	auto score2Display = std::make_unique<dae::GameObject>();
+	score2Display->AddComponent<dae::GraphicsComponent>();
+	score2Display->AddComponent<dae::TextComponent>(font);
+	score2Display->AddComponent<ScoreComponent>(pLevelManagerComponent, Character::Qbert2);
+	score2Display->SetPosition(
+		dae::Minigin::m_WindowSize.x - 150.f
+		, 50.f
+	);
 
 	// Observers
 	auto pQbertComponent1 = qbert1->GetComponent<QbertComponent>();
@@ -450,7 +460,8 @@ void Game::LoadCoop()
 	scene.Add(std::move(levelManager));
 	scene.Add(std::move(player1Text));
 	scene.Add(std::move(player2Text));
-	scene.Add(std::move(scoreDisplay));
+	scene.Add(std::move(score1Display));
+	scene.Add(std::move(score2Display));
 	for (auto& heart : vHearts)
 		scene.Add(std::move(heart));
 	scene.Add(std::move(qbert1Curse));

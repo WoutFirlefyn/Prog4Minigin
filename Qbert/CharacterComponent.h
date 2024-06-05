@@ -70,7 +70,7 @@ private:
 enum class TileType;
 class CharacterState;
 class LevelManagerComponent;
-class CharacterComponent : public dae::BaseComponent, public dae::Observer<bool>
+class CharacterComponent : public dae::BaseComponent, public dae::Observer<Character, bool>
 {
 public:
 	CharacterComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);
@@ -84,8 +84,8 @@ public:
 	virtual void Update() override;
 
 	// TileChanged
-	virtual void Notify(bool roundFinished) override;
-	virtual void SubjectDestroyed(dae::Subject<bool>* pSubject) override;
+	virtual void Notify(Character, bool roundFinished) override;
+	virtual void SubjectDestroyed(dae::Subject<Character, bool>* pSubject) override;
 
 	void Move(MovementInfo movementInfo);
 
@@ -107,6 +107,6 @@ protected:
 private:
 	std::unique_ptr<CharacterState> m_pState{ nullptr };
 	LevelManagerComponent* m_pLevelManagerComponent{ nullptr };
-	dae::Subject<bool>* m_pTileChangedSubject{ nullptr };
+	dae::Subject<Character, bool>* m_pTileChangedSubject{ nullptr };
 };
 

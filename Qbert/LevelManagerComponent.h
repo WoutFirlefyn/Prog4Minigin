@@ -42,7 +42,7 @@ struct ivec2_compare
 	}
 };
 
-class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>, public dae::Observer<Character, dae::GameObject*>, public dae::Observer<Disk, Character>, public dae::Observer<>
+class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<Character, bool>, public dae::Observer<Character, dae::GameObject*>, public dae::Observer<Disk, Character>, public dae::Observer<>
 {
 public:
 	LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene);
@@ -66,7 +66,7 @@ public:
 	virtual void SubjectDestroyed(dae::Subject<Character, dae::GameObject*>* pSubject) override;
 
 	// TileChanged
-	virtual void Notify(bool roundFinished) override;
+	virtual void Notify(Character character, bool roundFinished) override;
 
 	// DiskStateChanged
 	virtual void Notify(Disk disk, Character character) override;
@@ -86,7 +86,7 @@ public:
 	const std::map<glm::ivec2, dae::GameObject*, ivec2_compare>& GetTiles() const { return m_Tiles; }
 
 	std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
-	std::unique_ptr<dae::Subject<bool>> TileChanged;
+	std::unique_ptr<dae::Subject<Character, bool>> TileChanged;
 	std::unique_ptr<dae::Subject<>> NewRoundStarted;
 private:
 	glm::ivec2 GetNewDiskIndex() const;

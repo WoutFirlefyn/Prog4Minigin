@@ -48,13 +48,13 @@ void TileComponent::Update()
 
 }
 
-void TileComponent::Notify(bool roundFinished)
+void TileComponent::Notify(Character, bool roundFinished)
 {
     if (roundFinished)
         m_pSpritesheetComponent->MoveSourceRect(LevelManagerComponent::GetRoundNr(), m_MaxTileStage);
 }
 
-void TileComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
+void TileComponent::SubjectDestroyed(dae::Subject<Character, bool>* pSubject)
 {
     if (pSubject == m_pTileChanged)
         m_pTileChanged = nullptr;

@@ -5,13 +5,14 @@
 #include "LevelManagerComponent.h"
 #include "GameObject.h"
 
-ScoreComponent::ScoreComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent)
+ScoreComponent::ScoreComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent, Character character)
 	: BaseComponent(pGameObject)
 	, m_pLevelManagerComponent{ pLevelManagerComponent }
 	, m_pTileChangedSubject{ pLevelManagerComponent->TileChanged.get() }
 	, m_pCharactersCollideSubject{ pLevelManagerComponent->CharactersCollide.get() }
 	, m_pMoveStateChangedSubject { CharacterComponent::MoveStateChanged.get() }
 	, m_pNewRoundStartedSubject { pLevelManagerComponent->NewRoundStarted.get() }
+	, m_CharacterToTrack{ character }
 {
 }
 
@@ -29,8 +30,6 @@ ScoreComponent::~ScoreComponent()
 
 void ScoreComponent::Init()
 {
-
-
 	m_pTileChangedSubject->AddObserver(this);
 	m_pCharactersCollideSubject->AddObserver(this);
 	m_pMoveStateChangedSubject->AddObserver(this);
@@ -39,14 +38,15 @@ void ScoreComponent::Init()
 	UpdateScore();
 }
 
-void ScoreComponent::Notify(bool roundFinished)
+void ScoreComponent::Notify(Character character, bool roundFinished)
 {
-	UpdateScore(25);
+	if (character == m_CharacterToTrack)
+		UpdateScore(25);
 	if (roundFinished)
 		m_AmountOfDisks = m_pLevelManagerComponent->GetAmountOfActiveDisks();
 }
 
-void ScoreComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
+void ScoreComponent::SubjectDestroyed(dae::Subject<Character, bool>* pSubject)
 {
 	if (pSubject == m_pTileChangedSubject)
 		m_pTileChangedSubject = nullptr;
