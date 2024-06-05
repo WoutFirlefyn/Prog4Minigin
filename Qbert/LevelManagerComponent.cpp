@@ -194,16 +194,19 @@ void LevelManagerComponent::Notify(bool roundFinished)
 
 void LevelManagerComponent::Notify(Disk disk, Character character)
 {
-    if (disk.state == DiskState::Start)
-        return;
-
-    m_vInactiveDisks.push_back(disk.pGameObject);
-    m_Tiles.erase(std::find_if(m_Tiles.begin(), m_Tiles.end(), [&disk](const auto& pair)
-        {
-            return pair.second == disk.pGameObject;
-        }));
-
-    m_Characters[character].tileIndex = { 0,0 };
+    switch (disk.state)
+    {
+    case DiskState::Start:
+        m_vInactiveDisks.push_back(disk.pGameObject);
+        m_Tiles.erase(std::find_if(m_Tiles.begin(), m_Tiles.end(), [&disk](const auto& pair)
+            {
+                return pair.second == disk.pGameObject;
+            }));
+        break;
+    case DiskState::Stop:
+        m_Characters[character].tileIndex = { 0,0 };
+        break;
+    }
 }
 
 void LevelManagerComponent::SubjectDestroyed(dae::Subject<Disk, Character>* pSubject)

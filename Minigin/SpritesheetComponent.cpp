@@ -19,7 +19,7 @@ dae::SpritesheetComponent::SpritesheetComponent(GameObject* pGameObject, int spr
 
 void dae::SpritesheetComponent::MoveSourceRect(int cols, int rows)
 {
-	m_CurrCol = cols % m_ColCount;
+	m_CurrCol = cols % m_ColCount; 
 	m_CurrRow = rows % m_RowCount;
 	m_pGraphicsComponent->SetSourceRect({ static_cast<float>(m_SpriteWidth * m_CurrCol), static_cast<float>(m_SpriteHeight * m_CurrRow), m_SpriteWidth, m_SpriteHeight });
 }

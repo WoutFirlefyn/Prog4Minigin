@@ -7,7 +7,7 @@
 class QbertComponent final : public CharacterComponent, public dae::Observer<Character, MovementInfo>
 {
 public:
-	QbertComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);
+	QbertComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent, Character character = Character::Qbert1);
 	virtual ~QbertComponent() override;				
 
 	QbertComponent(const QbertComponent& other) = delete;

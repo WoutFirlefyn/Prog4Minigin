@@ -92,6 +92,7 @@ public:
 	Character GetCharacter() const { return m_Character; }
 
 	virtual glm::ivec2 GetSpawnPosition() const { return m_vSpawnPositions[rand() % m_vSpawnPositions.size()]; }
+	void SetSpawnPositions(std::vector<glm::ivec2> vPositions) { m_vSpawnPositions = vPositions; }
 
 	static std::unique_ptr<dae::Subject<Character, MovementInfo>> MoveStateChanged;
 	static std::unique_ptr<dae::Subject<Character, dae::GameObject*>> CharacterSpawned;
