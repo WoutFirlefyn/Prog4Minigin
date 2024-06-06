@@ -139,7 +139,7 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
     }
     case MovementState::Fall:
         if (character == Character::Qbert1 || character == Character::Qbert2)
-            characterPairIt->second.tileIndex -= movementInfo.indexOffset; // replace with characterPairIt->second.tileIndex = movementInfo.previousTileIndex; when possible
+            characterPairIt->second.tileIndex -= movementInfo.indexOffset;
         else
             characterPairIt->second.tileIndex = { -1,-1 };
         break;
@@ -241,21 +241,20 @@ void LevelManagerComponent::Notify(bool nextLevel)
     m_vInactiveDisks.clear();
 }
 
-TileType LevelManagerComponent::GetNextTileType(Character character, MovementInfo movementInfo) const
+TileType LevelManagerComponent::GetTileType(Character character, MovementInfo) const
 {
-    auto currentTilePairIt = m_Characters.find(character);
-    if (currentTilePairIt == m_Characters.end())
+    auto characterTilePairIt = m_Characters.find(character);
+    if (characterTilePairIt == m_Characters.end())
     {
         assert(false);
         return TileType::None;
     }
 
-    glm::ivec2 nextTileIdx = currentTilePairIt->second.tileIndex + movementInfo.indexOffset;
-    auto nextTilePairIt = m_Tiles.find(nextTileIdx);
+    auto tilePairIt = m_Tiles.find(characterTilePairIt->second.tileIndex);
 
-    if (nextTilePairIt == m_Tiles.end())
+    if (tilePairIt == m_Tiles.end())
         return TileType::None;
-    if (nextTilePairIt->second->HasComponent<TileComponent>())
+    if (tilePairIt->second->HasComponent<TileComponent>())
         return TileType::Tile;
     return TileType::Disk;
 }

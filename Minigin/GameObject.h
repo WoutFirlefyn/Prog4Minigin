@@ -88,6 +88,7 @@ namespace dae
 					{
 						std::lock_guard lockguard{ resultMutex };
 						result = tempResult;
+						return;
 					}
 				}
 			);

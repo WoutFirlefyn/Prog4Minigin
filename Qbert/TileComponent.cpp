@@ -51,7 +51,7 @@ void TileComponent::Update()
 void TileComponent::Notify(Character, bool roundFinished)
 {
     if (roundFinished)
-        m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() - 1, m_MaxTileStage);
+        m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 2, m_MaxTileStage);
 }
 
 void TileComponent::SubjectDestroyed(dae::Subject<Character, bool>* pSubject)
@@ -68,7 +68,7 @@ void TileComponent::Notify(bool nextLevel)
         return;
     }
     m_TileStage = 0;
-    m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() - 1, m_TileStage);
+    m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 2, m_TileStage);
 }
 
 void TileComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
@@ -91,6 +91,6 @@ bool TileComponent::ChangeTile(int& tilesCovered, int stageChange)
 
     m_TileStage = newTileStage;
 
-    m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() - 1, m_TileStage);
+    m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 2, m_TileStage);
     return stageChange > 0; 
 }

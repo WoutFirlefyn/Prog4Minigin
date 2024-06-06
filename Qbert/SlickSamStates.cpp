@@ -48,6 +48,7 @@ void SlickSamJumpState::Update()
 {
 	if (Jump())
 	{
+		m_NextTileType = GetLevelManagerComponent()->GetTileType(m_pCharacter->GetCharacter(), m_MovementInfo);
 		switch (m_NextTileType)
 		{
 		case TileType::Tile:

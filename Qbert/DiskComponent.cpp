@@ -95,7 +95,7 @@ void DiskComponent::Notify(bool nextLevel)
 		return;
 
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
-	m_pSpritesheetComponent->MoveSourceRect(rand(), m_pLevelManagerComponent->GetRoundNr() - 1);
+	m_pSpritesheetComponent->MoveSourceRect(rand(), m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 2);
 	m_Character = Character::None;
 	m_PlatformLerpValue = 0.f;
 }

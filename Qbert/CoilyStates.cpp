@@ -26,7 +26,7 @@ void CoilyIdleState::Update()
 		movementInfo = MovementInfo::GetMovementInfo(static_cast<MovementDirection>(rand() % 2 + 2));
 	else
 	{
-		if (Game::GetInstance().GetCurrentSceneType() == SceneType::Versus)
+		if (Game::GetInstance().GetCurrentSceneType() != SceneType::Versus)
 			return;
 		movementInfo = GetDirectionToNearestQbert();
 	}
@@ -97,6 +97,7 @@ void CoilyJumpState::Update()
 {
 	if (Jump())
 	{
+		m_NextTileType = GetLevelManagerComponent()->GetTileType(m_pCharacter->GetCharacter(), m_MovementInfo);
 		switch (m_NextTileType)
 		{
 		case TileType::Tile:

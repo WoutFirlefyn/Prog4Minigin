@@ -81,7 +81,7 @@ public:
 	glm::ivec2 GetTileSize() const { return m_TileSize; }
 
 	glm::vec3 GetTilePos(glm::ivec2 tileIdx) const;
-	TileType GetNextTileType(Character character, MovementInfo movementInfo) const;
+	TileType GetTileType(Character character, MovementInfo movementInfo) const;
 	int GetAmountOfActiveDisks() const;
 	std::pair<Character, CharacterInfo> GetCharacter(Character character) const;
 	const std::map<glm::ivec2, dae::GameObject*, ivec2_compare>& GetTiles() const { return m_Tiles; }
