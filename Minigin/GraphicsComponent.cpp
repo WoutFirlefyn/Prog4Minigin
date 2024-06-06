@@ -38,10 +38,12 @@ void dae::GraphicsComponent::SetTexture(Texture2D* pTexture)
 
 glm::ivec2 dae::GraphicsComponent::GetTextureSize() const
 {
-	if (m_UseSourceRect)
-		return glm::ivec2(m_SrcRect.z, m_SrcRect.w);
+	glm::vec3 scale = GetGameObject()->GetWorldScale();
 
-	return m_pTexture->GetSize();
+	if (m_UseSourceRect)
+		return glm::ivec2(m_SrcRect.z * scale.x, m_SrcRect.w * scale.y);
+
+	return m_pTexture->GetSize() * glm::ivec2{ scale.x, scale.y };
 }
 
 

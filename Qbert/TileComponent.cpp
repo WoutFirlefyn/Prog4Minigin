@@ -7,21 +7,22 @@
 #include "GameTime.h"
 #include <iostream>
 
-int TileComponent::m_MaxTileStage{ 1 };
-TileComponent::TileComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent) : BaseComponent(pGameObject)
+TileComponent::TileComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent) 
+    : BaseComponent(pGameObject)
+    , m_pLevelManagerComponent{ pLevelManagerComponent }
+    , m_pTileChangedSubject{ pLevelManagerComponent->TileChanged.get() }
+    , m_pNewRoundStartedSubject{ pLevelManagerComponent->NewRoundStarted.get() }
 {
-    m_pTileChanged = pLevelManagerComponent->TileChanged.get();
-    m_pTileChanged->AddObserver(this);
-    m_pNewRoundStarted = pLevelManagerComponent->NewRoundStarted.get();
-    m_pNewRoundStarted->AddObserver(this);
+    m_pTileChangedSubject->AddObserver(this);
+    m_pNewRoundStartedSubject->AddObserver(this);
 }
 
 TileComponent::~TileComponent()
 {
-    if (m_pTileChanged)
-        m_pTileChanged->RemoveObserver(this);
-    if (m_pNewRoundStarted)
-        m_pNewRoundStarted->RemoveObserver(this);
+    if (m_pTileChangedSubject)
+        m_pTileChangedSubject->RemoveObserver(this);
+    if (m_pNewRoundStartedSubject)
+        m_pNewRoundStartedSubject->RemoveObserver(this);
 }
 
 void TileComponent::Init()
@@ -34,7 +35,7 @@ void TileComponent::Init()
 
 void TileComponent::Update()
 {
-    if (!LevelManagerComponent::IsRoundOver())
+    if (!m_pLevelManagerComponent->IsRoundOver())
         return;
 
     m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
@@ -45,36 +46,44 @@ void TileComponent::Update()
         m_AccumSec -= secondsPerFrame;
         m_pSpritesheetComponent->MoveSourceRectRelative(0, 1);
     }
-
 }
 
 void TileComponent::Notify(Character, bool roundFinished)
 {
     if (roundFinished)
-        m_pSpritesheetComponent->MoveSourceRect(LevelManagerComponent::GetRoundNr(), m_MaxTileStage);
+        m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() - 1, m_MaxTileStage);
 }
 
 void TileComponent::SubjectDestroyed(dae::Subject<Character, bool>* pSubject)
 {
-    if (pSubject == m_pTileChanged)
-        m_pTileChanged = nullptr;
+    if (pSubject == m_pTileChangedSubject)
+        m_pTileChangedSubject = nullptr;
 }
 
-void TileComponent::Notify()
+void TileComponent::Notify(bool nextLevel)
 {
+    if (nextLevel)
+    {
+        m_MaxTileStage = m_pLevelManagerComponent->GetLevelNr() == 2 ? 2 : 1;
+        return;
+    }
     m_TileStage = 0;
-    m_pSpritesheetComponent->MoveSourceRect(LevelManagerComponent::GetRoundNr(), m_TileStage);
+    m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() - 1, m_TileStage);
 }
 
-void TileComponent::SubjectDestroyed(dae::Subject<>* pSubject)
+void TileComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
 {
-    if (pSubject == m_pNewRoundStarted)
-        m_pNewRoundStarted = nullptr;
+    if (pSubject == m_pNewRoundStartedSubject)
+        m_pNewRoundStartedSubject = nullptr;
 }
 
 bool TileComponent::ChangeTile(int& tilesCovered, int stageChange)
 {
-    int newTileStage{ m_TileStage + stageChange };
+    if (m_pLevelManagerComponent->GetLevelNr() == 3 && m_TileStage + stageChange > m_MaxTileStage)
+        stageChange *= -1;
+
+    int newTileStage = m_TileStage + stageChange;
+
     if (newTileStage > m_MaxTileStage || newTileStage < 0)
         return false;
 
@@ -82,6 +91,6 @@ bool TileComponent::ChangeTile(int& tilesCovered, int stageChange)
 
     m_TileStage = newTileStage;
 
-    m_pSpritesheetComponent->MoveSourceRect(LevelManagerComponent::GetRoundNr(), m_TileStage);
+    m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() - 1, m_TileStage);
     return stageChange > 0; 
 }

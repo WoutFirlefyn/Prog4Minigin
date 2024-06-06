@@ -21,7 +21,7 @@ MainMenuComponent::MainMenuComponent(dae::GameObject* pGameObject, const std::ve
 
     m_pArrow->SetParent(GetGameObject());
     m_pArrow->SetScale(2,2);
-    glm::ivec2 arrowSize = m_pArrow->GetComponent<dae::GraphicsComponent>()->GetTextureSize() * 2;
+    glm::ivec2 arrowSize = m_pArrow->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
     glm::ivec2 textSize = m_vModes[0]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
     m_pArrow->SetPosition(m_vModes[0]->GetLocalPosition() - glm::vec3{ 20, textSize.y / 2.f, 0 } + glm::vec3{ 0, arrowSize.y / 1.25f, 0 });
 }
@@ -34,7 +34,7 @@ void MainMenuComponent::ChangeGamemode(int offset)
         newModeIndex += 3;
 
     m_SelectedScene = static_cast<SceneType>(newModeIndex);
-    glm::ivec2 arrowSize = m_pArrow->GetComponent<dae::GraphicsComponent>()->GetTextureSize() * 2;
+    glm::ivec2 arrowSize = m_pArrow->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
     glm::ivec2 textSize = m_vModes[newModeIndex]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
     m_pArrow->SetPosition(m_vModes[newModeIndex]->GetLocalPosition() - glm::vec3{ 20, textSize.y / 2.f, 0 } + glm::vec3{ 0, arrowSize.y / 1.25f, 0 });
 

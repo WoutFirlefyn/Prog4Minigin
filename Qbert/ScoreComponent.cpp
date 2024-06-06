@@ -82,12 +82,13 @@ void ScoreComponent::SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSu
 		m_pMoveStateChangedSubject = nullptr;
 }
 
-void ScoreComponent::Notify()
+void ScoreComponent::Notify(bool nextLevel)
 {
-	UpdateScore(m_AmountOfDisks * 50);
+	if (!nextLevel)
+		UpdateScore(m_AmountOfDisks * 50);
 }
 
-void ScoreComponent::SubjectDestroyed(dae::Subject<>* pSubject)
+void ScoreComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
 {
 	if (pSubject == m_pNewRoundStartedSubject)
 		m_pNewRoundStartedSubject = nullptr;

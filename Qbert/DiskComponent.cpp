@@ -39,7 +39,7 @@ void DiskComponent::Init()
 
 void DiskComponent::Update()
 {
-	if (LevelManagerComponent::IsRoundOver())
+	if (m_pLevelManagerComponent->IsRoundOver())
 		return;
 
 	float deltaTime = dae::GameTime::GetInstance().GetDeltaTime();
@@ -75,7 +75,7 @@ void DiskComponent::Notify(Disk disk, Character character)
 
 		m_StartPos = GetGameObject()->GetLocalPosition();
 		const glm::ivec2 tileSize = m_pLevelManagerComponent->GetTileSize();
-		m_EndPos = m_pLevelManagerComponent->GetTilePos({ -1,-1 }) + glm::vec3{ 0, tileSize.y / 2.f, 0 } *GetGameObject()->GetWorldScale();
+		m_EndPos = m_pLevelManagerComponent->GetTilePos({ -1,-1 }) + glm::vec3{ 0, tileSize.y / 2.f, 0 };
 
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::DiskLift, 0.2f);
 		break;
@@ -89,15 +89,18 @@ void DiskComponent::Notify(Disk disk, Character character)
 	}
 }
 
-void DiskComponent::Notify()
+void DiskComponent::Notify(bool nextLevel)
 {
+	if (nextLevel)
+		return;
+
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
-	m_pSpritesheetComponent->MoveSourceRect(rand(), LevelManagerComponent::GetRoundNr());
+	m_pSpritesheetComponent->MoveSourceRect(rand(), m_pLevelManagerComponent->GetRoundNr() - 1);
 	m_Character = Character::None;
 	m_PlatformLerpValue = 0.f;
 }
 
-void DiskComponent::SubjectDestroyed(dae::Subject<>* pSubject)
+void DiskComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
 {
 	if (pSubject == m_pNewRoundStarted)
 		m_pNewRoundStarted = nullptr;

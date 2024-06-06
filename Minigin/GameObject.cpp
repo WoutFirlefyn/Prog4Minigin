@@ -138,7 +138,7 @@ void dae::GameObject::SetPositionDirty()
 {
 	m_PositionIsDirty = true;
 
-	for (auto child : m_vChildren)
+	for (auto& child : m_vChildren)
 		child->SetPositionDirty();
 }
 

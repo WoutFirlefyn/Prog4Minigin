@@ -11,15 +11,13 @@
 #include "GameTime.h"
 #include <algorithm>
 
-int LevelManagerComponent::m_CurrentRound{ 0 };
-bool LevelManagerComponent::m_RoundOver{ false };
-LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene) : BaseComponent(pGameObject)
+LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
     , m_pMoveStateChangedSubject{ CharacterComponent::MoveStateChanged.get() }
     , m_pCharacterSpawnedSubject{ CharacterComponent::CharacterSpawned.get() }
     , m_pDiskStateChanged{ DiskComponent::DiskStateChanged.get() }
 {
     TileChanged = std::make_unique<dae::Subject<Character, bool>>();
-    NewRoundStarted = std::make_unique<dae::Subject<>>();
+    NewRoundStarted = std::make_unique<dae::Subject<bool>>();
     CharactersCollide = std::make_unique<dae::Subject<Character, Character>>();
 
     // Initializing the tiles
@@ -31,12 +29,14 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
             tile->AddComponent<dae::GraphicsComponent>("Qbert Cubes.png");
             tile->AddComponent<dae::SpritesheetComponent>(6, 3);
             tile->AddComponent<TileComponent>(this);
-            m_Tiles[{j, i}] = scene.Add(std::move(tile));
+            tile->SetParent(GetGameObject());
+            if (m_TileSize == glm::ivec2{ 0 })
+                m_TileSize = tile->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
+            tile->SetPosition(GetTilePos({ j, i }));
+            m_Tiles[{j, i}] = dae::SceneManager::GetInstance().GetCurrentScene().Add(std::move(tile));
         }
     }
 
-    m_TileSize = m_Tiles[{0, 0}]->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-    
     // Initializing disks
     for (int i{}; i < m_AmountOfDisks; ++i)
     {
@@ -44,11 +44,12 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject, dae::
         disk->AddComponent<dae::GraphicsComponent>("Disk Spritesheet.png");
         disk->AddComponent<dae::SpritesheetComponent>(4, 6);
         disk->AddComponent<DiskComponent>(this);
-
+        disk->SetParent(GetGameObject());
         if (m_DiskSize == glm::ivec2{ 0 })
             m_DiskSize = disk->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
-
-        m_Tiles[GetNewDiskIndex()] = scene.Add(std::move(disk));
+        glm::ivec2 tileIndex = GetNewDiskIndex();
+        disk->SetPosition(GetTilePos(tileIndex));
+        m_Tiles[tileIndex] = dae::SceneManager::GetInstance().GetCurrentScene().Add(std::move(disk));
     }
 }
 
@@ -73,12 +74,6 @@ void LevelManagerComponent::Init()
     m_pDiskStateChanged->AddObserver(this);
     TileChanged->AddObserver(this); 
     NewRoundStarted->AddObserver(this);
-
-    for (const auto& [index, pTile] : m_Tiles)
-    {
-        pTile->SetParent(GetGameObject());
-        pTile->SetPosition(GetTilePos(index));
-    }
 }
 
 void LevelManagerComponent::Update()
@@ -90,9 +85,16 @@ void LevelManagerComponent::Update()
 
     if (m_AccumSec >= m_RoundOverDelay)
     {
-        m_RoundOver = false;
         m_AccumSec = 0;
-        NewRoundStarted->NotifyObservers();
+        if (m_CurrentRound > 4)
+        {
+            m_CurrentRound = 1;
+            ++m_CurrentLevel;
+            NewRoundStarted->NotifyObservers(true);
+            return;
+        }
+        m_RoundOver = false;
+        NewRoundStarted->NotifyObservers(false);
     }
 }
 
@@ -215,8 +217,11 @@ void LevelManagerComponent::SubjectDestroyed(dae::Subject<Disk, Character>* pSub
         m_pDiskStateChanged = nullptr;
 }
 
-void LevelManagerComponent::Notify()
+void LevelManagerComponent::Notify(bool nextLevel)
 {
+    if (nextLevel)
+        return;
+
     std::erase_if(m_Tiles, [&](auto& tilePair)
         {
             if (tilePair.second->HasComponent<DiskComponent>())
@@ -290,9 +295,16 @@ glm::ivec2 LevelManagerComponent::GetNewDiskIndex() const
 }
 
 bool LevelManagerComponent::AreAllTilesCovered() const
-{ 
+{
     const int amountOfTiles = m_LevelLength * (m_LevelLength + 1) / 2;
-    return TileComponent::GetMaxTileStage() * amountOfTiles == m_TilesCovered;
+    auto it = m_Tiles.find({ 0, 0 });
+    if (it == m_Tiles.end())
+    {
+        assert(false);
+        return false;
+    }
+   
+    return it->second->GetComponent<TileComponent>()->GetMaxTileStage() * amountOfTiles == m_TilesCovered;
 }
 
 void LevelManagerComponent::LandOnTile(Character character, TileComponent* pTileComponent)
@@ -318,13 +330,12 @@ void LevelManagerComponent::LandOnTile(Character character, TileComponent* pTile
 
 glm::vec3 LevelManagerComponent::GetTilePos(glm::ivec2 tileIdx) const
 {
-    const glm::vec3 scale = GetGameObject()->GetWorldScale();
-    const glm::vec3 tileOffset{ m_TileSize.x * 0.5f * scale.x, m_TileSize.y * 0.75f * scale.y, 0.f };
+    const glm::vec3 tileOffset{ m_TileSize.x * 0.5f, m_TileSize.y * 0.75f, 0.f };
 
     glm::vec3 offsetToPos{ tileOffset.x * (tileIdx.x - tileIdx.y), tileOffset.y * (tileIdx.y + tileIdx.x), 0.f };
 
     if (tileIdx.x < 0 || tileIdx.y < 0)
-        offsetToPos += glm::vec3{ m_DiskSize.x, m_DiskSize.y, 0.f } * 0.5f * scale;
+        offsetToPos += glm::vec3{ m_DiskSize.x, m_DiskSize.y, 0.f } * 0.5f;
 
     return offsetToPos;
 }

@@ -30,7 +30,7 @@ void SlickSamComponent::Init()
 	m_vSpawnPositions.push_back({ 0,1 });
 
 	MoveStateChanged->AddObserver(this);
-	SetState(std::make_unique<SlickSamSpawnState>(this));
+	SetState(std::make_unique<SlickSamResetState>(this));
 }
 
 void SlickSamComponent::LateUpdate()

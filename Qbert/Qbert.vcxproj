@@ -224,6 +224,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClCompile Include="SlickSamComponent.cpp" />
     <ClCompile Include="SlickSamStates.cpp" />
     <ClCompile Include="TileComponent.cpp" />
+    <ClCompile Include="TitleComponent.cpp" />
     <ClCompile Include="UggWrongwayComponent.cpp" />
     <ClCompile Include="UggWrongwayStates.cpp" />
   </ItemGroup>
@@ -249,6 +250,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="SlickSamStates.h" />
     <ClInclude Include="Sounds.h" />
     <ClInclude Include="TileComponent.h" />
+    <ClInclude Include="TitleComponent.h" />
     <ClInclude Include="UggWrongwayComponent.h" />
     <ClInclude Include="UggWrongwayStates.h" />
   </ItemGroup>

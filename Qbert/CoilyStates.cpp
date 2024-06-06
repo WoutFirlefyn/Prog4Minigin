@@ -61,14 +61,14 @@ MovementInfo CoilyIdleState::GetDirectionToNearestQbert() const
 	if (qbert2TilePair.first != Character::None)
 	{
 		glm::ivec2 deltaTileIdx2 = coilyTilePair.second.tileIndex - qbert2TilePair.second.tileIndex;
-		if (CalculateTileDistance(deltaTileIdx) == 0)
-			deltaTileIdx = coilyTilePair.second.tileIndex - qbert2TilePair.second.previousTileIndex;
+		if (CalculateTileDistance(deltaTileIdx2) == 0)
+			deltaTileIdx2 = coilyTilePair.second.tileIndex - qbert2TilePair.second.previousTileIndex;
 		if (CalculateTileDistance(deltaTileIdx) > CalculateTileDistance(deltaTileIdx2))
 			deltaTileIdx = deltaTileIdx2;
 	}
 
 	MovementInfo option1 = MovementInfo::GetMovementInfo((deltaTileIdx.x < 0) ? MovementDirection::Right : MovementDirection::Left);
-	MovementInfo option2 = MovementInfo::GetMovementInfo((deltaTileIdx.y < 0) ? MovementDirection::Down : MovementDirection::Up);
+	MovementInfo option2 = MovementInfo::GetMovementInfo((deltaTileIdx.y < 0) ? MovementDirection::Down  : MovementDirection::Up);
 
 	if (std::abs(deltaTileIdx.x) > std::abs(deltaTileIdx.y))
 		return option1;
@@ -79,7 +79,7 @@ MovementInfo CoilyIdleState::GetDirectionToNearestQbert() const
 		if (rand() % 2 == 0)
 			std::swap(option1, option2);
 
-		auto& tiles = GetLevelManagerComponent()->GetTiles();
+		const auto& tiles = GetLevelManagerComponent()->GetTiles();
 		if (tiles.find(coilyTilePair.second.tileIndex + option1.indexOffset) != tiles.end())
 			return option1;
 		else

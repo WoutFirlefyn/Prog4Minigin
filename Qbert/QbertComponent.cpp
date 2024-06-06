@@ -22,7 +22,7 @@ void QbertComponent::Init()
 {
 	MoveStateChanged->AddObserver(this);
 
-	SetState(std::make_unique<QbertSpawnState>(this));
+	SetState(std::make_unique<QbertResetState>(this));
 }
 
 void QbertComponent::LateUpdate()

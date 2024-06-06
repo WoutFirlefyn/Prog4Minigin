@@ -26,6 +26,7 @@
 #include "QbertCurseComponent.h"
 #include "LevelManagerComponent.h"
 #include "MainMenuComponent.h"
+#include "TitleComponent.h"
 #include "ServiceLocator.h"
 #include "Sounds.h"
 #include "Game.h"
@@ -55,7 +56,7 @@ void Game::SetScene(SceneType scene)
 		return;
 	}
 
-	dae::SceneManager::GetInstance().GetCurrentScene().Init();
+	dae::SceneManager::GetInstance().Init();
 }
 
 void Game::LoadMainMenu()
@@ -161,9 +162,9 @@ void Game::LoadSolo()
 
 	// Tiles
 	auto levelManager = std::make_unique<dae::GameObject>();
-	levelManager->AddComponent<LevelManagerComponent>(scene);
 	levelManager->SetPosition(285, 95);
 	levelManager->SetScale(scale);
+	levelManager->AddComponent<LevelManagerComponent>();
 	auto pLevelManagerComponent = levelManager->GetComponent<LevelManagerComponent>();
 
 	MovementInfo::AddMovementInfo(MovementDirection::Up, glm::vec3(16, -24, 0) * scale, glm::ivec2{ 0,-1 });
@@ -233,16 +234,10 @@ void Game::LoadSolo()
 	font = resourceManager.LoadFont("Minecraft.ttf", 20);
 
 	// Lives 1
-	std::vector<std::unique_ptr<dae::GameObject>> vHearts{};
-
-	for (size_t i{}; i < 3; ++i)
-	{
-		vHearts.push_back(std::make_unique<dae::GameObject>());
-		vHearts[i]->AddComponent<dae::GraphicsComponent>("Heart.png");
-		vHearts[i]->AddComponent<LivesComponent>();
-		vHearts[i]->SetScale(scale);
-		vHearts[i]->SetPosition(10, 80 + 18 * i * scale.y);
-	}
+	auto lives = std::make_unique<dae::GameObject>();
+	lives->SetScale(scale);
+	lives->SetPosition(10.f, 80.f);
+	lives->AddComponent<LivesComponent>();
 
 	// Score 1
 	auto scoreDisplay = std::make_unique<dae::GameObject>();
@@ -251,19 +246,23 @@ void Game::LoadSolo()
 	scoreDisplay->AddComponent<ScoreComponent>(pLevelManagerComponent);
 	scoreDisplay->SetPosition(10, 50);
 
+	// Titlescreen
+	auto title = std::make_unique<dae::GameObject>();
+	title->AddComponent<dae::GraphicsComponent>("Level Titles.png");
+	title->AddComponent<dae::SpritesheetComponent>(1, 3);
+	title->AddComponent<TitleComponent>(levelManager->GetComponent<LevelManagerComponent>());
+
 	// Observers
 	auto pQbertComponent1 = qbert->GetComponent<QbertComponent>();
 
-	for (auto& heart : vHearts)
-		heart->GetComponent<LivesComponent>()->AddObserver(pQbertComponent1->PlayerDied.get());
+	lives->GetComponent<LivesComponent>()->AddObserver(pQbertComponent1->PlayerDied.get());
 	qbertCurse->GetComponent<QbertCurseComponent>()->AddObserver(pQbertComponent1->PlayerDied.get());
 
 	// Add to scene
 	scene.Add(std::move(levelManager));
 	scene.Add(std::move(player1Text));
 	scene.Add(std::move(scoreDisplay));
-	for (auto& heart : vHearts)
-		scene.Add(std::move(heart));
+	scene.Add(std::move(lives));
 	scene.Add(std::move(qbertCurse));
 	scene.Add(std::move(qbert));
 	scene.Add(std::move(coily));
@@ -271,6 +270,7 @@ void Game::LoadSolo()
 	scene.Add(std::move(sam));
 	scene.Add(std::move(ugg));
 	scene.Add(std::move(wrongway));
+	scene.Add(std::move(title));
 }
 
 void Game::LoadCoop()
@@ -317,7 +317,7 @@ void Game::LoadCoop()
 	player2Text->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, 1);
 	player2Text->SetScale(3, 3);
 	player2Text->SetPosition(
-		dae::Minigin::m_WindowSize.x - player2Text->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x * player2Text->GetLocalScale().x - 10.f
+		dae::Minigin::m_WindowSize.x - player2Text->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x - 10.f
 		, 10.f
 	);
 
@@ -325,9 +325,9 @@ void Game::LoadCoop()
 
 	// Tiles
 	auto levelManager = std::make_unique<dae::GameObject>();
-	levelManager->AddComponent<LevelManagerComponent>(scene);
 	levelManager->SetPosition(285, 95);
 	levelManager->SetScale(scale);
+	levelManager->AddComponent<LevelManagerComponent>();
 	auto pLevelManagerComponent = levelManager->GetComponent<LevelManagerComponent>();
 
 	MovementInfo::AddMovementInfo(MovementDirection::Up, glm::vec3(16, -24, 0) * scale, glm::ivec2{ 0,-1 });
@@ -419,16 +419,16 @@ void Game::LoadCoop()
 	font = resourceManager.LoadFont("Minecraft.ttf", 20);
 
 	// Lives 1
-	std::vector<std::unique_ptr<dae::GameObject>> vHearts{};
+	auto lives1 = std::make_unique<dae::GameObject>();
+	lives1->SetScale(scale);
+	lives1->SetPosition(10.f, 80.f);
+	lives1->AddComponent<LivesComponent>();
 
-	for (size_t i{}; i < 3; ++i)
-	{
-		vHearts.push_back(std::make_unique<dae::GameObject>());
-		vHearts[i]->AddComponent<dae::GraphicsComponent>("Heart.png");
-		vHearts[i]->AddComponent<LivesComponent>();
-		vHearts[i]->SetScale(scale);
-		vHearts[i]->SetPosition(10, 80 + 18 * i * scale.y);
-	}
+	// Lives 2
+	auto lives2 = std::make_unique<dae::GameObject>();
+	lives2->AddComponent<LivesComponent>();
+	lives2->SetScale(scale);
+	lives2->SetPosition(windowSize.x - 38.f, 80.f);
 
 	// Score 1
 	auto score1Display = std::make_unique<dae::GameObject>();
@@ -447,12 +447,18 @@ void Game::LoadCoop()
 		, 50.f
 	);
 
+	// Titlescreen
+	auto title = std::make_unique<dae::GameObject>();
+	title->AddComponent<dae::GraphicsComponent>("Level Titles.png");
+	title->AddComponent<dae::SpritesheetComponent>(1, 3);
+	title->AddComponent<TitleComponent>(levelManager->GetComponent<LevelManagerComponent>());
+
 	// Observers
 	auto pQbertComponent1 = qbert1->GetComponent<QbertComponent>();
 	auto pQbertComponent2 = qbert2->GetComponent<QbertComponent>();
 
-	for (auto& heart : vHearts)
-		heart->GetComponent<LivesComponent>()->AddObserver(pQbertComponent1->PlayerDied.get());
+	lives1->GetComponent<LivesComponent>()->AddObserver(pQbertComponent1->PlayerDied.get());
+	lives2->GetComponent<LivesComponent>()->AddObserver(pQbertComponent2->PlayerDied.get());
 	qbert1Curse->GetComponent<QbertCurseComponent>()->AddObserver(pQbertComponent1->PlayerDied.get());
 	qbert2Curse->GetComponent<QbertCurseComponent>()->AddObserver(pQbertComponent2->PlayerDied.get());
 
@@ -462,8 +468,8 @@ void Game::LoadCoop()
 	scene.Add(std::move(player2Text));
 	scene.Add(std::move(score1Display));
 	scene.Add(std::move(score2Display));
-	for (auto& heart : vHearts)
-		scene.Add(std::move(heart));
+	scene.Add(std::move(lives1));
+	scene.Add(std::move(lives2));
 	scene.Add(std::move(qbert1Curse));
 	scene.Add(std::move(qbert2Curse));
 	scene.Add(std::move(qbert1));
@@ -473,6 +479,7 @@ void Game::LoadCoop()
 	scene.Add(std::move(sam));
 	scene.Add(std::move(ugg));
 	scene.Add(std::move(wrongway));
+	scene.Add(std::move(title));
 
 	sceneManager.SetCurrentScene(sceneName);
 }
@@ -524,9 +531,9 @@ void Game::LoadVersus()
 
 	// Tiles
 	auto levelManager = std::make_unique<dae::GameObject>();
-	levelManager->AddComponent<LevelManagerComponent>(scene);
 	levelManager->SetPosition(285, 95);
 	levelManager->SetScale(scale);
+	levelManager->AddComponent<LevelManagerComponent>();
 	auto pLevelManagerComponent = levelManager->GetComponent<LevelManagerComponent>();
 
 	MovementInfo::AddMovementInfo(MovementDirection::Up, glm::vec3(16, -24, 0) * scale, glm::ivec2{ 0,-1 });
@@ -604,16 +611,10 @@ void Game::LoadVersus()
 	font = resourceManager.LoadFont("Minecraft.ttf", 20);
 
 	// Lives 1
-	std::vector<std::unique_ptr<dae::GameObject>> vHearts{};
-
-	for (size_t i{}; i < 3; ++i)
-	{
-		vHearts.push_back(std::make_unique<dae::GameObject>());
-		vHearts[i]->AddComponent<dae::GraphicsComponent>("Heart.png");
-		vHearts[i]->AddComponent<LivesComponent>();
-		vHearts[i]->SetScale(scale);
-		vHearts[i]->SetPosition(10, 80 + 18 * i * scale.y);
-	}
+	auto lives = std::make_unique<dae::GameObject>();
+	lives->SetScale(scale);
+	lives->SetPosition(10.f, 80.f);
+	lives->AddComponent<LivesComponent>();
 
 	// Score 1
 	auto scoreDisplay = std::make_unique<dae::GameObject>();
@@ -622,19 +623,23 @@ void Game::LoadVersus()
 	scoreDisplay->AddComponent<ScoreComponent>(pLevelManagerComponent);
 	scoreDisplay->SetPosition(10, 50);
 
+	// Titlescreen
+	auto title = std::make_unique<dae::GameObject>();
+	title->AddComponent<dae::GraphicsComponent>("Level Titles.png");
+	title->AddComponent<dae::SpritesheetComponent>(1, 3);
+	title->AddComponent<TitleComponent>(levelManager->GetComponent<LevelManagerComponent>());
+
 	// Observers
 	auto pQbertComponent1 = qbert->GetComponent<QbertComponent>();
 
-	for (auto& heart : vHearts)
-		heart->GetComponent<LivesComponent>()->AddObserver(pQbertComponent1->PlayerDied.get());
+	lives->GetComponent<LivesComponent>()->AddObserver(pQbertComponent1->PlayerDied.get());
 	qbertCurse->GetComponent<QbertCurseComponent>()->AddObserver(pQbertComponent1->PlayerDied.get());
 
 	// Add to scene
 	scene.Add(std::move(levelManager));
 	scene.Add(std::move(player1Text));
 	scene.Add(std::move(scoreDisplay));
-	for (auto& heart : vHearts)
-		scene.Add(std::move(heart));
+	scene.Add(std::move(lives));
 	scene.Add(std::move(qbertCurse));
 	scene.Add(std::move(qbert));
 	scene.Add(std::move(coily));
@@ -642,4 +647,5 @@ void Game::LoadVersus()
 	scene.Add(std::move(sam));
 	scene.Add(std::move(ugg));
 	scene.Add(std::move(wrongway));
+	scene.Add(std::move(title));
 }

@@ -28,8 +28,10 @@ namespace dae
 	private: 
 		explicit Scene();
 		void CheckForDestroyedObjects();
+		void AddNewObjects();
 
 		std::vector<std::unique_ptr<GameObject>> m_vObjects{};
+		std::vector<std::unique_ptr<GameObject>> m_vNewObjects{};
 
 		bool m_IsInitialized{ false };
 	};

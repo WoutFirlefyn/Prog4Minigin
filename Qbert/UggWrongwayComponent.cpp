@@ -31,7 +31,7 @@ void UggWrongwayComponent::Init()
 	m_vSpawnPositions.push_back({ 0,7 });
 
 	MoveStateChanged->AddObserver(this);
-	SetState(std::make_unique<UggWrongwaySpawnState>(this));
+	SetState(std::make_unique<UggWrongwayResetState>(this));
 }
 
 void UggWrongwayComponent::LateUpdate()

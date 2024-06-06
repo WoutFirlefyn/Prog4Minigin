@@ -101,7 +101,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	LONGLONG MS_PER_FRAME = static_cast<LONGLONG>(time.GetMsPerFrame());
 	float FIXED_TIME_STEP = time.GetFixedTimeStep();
 
-	sceneManager.Init();
+	//sceneManager.Init();
 
 	auto lastTime = high_resolution_clock::now();
 	float lag = 0.f;

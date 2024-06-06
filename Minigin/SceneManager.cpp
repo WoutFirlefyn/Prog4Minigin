@@ -4,8 +4,6 @@
 void dae::SceneManager::Init()
 {
 	m_Scenes.at(m_CurrentScene)->Init();
-	//for (auto& [name, pScene] : m_Scenes)
-	//	pScene->Init();
 }
 
 void dae::SceneManager::Update()

@@ -30,7 +30,7 @@ void CoilyComponent::Init()
 	MoveStateChanged->AddObserver(this);
 	CharacterSpawned->AddObserver(this);
 	m_Character = Character::Coily;
-	SetState(std::make_unique<CoilySpawnState>(this));
+	SetState(std::make_unique<CoilyResetState>(this));
 }
 
 void CoilyComponent::LateUpdate()

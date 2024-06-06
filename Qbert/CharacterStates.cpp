@@ -115,13 +115,14 @@ ResetState::~ResetState()
 		m_pNewRoundStarted->RemoveObserver(this);
 }
 
-void ResetState::SubjectDestroyed(dae::Subject<>* pSubject)
+void ResetState::Notify(bool nextLevel)
+{
+	if (!nextLevel)
+		m_NewRoundStarted = true;
+}
+
+void ResetState::SubjectDestroyed(dae::Subject<bool>* pSubject)
 {
 	if (pSubject == m_pNewRoundStarted)
 		m_pNewRoundStarted = nullptr;
-}
-
-void ResetState::Notify()
-{
-	m_NewRoundStarted = true;
 }

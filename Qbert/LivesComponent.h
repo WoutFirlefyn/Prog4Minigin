@@ -22,8 +22,8 @@ public:
 	virtual void SubjectDestroyed(dae::Subject<>* pSubject) override;
 private:
 	dae::Subject<>* m_pPlayerDiedSubject{ nullptr };
-	static int m_CurrentId;
-	const int m_HeartId;
+	std::vector<dae::GameObject*> m_vHearts;
+	int m_Lives{ 3 };
 };
 
 

@@ -69,16 +69,16 @@ public:
 	DeathState(CharacterComponent* pCharacter) : CharacterState(pCharacter) {}
 };
 
-class ResetState : public CharacterState, dae::Observer<>
+class ResetState : public CharacterState, dae::Observer<bool>
 {
 public:
 	ResetState(CharacterComponent* pCharacter);
 	virtual ~ResetState() override;
-	virtual void Notify() override;
-	virtual void SubjectDestroyed(dae::Subject<>* pSubject) override;
+	virtual void Notify(bool nextLevel) override;
+	virtual void SubjectDestroyed(dae::Subject<bool>* pSubject) override;
 protected:
 	bool m_NewRoundStarted{ false };
 private:
-	dae::Subject<>* m_pNewRoundStarted{ nullptr };
+	dae::Subject<bool>* m_pNewRoundStarted{ nullptr };
 };
 

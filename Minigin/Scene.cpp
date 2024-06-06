@@ -10,10 +10,16 @@ dae::Scene::~Scene() = default;
 
 dae::GameObject* dae::Scene::Add(std::unique_ptr<GameObject>&& object)
 {
-	m_vObjects.emplace_back(std::move(object));
 	if (m_IsInitialized)
-		m_vObjects.back()->Init();
-	return m_vObjects.back().get();
+	{
+		m_vNewObjects.emplace_back(std::move(object));
+		return m_vNewObjects.back().get();
+	}
+	else
+	{
+		m_vObjects.emplace_back(std::move(object));
+		return m_vObjects.back().get();
+	}
 }
 
 void dae::Scene::Remove(std::unique_ptr<GameObject>&& object)
@@ -31,10 +37,10 @@ void dae::Scene::Init()
 	if (m_IsInitialized)
 		return;
 
+	m_IsInitialized = true;
+
 	for (auto& pObject : m_vObjects)
 		pObject->Init();
-
-	m_IsInitialized = true;
 }
 
 void dae::Scene::Update()
@@ -62,6 +68,7 @@ void dae::Scene::LateUpdate()
 			pObject->LateUpdate();
 
 	CheckForDestroyedObjects();
+	AddNewObjects();
 }
 
 void dae::Scene::Render() const
@@ -84,4 +91,17 @@ void dae::Scene::CheckForDestroyedObjects()
 			return pObject->IsDestroyed();
 		}
 	), m_vObjects.end());
+}
+
+void dae::Scene::AddNewObjects()
+{
+	if (m_vNewObjects.size() == 0)
+		return;
+
+	for (auto& pObject : m_vNewObjects)
+	{
+		pObject->Init();
+		m_vObjects.emplace_back(std::move(pObject));
+	}
+	m_vNewObjects.clear();
 }

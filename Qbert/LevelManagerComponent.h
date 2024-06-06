@@ -42,10 +42,10 @@ struct ivec2_compare
 	}
 };
 
-class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<Character, bool>, public dae::Observer<Character, dae::GameObject*>, public dae::Observer<Disk, Character>, public dae::Observer<>
+class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<Character, bool>, public dae::Observer<Character, dae::GameObject*>, public dae::Observer<Disk, Character>, public dae::Observer<bool>
 {
 public:
-	LevelManagerComponent(dae::GameObject* pGameObject, dae::Scene& scene);
+	LevelManagerComponent(dae::GameObject* pGameObject);
 	virtual ~LevelManagerComponent() override;
 
 	LevelManagerComponent(const LevelManagerComponent& other) = delete;
@@ -73,10 +73,11 @@ public:
 	virtual void SubjectDestroyed(dae::Subject<Disk, Character>* pSubject) override;
 
 	// NewRoundStarted
-	virtual void Notify() override;
+	virtual void Notify(bool nextLevel) override;
 
-	static int GetRoundNr() { return m_CurrentRound; }
-	static bool IsRoundOver() { return m_RoundOver; }
+	int GetRoundNr() const { return m_CurrentRound; }
+	int GetLevelNr() const { return m_CurrentLevel; }
+	bool IsRoundOver() const { return m_RoundOver; }
 	glm::ivec2 GetTileSize() const { return m_TileSize; }
 
 	glm::vec3 GetTilePos(glm::ivec2 tileIdx) const;
@@ -87,7 +88,7 @@ public:
 
 	std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
 	std::unique_ptr<dae::Subject<Character, bool>> TileChanged;
-	std::unique_ptr<dae::Subject<>> NewRoundStarted;
+	std::unique_ptr<dae::Subject<bool>> NewRoundStarted;
 private:
 	glm::ivec2 GetNewDiskIndex() const;
 	bool AreAllTilesCovered() const;
@@ -106,11 +107,12 @@ private:
 	glm::ivec2 m_DiskSize{ 0 };
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };
-	static int m_CurrentRound;
+	int m_CurrentRound{ 1 };
+	int m_CurrentLevel{ 3 };
 	int m_AmountOfDisks{ 2 };
 	bool m_CharacterMovedDirtyFlag{ false };
 
-	static bool m_RoundOver;
+	bool m_RoundOver{ true };
 	float m_AccumSec{};
 	float m_RoundOverDelay{ 2.5f };
 };
