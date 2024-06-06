@@ -108,7 +108,7 @@ private:
 	const int m_LevelLength{ 7 };
 	int m_TilesCovered{ 0 };
 	int m_CurrentRound{ 1 };
-	int m_CurrentLevel{ 3 };
+	int m_CurrentLevel{ 1 };
 	int m_AmountOfDisks{ 2 };
 	bool m_CharacterMovedDirtyFlag{ false };
 

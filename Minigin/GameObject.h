@@ -79,16 +79,16 @@ namespace dae
 				return dynamic_cast<T*>((*m_Components.find(typeid(T))).second.get());
 
 			// If component is not found, check for derived components of T
+			std::mutex resultMutex{};
 			T* result = nullptr;
-			auto derivedIt = std::find_if(std::execution::par_unseq, m_Components.begin(), m_Components.end(),
-				[&result](const auto& pair)
+			std::for_each(std::execution::par_unseq, m_Components.begin(), m_Components.end(),
+				[&](const auto& pair)
 				{
-					if (auto tempResult = dynamic_cast<T*>(pair.second.get()))
+					if (T* tempResult = dynamic_cast<T*>(pair.second.get()))
 					{
+						std::lock_guard lockguard{ resultMutex };
 						result = tempResult;
-						return true;
 					}
-					return false;
 				}
 			);
 

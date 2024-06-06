@@ -10,9 +10,8 @@
 #include "CommandImplementation.h"
 #include "InputManager.h"
 
-CoilyComponent::CoilyComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent, bool versusModeEnabled)
+CoilyComponent::CoilyComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent)
 	: CharacterComponent(pGameObject, pLevelManagerComponent)
-	, m_VersusMode{ versusModeEnabled }
 {
 }
 

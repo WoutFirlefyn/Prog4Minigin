@@ -15,7 +15,6 @@ public:
 	TitleComponent& operator=(TitleComponent&& other) noexcept = delete;
 
 	virtual void Init() override;
-	//virtual void Update() override;
 
 	virtual void Notify(bool nextLevel) override;
 	virtual void SubjectDestroyed(dae::Subject<bool>* pSubject) override;

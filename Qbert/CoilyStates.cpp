@@ -7,6 +7,7 @@
 #include "GraphicsComponent.h"
 #include "Sounds.h"
 #include "ServiceLocator.h"
+#include "Game.h"
 
 CoilyIdleState::CoilyIdleState(CharacterComponent* pCharacter) : IdleState(pCharacter) 
 {
@@ -25,7 +26,7 @@ void CoilyIdleState::Update()
 		movementInfo = MovementInfo::GetMovementInfo(static_cast<MovementDirection>(rand() % 2 + 2));
 	else
 	{
-		if (m_pCoilyComponent->VersusModeEnabled())
+		if (Game::GetInstance().GetCurrentSceneType() == SceneType::Versus)
 			return;
 		movementInfo = GetDirectionToNearestQbert();
 	}
@@ -35,7 +36,7 @@ void CoilyIdleState::Update()
 
 void CoilyIdleState::HandleInput(MovementInfo movementInfo)
 {
-	if (m_pCoilyComponent->VersusModeEnabled()
+	if (Game::GetInstance().GetCurrentSceneType() == SceneType::Versus
 		&& !m_pCoilyComponent->IsEgg()
 		&& m_AccumSec >= m_TimeBetweenJumps)
 		return SetState(std::make_unique<CoilyJumpState>(m_pCharacter, movementInfo));

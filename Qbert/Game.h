@@ -21,13 +21,14 @@ public:
 	Game& operator= (Game&&) noexcept = delete;
 
 	void SetScene(SceneType scene);
+	SceneType GetCurrentSceneType() const { return m_CurrentSceneType; }
 private:
 	friend class dae::Singleton<Game>;
 	Game() = default;
 
 	void LoadMainMenu();
-	void LoadSolo();
-	void LoadCoop();
-	void LoadVersus();
+	void LoadLevel(SceneType sceneType);
+
+	SceneType m_CurrentSceneType;
 };
 
