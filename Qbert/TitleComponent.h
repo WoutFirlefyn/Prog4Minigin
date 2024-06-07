@@ -3,7 +3,8 @@
 #include <Observer.h>
 class LevelManagerComponent;
 enum class Character;
-class TitleComponent final : public dae::BaseComponent, public dae::Observer<bool>
+enum class GameState;
+class TitleComponent final : public dae::BaseComponent, public dae::Observer<GameState>
 {
 public:
 	TitleComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);
@@ -16,10 +17,10 @@ public:
 
 	virtual void Init() override;
 
-	virtual void Notify(bool nextLevel) override;
-	virtual void SubjectDestroyed(dae::Subject<bool>* pSubject) override;
+	virtual void Notify(GameState gameState) override;
+	virtual void SubjectDestroyed(dae::Subject<GameState>* pSubject) override;
 private:
 	LevelManagerComponent* m_pLevelManagerComponent{ nullptr };
-	dae::Subject<bool>* m_pNewRoundStartedSubject{ nullptr };
+	dae::Subject<GameState>* m_pGameResumedSubject{ nullptr };
 };
 

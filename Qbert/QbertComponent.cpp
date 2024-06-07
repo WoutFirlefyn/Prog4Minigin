@@ -36,16 +36,9 @@ void QbertComponent::LateUpdate()
 
 void QbertComponent::Notify(Character character, MovementInfo movementInfo)
 {
-	if (character != m_Character)
-		return;
-
-	switch (movementInfo.state)
+	if (character == m_Character && movementInfo.state == MovementState::Fall)
 	{
-	case MovementState::Fall:
 		--m_Lives;
 		PlayerDied->NotifyObservers();
-		break;
-	default:
-		break;
 	}
 }

@@ -101,7 +101,6 @@ void QbertDeathState::OnExit()
 QbertDiskState::QbertDiskState(CharacterComponent* pCharacter)
 	: CharacterState(pCharacter)
 	, m_pDiskStateChangedSubject{ DiskComponent::DiskStateChanged.get() }
-
 {
 	if (m_pDiskStateChangedSubject)
 		m_pDiskStateChangedSubject->AddObserver(this);
@@ -172,9 +171,9 @@ void QbertSpawnState::OnEnter()
 
 void QbertResetState::Update()
 {
-	if (m_NewRoundStarted)
+	if (m_EndResetState)
 	{
-		m_NewRoundStarted = false;
+		m_EndResetState = false;
 		return SetState(std::make_unique<QbertSpawnState>(m_pCharacter));
 	}
 }

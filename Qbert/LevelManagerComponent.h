@@ -22,7 +22,14 @@ enum class TileType
 	Tile,
 	Disk,
 	None
-}; 
+};
+
+enum class GameState
+{
+	NextRound,
+	NextLevel,
+	QbertDied
+};
 
 struct CharacterInfo
 {
@@ -42,7 +49,7 @@ struct ivec2_compare
 	}
 };
 
-class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<Character, bool>, public dae::Observer<Character, dae::GameObject*>, public dae::Observer<Disk, Character>, public dae::Observer<bool>
+class LevelManagerComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>, public dae::Observer<Character, bool>, public dae::Observer<Character, dae::GameObject*>, public dae::Observer<Disk, Character>, public dae::Observer<GameState>
 {
 public:
 	LevelManagerComponent(dae::GameObject* pGameObject);
@@ -72,12 +79,14 @@ public:
 	virtual void Notify(Disk disk, Character character) override;
 	virtual void SubjectDestroyed(dae::Subject<Disk, Character>* pSubject) override;
 
-	// NewRoundStarted
-	virtual void Notify(bool nextLevel) override;
+	// GameResumed
+	virtual void Notify(GameState gameState) override;
+	
+	void SkipRound();
 
 	int GetRoundNr() const { return m_CurrentRound; }
 	int GetLevelNr() const { return m_CurrentLevel; }
-	bool IsRoundOver() const { return m_RoundOver; }
+	bool IsGamePaused() const { return m_GamePaused; }
 	glm::ivec2 GetTileSize() const { return m_TileSize; }
 
 	glm::vec3 GetTilePos(glm::ivec2 tileIdx) const;
@@ -88,7 +97,7 @@ public:
 
 	std::unique_ptr<dae::Subject<Character, Character>> CharactersCollide;
 	std::unique_ptr<dae::Subject<Character, bool>> TileChanged;
-	std::unique_ptr<dae::Subject<bool>> NewRoundStarted;
+	std::unique_ptr<dae::Subject<GameState>> GameResumed;
 private:
 	glm::ivec2 GetNewDiskIndex() const;
 	bool AreAllTilesCovered() const;
@@ -112,8 +121,8 @@ private:
 	int m_AmountOfDisks{ 2 };
 	bool m_CharacterMovedDirtyFlag{ false };
 
-	bool m_RoundOver{ true };
+	bool m_GamePaused{ true };
 	float m_AccumSec{};
-	float m_RoundOverDelay{ 2.5f };
+	float m_PauseDuration{ 2.5f };
 };
 

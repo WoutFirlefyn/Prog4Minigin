@@ -46,6 +46,9 @@ void UggWrongwayComponent::LateUpdate()
 // MoveStateChanged
 void UggWrongwayComponent::Notify(Character character, MovementInfo movementInfo)
 {
+	if ((character == Character::Qbert1 || character == Character::Qbert2) && movementInfo.state == MovementState::Fall)
+		m_ResetCharacter = true;
+
 	if (character != m_Character)
 		return;
 

@@ -157,9 +157,9 @@ void CoilyDeathState::OnEnter()
 
 void CoilyResetState::Update()
 {
-	if (m_NewRoundStarted)
+	if (m_EndResetState)
 	{
-		m_NewRoundStarted = false;
+		m_EndResetState = false;
 		return SetState(std::make_unique<CoilySpawnState>(m_pCharacter));
 	}
 }

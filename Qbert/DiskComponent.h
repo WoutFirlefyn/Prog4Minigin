@@ -20,8 +20,9 @@ namespace dae
 	class SpritesheetComponent;
 }
 enum class Character;
+enum class GameState;
 class LevelManagerComponent;
-class DiskComponent final : public dae::BaseComponent, public dae::Observer<Disk, Character>, public dae::Observer<bool>
+class DiskComponent final : public dae::BaseComponent, public dae::Observer<Disk, Character>, public dae::Observer<GameState>
 {
 public:
 	DiskComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);
@@ -37,12 +38,12 @@ public:
 
 	virtual void Notify(Disk, Character) override;
 
-	virtual void Notify(bool nextLevel) override;
-	virtual void SubjectDestroyed(dae::Subject<bool>* pSubject) override;
+	virtual void Notify(GameState gameState) override;
+	virtual void SubjectDestroyed(dae::Subject<GameState>* pSubject) override;
 
 	static std::unique_ptr<dae::Subject<Disk, Character>> DiskStateChanged;
 private:
-	dae::Subject<bool>* m_pNewRoundStarted{ nullptr };
+	dae::Subject<GameState>* m_pGameResumedSubject{ nullptr };
 
 	dae::SpritesheetComponent* m_pSpritesheetComponent{ nullptr };
 	LevelManagerComponent* m_pLevelManagerComponent{ nullptr };

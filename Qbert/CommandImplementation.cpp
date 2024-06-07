@@ -52,7 +52,7 @@ void NextRoundCommand::Execute()
 		assert(false);
 		return;
 	}
-	GetGameObject()->GetComponent<LevelManagerComponent>()->TileChanged->NotifyObservers(Character::None, true);
+	GetGameObject()->GetComponent<LevelManagerComponent>()->SkipRound();
 }
 
 void ToggleSoundCommand::Execute()

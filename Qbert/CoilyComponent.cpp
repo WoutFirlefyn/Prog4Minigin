@@ -43,10 +43,10 @@ void CoilyComponent::LateUpdate()
 
 void CoilyComponent::Notify(Character character, MovementInfo movementInfo)
 {
-	if (character != m_Character)
-		return;
+	if ((character == Character::Qbert1 || character == Character::Qbert2) && movementInfo.state == MovementState::Fall)
+		m_ResetCharacter = true;
 
-	if (movementInfo.state == MovementState::End)
+	if (character == m_Character && movementInfo.state == MovementState::End)
 	{
 		dae::ServiceLocator::GetSoundSystem().Play((m_IsEgg ? dae::Sounds::CoilyEggJump : dae::Sounds::CoilySnakeJump), 0.2f);
 		GetGameObject()->GetComponent<dae::SpritesheetComponent>()->MoveSourceRectRelative(0, -1);

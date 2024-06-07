@@ -97,9 +97,9 @@ void UggWrongwayDeathState::OnEnter()
 
 void UggWrongwayResetState::Update()
 {
-	if (m_NewRoundStarted)
+	if (m_EndResetState)
 	{
-		m_NewRoundStarted = false;
+		m_EndResetState = false;
 		return SetState(std::make_unique<UggWrongwaySpawnState>(m_pCharacter));
 	}
 }

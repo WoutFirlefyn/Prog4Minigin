@@ -45,9 +45,9 @@ void SlickSamComponent::LateUpdate()
 // MoveStateChanged
 void SlickSamComponent::Notify(Character character, MovementInfo movementInfo)
 {
-	if (character != m_Character)
-		return;
+	if ((character == Character::Qbert1 || character == Character::Qbert2) && movementInfo.state == MovementState::Fall)
+		m_ResetCharacter = true;
 
-	if (movementInfo.state == MovementState::End)
+	if (character == m_Character && movementInfo.state == MovementState::End)
 		dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::OtherFoesJump, 0.2f);
 }

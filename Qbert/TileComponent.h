@@ -10,8 +10,9 @@ namespace dae
 }
 enum class Character;
 enum class MovementDirection;
+enum class GameState;
 class LevelManagerComponent;
-class TileComponent final : public dae::BaseComponent, public dae::Observer<Character, bool>, public dae::Observer<bool>
+class TileComponent final : public dae::BaseComponent, public dae::Observer<Character, bool>, public dae::Observer<GameState>
 {
 public:
 	TileComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent);	
@@ -27,20 +28,22 @@ public:
 
 	virtual void Notify(Character, bool roundFinished) override;
 	virtual void SubjectDestroyed(dae::Subject<Character, bool>* pSubject) override;
-	virtual void Notify(bool nextLevel) override;
-	virtual void SubjectDestroyed(dae::Subject<bool>* pSubject) override;
+	virtual void Notify(GameState gameState) override;
+	virtual void SubjectDestroyed(dae::Subject<GameState>* pSubject) override;
 
 	bool ChangeTile(int& tilesCovered, int stageChange);
 
 	int GetMaxTileStage() { return m_MaxTileStage; }
 private:
 	dae::Subject<Character, bool>* m_pTileChangedSubject{ nullptr };
-	dae::Subject<bool>* m_pNewRoundStartedSubject{ nullptr };
+	dae::Subject<GameState>* m_pGameResumedSubject{ nullptr };
 	dae::SpritesheetComponent* m_pSpritesheetComponent{ nullptr };
 	LevelManagerComponent* m_pLevelManagerComponent{ nullptr };
 
 	int m_TileStage{ 0 };
 	int m_MaxTileStage{ 1 };
+
+	bool m_RoundOverAnimationEnabled{ false };
 
 	float m_AccumSec{};
 	float m_Fps{ 12.f };

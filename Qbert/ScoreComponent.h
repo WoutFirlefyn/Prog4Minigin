@@ -9,8 +9,9 @@ namespace dae
 class QbertComponent;
 class LevelManagerComponent;
 enum class Character;
+enum class GameState;
 struct MovementInfo;
-class ScoreComponent final : public dae::BaseComponent, public dae::Observer<Character, bool>, public dae::Observer<Character, Character>, public dae::Observer<Character, MovementInfo>, public dae::Observer<bool>
+class ScoreComponent final : public dae::BaseComponent, public dae::Observer<Character, bool>, public dae::Observer<Character, Character>, public dae::Observer<Character, MovementInfo>, public dae::Observer<GameState>
 {
 public:
 	ScoreComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent, Character character = static_cast<Character>(0));
@@ -36,8 +37,8 @@ public:
 	virtual void SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSubject) override;
 
 	// New Round Started
-	virtual void Notify(bool nextLevel) override;
-	virtual void SubjectDestroyed(dae::Subject<bool>* pSubject)override;
+	virtual void Notify(GameState gameState) override;
+	virtual void SubjectDestroyed(dae::Subject<GameState>* pSubject)override;
 
 	int GetScore() const { return m_Score; }
 
@@ -50,7 +51,7 @@ private:
 	dae::Subject<Character, bool>* m_pTileChangedSubject{ nullptr };
 	dae::Subject<Character,Character>* m_pCharactersCollideSubject{ nullptr };
 	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
-	dae::Subject<bool>* m_pNewRoundStartedSubject{ nullptr };
+	dae::Subject<GameState>* m_pGameResumedSubject{ nullptr };
 
 	Character m_CharacterToTrack{};
 	int m_Score{ 0 };

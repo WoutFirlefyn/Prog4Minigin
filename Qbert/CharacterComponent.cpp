@@ -10,8 +10,8 @@ std::unique_ptr<dae::Subject<Character, dae::GameObject*>> CharacterComponent::C
 CharacterComponent::CharacterComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent)
 	: BaseComponent(pGameObject)
 	, m_pLevelManagerComponent{ pLevelManagerComponent }
+	, m_pTileChangedSubject{ m_pLevelManagerComponent->TileChanged.get() }
 {
-	m_pTileChangedSubject = m_pLevelManagerComponent->TileChanged.get();
 	m_pTileChangedSubject->AddObserver(this);
 }
 

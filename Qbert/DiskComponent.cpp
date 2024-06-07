@@ -16,16 +16,16 @@ DiskComponent::DiskComponent(dae::GameObject* pGameObject, LevelManagerComponent
 	, m_pLevelManagerComponent{ pLevelManagerComponent }
 	, m_Character{ Character::None }
 {
-	m_pNewRoundStarted = pLevelManagerComponent->NewRoundStarted.get();
-	m_pNewRoundStarted->AddObserver(this);
+	m_pGameResumedSubject = pLevelManagerComponent->GameResumed.get();
+	m_pGameResumedSubject->AddObserver(this);
 }
 
 DiskComponent::~DiskComponent()
 {
 	if (DiskStateChanged)
 		DiskStateChanged->RemoveObserver(this);
-	if (m_pNewRoundStarted)
-		m_pNewRoundStarted->RemoveObserver(this);
+	if (m_pGameResumedSubject)
+		m_pGameResumedSubject->RemoveObserver(this);
 }
 
 void DiskComponent::Init()
@@ -39,7 +39,7 @@ void DiskComponent::Init()
 
 void DiskComponent::Update()
 {
-	if (m_pLevelManagerComponent->IsRoundOver())
+	if (m_pLevelManagerComponent->IsGamePaused())
 		return;
 
 	float deltaTime = dae::GameTime::GetInstance().GetDeltaTime();
@@ -89,9 +89,9 @@ void DiskComponent::Notify(Disk disk, Character character)
 	}
 }
 
-void DiskComponent::Notify(bool nextLevel)
+void DiskComponent::Notify(GameState gameState)
 {
-	if (nextLevel)
+	if (gameState != GameState::NextRound)
 		return;
 
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
@@ -100,10 +100,10 @@ void DiskComponent::Notify(bool nextLevel)
 	m_PlatformLerpValue = 0.f;
 }
 
-void DiskComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
+void DiskComponent::SubjectDestroyed(dae::Subject<GameState>* pSubject)
 {
-	if (pSubject == m_pNewRoundStarted)
-		m_pNewRoundStarted = nullptr;
+	if (pSubject == m_pGameResumedSubject)
+		m_pGameResumedSubject = nullptr;
 }
 
 

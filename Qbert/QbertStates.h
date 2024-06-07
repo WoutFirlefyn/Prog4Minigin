@@ -31,7 +31,7 @@ public:
 private:
 	glm::vec3 m_StartPos{};
 	float m_AccumSec{ 0.f };
-	float m_RespawnDelay{ 1.f };
+	float m_RespawnDelay{ 2.5f };
 };
 
 struct Disk;

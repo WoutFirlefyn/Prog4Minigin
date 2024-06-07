@@ -11,7 +11,7 @@ ScoreComponent::ScoreComponent(dae::GameObject* pGameObject, LevelManagerCompone
 	, m_pTileChangedSubject{ pLevelManagerComponent->TileChanged.get() }
 	, m_pCharactersCollideSubject{ pLevelManagerComponent->CharactersCollide.get() }
 	, m_pMoveStateChangedSubject { CharacterComponent::MoveStateChanged.get() }
-	, m_pNewRoundStartedSubject { pLevelManagerComponent->NewRoundStarted.get() }
+	, m_pGameResumedSubject { pLevelManagerComponent->GameResumed.get() }
 	, m_CharacterToTrack{ character }
 {
 }
@@ -24,8 +24,8 @@ ScoreComponent::~ScoreComponent()
 		m_pCharactersCollideSubject->RemoveObserver(this);
 	if (m_pMoveStateChangedSubject)
 		m_pMoveStateChangedSubject->RemoveObserver(this);
-	if (m_pNewRoundStartedSubject)
-		m_pNewRoundStartedSubject->RemoveObserver(this);
+	if (m_pGameResumedSubject)
+		m_pGameResumedSubject->RemoveObserver(this);
 }
 
 void ScoreComponent::Init()
@@ -33,7 +33,7 @@ void ScoreComponent::Init()
 	m_pTileChangedSubject->AddObserver(this);
 	m_pCharactersCollideSubject->AddObserver(this);
 	m_pMoveStateChangedSubject->AddObserver(this);
-	m_pNewRoundStartedSubject->AddObserver(this);
+	m_pGameResumedSubject->AddObserver(this);
 	m_pTextComponent = GetGameObject()->GetComponent<dae::TextComponent>();
 	UpdateScore();
 }
@@ -82,16 +82,16 @@ void ScoreComponent::SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSu
 		m_pMoveStateChangedSubject = nullptr;
 }
 
-void ScoreComponent::Notify(bool nextLevel)
+void ScoreComponent::Notify(GameState gameState)
 {
-	if (!nextLevel)
+	if (gameState == GameState::NextRound)
 		UpdateScore(m_AmountOfDisks * 50);
 }
 
-void ScoreComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
+void ScoreComponent::SubjectDestroyed(dae::Subject<GameState>* pSubject)
 {
-	if (pSubject == m_pNewRoundStartedSubject)
-		m_pNewRoundStartedSubject = nullptr;
+	if (pSubject == m_pGameResumedSubject)
+		m_pGameResumedSubject = nullptr;
 }
 
 void ScoreComponent::UpdateScore(int score)

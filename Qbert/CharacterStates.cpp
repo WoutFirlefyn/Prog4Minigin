@@ -103,26 +103,28 @@ void IdleState::SubjectDestroyed(dae::Subject<Character, Character>* pSubject)
 		m_pCharactersCollide = nullptr;
 }
 
-ResetState::ResetState(CharacterComponent* pCharacter) : CharacterState(pCharacter)
+ResetState::ResetState(CharacterComponent* pCharacter) 
+	: CharacterState(pCharacter)
+	, m_pGameResumedSubject{ GetLevelManagerComponent()->GameResumed.get() }
 {
-	m_pNewRoundStarted = GetLevelManagerComponent()->NewRoundStarted.get();
-	m_pNewRoundStarted->AddObserver(this);
+	m_pGameResumedSubject->AddObserver(this);
+
 }
 
 ResetState::~ResetState()
 {
-	if (m_pNewRoundStarted)
-		m_pNewRoundStarted->RemoveObserver(this);
+	if (m_pGameResumedSubject)
+		m_pGameResumedSubject->RemoveObserver(this);
 }
 
-void ResetState::Notify(bool nextLevel)
+void ResetState::Notify(GameState gameState)
 {
-	if (!nextLevel)
-		m_NewRoundStarted = true;
+	if (gameState != GameState::NextLevel)
+		m_EndResetState = true;
 }
 
-void ResetState::SubjectDestroyed(dae::Subject<bool>* pSubject)
+void ResetState::SubjectDestroyed(dae::Subject<GameState>* pSubject)
 {
-	if (pSubject == m_pNewRoundStarted)
-		m_pNewRoundStarted = nullptr;
+	if (pSubject == m_pGameResumedSubject)
+		m_pGameResumedSubject = nullptr;
 }

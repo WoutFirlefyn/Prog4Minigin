@@ -17,7 +17,7 @@ LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject) : Bas
     , m_pDiskStateChanged{ DiskComponent::DiskStateChanged.get() }
 {
     TileChanged = std::make_unique<dae::Subject<Character, bool>>();
-    NewRoundStarted = std::make_unique<dae::Subject<bool>>();
+    GameResumed = std::make_unique<dae::Subject<GameState>>();
     CharactersCollide = std::make_unique<dae::Subject<Character, Character>>();
 
     // Initializing the tiles
@@ -63,8 +63,8 @@ LevelManagerComponent::~LevelManagerComponent()
         m_pDiskStateChanged->RemoveObserver(this);
     if (TileChanged.get())
         TileChanged->RemoveObserver(this);
-    if (NewRoundStarted.get())
-        NewRoundStarted->RemoveObserver(this);
+    if (GameResumed.get())
+        GameResumed->RemoveObserver(this);
 }
 
 void LevelManagerComponent::Init()
@@ -73,28 +73,32 @@ void LevelManagerComponent::Init()
     m_pCharacterSpawnedSubject->AddObserver(this);
     m_pDiskStateChanged->AddObserver(this);
     TileChanged->AddObserver(this); 
-    NewRoundStarted->AddObserver(this);
+    GameResumed->AddObserver(this);
 }
 
 void LevelManagerComponent::Update()
 {
-    if (!m_RoundOver)
+    if (!m_GamePaused)
         return;
 
     m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
 
-    if (m_AccumSec >= m_RoundOverDelay)
+    if (m_AccumSec >= m_PauseDuration)
     {
         m_AccumSec = 0;
         if (m_CurrentRound > 4)
         {
             m_CurrentRound = 1;
             ++m_CurrentLevel;
-            NewRoundStarted->NotifyObservers(true);
+            GameResumed->NotifyObservers(GameState::NextLevel);
             return;
         }
-        m_RoundOver = false;
-        NewRoundStarted->NotifyObservers(false);
+        if (AreAllTilesCovered())
+            GameResumed->NotifyObservers(GameState::NextRound);
+        else
+            GameResumed->NotifyObservers(GameState::QbertDied);
+
+        m_GamePaused = false;
     }
 }
 
@@ -139,7 +143,10 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
     }
     case MovementState::Fall:
         if (character == Character::Qbert1 || character == Character::Qbert2)
+        {
             characterPairIt->second.tileIndex -= movementInfo.indexOffset;
+            m_GamePaused = true;
+        }
         else
             characterPairIt->second.tileIndex = { -1,-1 };
         break;
@@ -186,10 +193,8 @@ void LevelManagerComponent::Notify(Character, bool roundFinished)
 {
     if (roundFinished)
     {
-        m_RoundOver = true;
+        m_GamePaused = true;
         ++m_CurrentRound;
-        m_TilesCovered = 0;
-
         dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::RoundCompleteTune);
     }
 }
@@ -217,10 +222,12 @@ void LevelManagerComponent::SubjectDestroyed(dae::Subject<Disk, Character>* pSub
         m_pDiskStateChanged = nullptr;
 }
 
-void LevelManagerComponent::Notify(bool nextLevel)
+void LevelManagerComponent::Notify(GameState gameState)
 {
-    if (nextLevel)
+    if (gameState != GameState::NextRound)
         return;
+
+    m_TilesCovered = 0;
 
     std::erase_if(m_Tiles, [&](auto& tilePair)
         {
@@ -239,6 +246,15 @@ void LevelManagerComponent::Notify(bool nextLevel)
         pDisk->SetPosition(GetTilePos(newIdx));
     }
     m_vInactiveDisks.clear();
+}
+
+void LevelManagerComponent::SkipRound()
+{
+    if (!m_GamePaused)
+    {
+        m_TilesCovered = m_LevelLength * (m_LevelLength + 1) / 2;
+        TileChanged->NotifyObservers(Character::None, true);
+    }
 }
 
 TileType LevelManagerComponent::GetTileType(Character character, MovementInfo) const

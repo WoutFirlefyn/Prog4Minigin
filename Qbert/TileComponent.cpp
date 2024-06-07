@@ -11,18 +11,18 @@ TileComponent::TileComponent(dae::GameObject* pGameObject, LevelManagerComponent
     : BaseComponent(pGameObject)
     , m_pLevelManagerComponent{ pLevelManagerComponent }
     , m_pTileChangedSubject{ pLevelManagerComponent->TileChanged.get() }
-    , m_pNewRoundStartedSubject{ pLevelManagerComponent->NewRoundStarted.get() }
+    , m_pGameResumedSubject{ pLevelManagerComponent->GameResumed.get() }
 {
     m_pTileChangedSubject->AddObserver(this);
-    m_pNewRoundStartedSubject->AddObserver(this);
+    m_pGameResumedSubject->AddObserver(this);
 }
 
 TileComponent::~TileComponent()
 {
     if (m_pTileChangedSubject)
         m_pTileChangedSubject->RemoveObserver(this);
-    if (m_pNewRoundStartedSubject)
-        m_pNewRoundStartedSubject->RemoveObserver(this);
+    if (m_pGameResumedSubject)
+        m_pGameResumedSubject->RemoveObserver(this);
 }
 
 void TileComponent::Init()
@@ -35,7 +35,7 @@ void TileComponent::Init()
 
 void TileComponent::Update()
 {
-    if (!m_pLevelManagerComponent->IsRoundOver())
+    if (!m_RoundOverAnimationEnabled || !m_pLevelManagerComponent->IsGamePaused())
         return;
 
     m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
@@ -51,7 +51,10 @@ void TileComponent::Update()
 void TileComponent::Notify(Character, bool roundFinished)
 {
     if (roundFinished)
+    {
         m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 2, m_MaxTileStage);
+        m_RoundOverAnimationEnabled = true;
+    }
 }
 
 void TileComponent::SubjectDestroyed(dae::Subject<Character, bool>* pSubject)
@@ -60,21 +63,27 @@ void TileComponent::SubjectDestroyed(dae::Subject<Character, bool>* pSubject)
         m_pTileChangedSubject = nullptr;
 }
 
-void TileComponent::Notify(bool nextLevel)
+void TileComponent::Notify(GameState gameState)
 {
-    if (nextLevel)
+    switch (gameState)
     {
+    case GameState::NextRound:
+        m_TileStage = 0;
+        m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 2, m_TileStage);
+        break;
+    case GameState::NextLevel:
         m_MaxTileStage = m_pLevelManagerComponent->GetLevelNr() == 2 ? 2 : 1;
-        return;
+        break;
+    default:
+        break;
     }
-    m_TileStage = 0;
-    m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 2, m_TileStage);
+    m_RoundOverAnimationEnabled = false;
 }
 
-void TileComponent::SubjectDestroyed(dae::Subject<bool>* pSubject)
+void TileComponent::SubjectDestroyed(dae::Subject<GameState>* pSubject)
 {
-    if (pSubject == m_pNewRoundStartedSubject)
-        m_pNewRoundStartedSubject = nullptr;
+    if (pSubject == m_pGameResumedSubject)
+        m_pGameResumedSubject = nullptr;
 }
 
 bool TileComponent::ChangeTile(int& tilesCovered, int stageChange)
