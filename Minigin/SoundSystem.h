@@ -11,6 +11,7 @@ namespace dae
 		virtual void Play(const Sounds soundId, const float volume = 1.f) = 0;
 		virtual void LoadSound(const std::string& fileName, Sounds soundId) = 0;
 		virtual void ClearSounds() = 0;
+		virtual void ToggleMute() = 0;
 	};
 
 	class LoggingSoundSystem final : public SoundSystem 
@@ -33,6 +34,11 @@ namespace dae
 			m_pSoundSystem->ClearSounds();
 			std::cout << "Unloading all loaded sounds\n";
 		}
+		virtual void ToggleMute()
+		{ 
+			std::cout << "Toggled sound mute\n";
+			m_pSoundSystem->ToggleMute();
+		}
 	private:
 		std::unique_ptr<SoundSystem> m_pSoundSystem;
 	};
@@ -42,6 +48,7 @@ namespace dae
 		virtual void Play(const Sounds, const float) override {}
 		virtual void LoadSound(const std::string&, Sounds) override {}
 		virtual void ClearSounds() override {}
+		virtual void ToggleMute() {}
 	};
 }
 

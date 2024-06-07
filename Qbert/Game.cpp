@@ -144,7 +144,10 @@ void Game::LoadLevel(SceneType sceneType)
 	soundSystem.LoadSound("SlickSam Caught.wav", dae::Sounds::SlickSamCaught);
 	soundSystem.LoadSound("Swearing.wav", dae::Sounds::Swearing);
 
+	input.BindCommand(std::make_unique<ToggleSoundCommand>(), SDL_SCANCODE_M, dae::InputType::Pressed);
+
 	auto font = resourceManager.LoadFont("Minecraft.ttf", 36);
+	glm::vec4 textColor{ 255,200,90,255 };
 
 	// player1Text
 	auto player1Text = std::make_unique<dae::GameObject>();
@@ -177,7 +180,8 @@ void Game::LoadLevel(SceneType sceneType)
 	levelManager->SetPosition(285, 95);
 	levelManager->SetScale(scale);
 	levelManager->AddComponent<LevelManagerComponent>();
-	auto pLevelManagerComponent = levelManager->GetComponent<LevelManagerComponent>();
+	auto pLevelManagerComponent = levelManager->GetComponent<LevelManagerComponent>(); 
+	input.BindCommand(std::make_unique<NextRoundCommand>(levelManager.get()), SDL_SCANCODE_F1, dae::InputType::Pressed);
 
 	MovementInfo::AddMovementInfo(MovementDirection::Up, glm::vec3(16, -24, 0) * scale, glm::ivec2{ 0,-1 });
 	MovementInfo::AddMovementInfo(MovementDirection::Left, glm::vec3(-16, -24, 0) * scale, glm::ivec2{ -1, 0 });
@@ -308,6 +312,7 @@ void Game::LoadLevel(SceneType sceneType)
 	auto scoreDisplay1 = vScoreDisplay.back().get();
 	scoreDisplay1->AddComponent<dae::GraphicsComponent>();
 	scoreDisplay1->AddComponent<dae::TextComponent>(font);
+	scoreDisplay1->GetComponent<dae::TextComponent>()->SetColor(textColor);
 	scoreDisplay1->AddComponent<ScoreComponent>(pLevelManagerComponent);
 	scoreDisplay1->SetPosition(10, 50);
 
@@ -325,6 +330,7 @@ void Game::LoadLevel(SceneType sceneType)
 		auto scoreDisplay2 = vScoreDisplay.back().get();
 		scoreDisplay2->AddComponent<dae::GraphicsComponent>();
 		scoreDisplay2->AddComponent<dae::TextComponent>(font);
+		scoreDisplay2->GetComponent<dae::TextComponent>()->SetColor(textColor);
 		scoreDisplay2->AddComponent<ScoreComponent>(pLevelManagerComponent, Character::Qbert2);
 		scoreDisplay2->SetPosition(
 			dae::Minigin::m_WindowSize.x - 150.f
@@ -339,7 +345,7 @@ void Game::LoadLevel(SceneType sceneType)
 	title->AddComponent<TitleComponent>(levelManager->GetComponent<LevelManagerComponent>());
 
 	// Observers
-	for (int i{}; i < vQbert.size(); ++i)
+	for (size_t i{}; i < vQbert.size(); ++i)
 	{
 		auto pQbertComponent = vQbert[i]->GetComponent<QbertComponent>();
 		vLives[i]->GetComponent<LivesComponent>()->AddObserver(pQbertComponent->PlayerDied.get());
@@ -363,4 +369,19 @@ void Game::LoadLevel(SceneType sceneType)
 	scene.Add(std::move(ugg));
 	scene.Add(std::move(wrongway));
 	scene.Add(std::move(title));
+}
+
+void Game::LoadEndScreen()
+{
+	auto& soundSystem = dae::ServiceLocator::GetSoundSystem();
+	//auto& input = dae::InputManager::GetInstance();
+	//auto& sceneManager = dae::SceneManager::GetInstance();
+
+	//glm::ivec2 windowSize = dae::Minigin::m_WindowSize;
+
+	//std::string sceneName = "EndScreen";
+	//auto& scene = sceneManager.CreateScene(sceneName);
+	//sceneManager.SetCurrentScene(sceneName);
+
+	soundSystem.LoadSound("Change Selection.wav", dae::Sounds::ChangeSelection);
 }

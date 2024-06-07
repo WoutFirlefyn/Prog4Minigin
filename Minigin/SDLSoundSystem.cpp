@@ -34,6 +34,7 @@ public:
 	void ProcessSounds();
 	void LoadSound(const std::string& fileName, dae::Sounds soundId);
 	void ClearSounds();
+	void ToggleMute() { m_SoundMuted = !m_SoundMuted; }
 private:
 	struct DeleteSound
 	{
@@ -50,6 +51,8 @@ private:
 	std::jthread m_SoundThread{};
 	std::condition_variable m_WaitForNewSound{};
 	std::mutex m_Mutex{};
+
+	bool m_SoundMuted{ false };
 
 	bool m_StopProcessing{ false };
 };
@@ -127,8 +130,11 @@ void dae::SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds()
 		if (m_StopProcessing)
 			break;
 
-		Mix_Volume(-1, static_cast<int>(roundf(m_Queue[m_Head].volume * MIX_MAX_VOLUME)));
-		Mix_PlayChannel(-1, m_vSounds[m_Queue[m_Head].id].get(), 0);
+		if (!m_SoundMuted)
+		{
+			Mix_Volume(-1, static_cast<int>(roundf(m_Queue[m_Head].volume * MIX_MAX_VOLUME)));
+			Mix_PlayChannel(-1, m_vSounds[m_Queue[m_Head].id].get(), 0);
+		}
 
 		m_Head = ++m_Head % MAX_PENDING;
 	}
@@ -154,4 +160,9 @@ void dae::SDLSoundSystem::LoadSound(const std::string& fileName, dae::Sounds sou
 void dae::SDLSoundSystem::ClearSounds()
 {
 	m_pSDLSoundSystemImpl->ClearSounds();
+}
+
+void dae::SDLSoundSystem::ToggleMute()
+{
+	m_pSDLSoundSystemImpl->ToggleMute();
 }

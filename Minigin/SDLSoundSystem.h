@@ -11,6 +11,7 @@ namespace dae
 		virtual void Play(const dae::Sounds soundId, const float volume) override;
 		virtual void LoadSound(const std::string& fileName, dae::Sounds soundId) override;
 		virtual void ClearSounds() override;
+		virtual void ToggleMute() override;
 
 	private:
 		class SDLSoundSystemImpl;

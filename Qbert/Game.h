@@ -28,6 +28,7 @@ private:
 
 	void LoadMainMenu();
 	void LoadLevel(SceneType sceneType);
+	void LoadEndScreen();
 
 	SceneType m_CurrentSceneType;
 };

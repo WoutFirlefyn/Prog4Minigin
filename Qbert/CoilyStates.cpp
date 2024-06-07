@@ -26,7 +26,7 @@ void CoilyIdleState::Update()
 		movementInfo = MovementInfo::GetMovementInfo(static_cast<MovementDirection>(rand() % 2 + 2));
 	else
 	{
-		if (Game::GetInstance().GetCurrentSceneType() != SceneType::Versus)
+		if (Game::GetInstance().GetCurrentSceneType() == SceneType::Versus)
 			return;
 		movementInfo = GetDirectionToNearestQbert();
 	}

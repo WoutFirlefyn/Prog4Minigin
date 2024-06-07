@@ -31,3 +31,16 @@ public:
 	virtual void Execute() override;
 };
 
+class NextRoundCommand : public dae::GameObjectCommand
+{
+public:
+	NextRoundCommand(dae::GameObject* pGameObject) : GameObjectCommand(pGameObject) {}
+
+	virtual void Execute() override;
+};
+
+class ToggleSoundCommand : public dae::Command
+{
+public:
+	virtual void Execute() override;
+};

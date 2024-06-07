@@ -27,6 +27,6 @@ namespace dae
 		GameObject* GetGameObject() const { return m_pGameObject; }
 	private:
 		GameObject* m_pGameObject;
-	};	 
+	}; 
 }
 

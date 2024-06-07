@@ -8,7 +8,7 @@ LivesComponent::LivesComponent(dae::GameObject* pGameObject)
 {
 	glm::ivec2 heartSize{ 0 };
 	auto& scene = dae::SceneManager::GetInstance().GetCurrentScene();
-	for (size_t i{}; i < m_Lives; ++i)
+	for (int i{}; i < m_Lives; ++i)
 	{
 		auto pHeart = std::make_unique<dae::GameObject>();
 		pHeart->AddComponent<dae::GraphicsComponent>("Heart.png");
