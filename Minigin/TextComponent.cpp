@@ -44,5 +44,7 @@ void dae::TextComponent::SetColor(const glm::vec4& color)
 	if (m_Color == color)
 		return;
 	m_Color = color;
-	m_NeedsUpdate = true;
+
+	if (!m_Text.empty())
+		m_NeedsUpdate = true;
 }

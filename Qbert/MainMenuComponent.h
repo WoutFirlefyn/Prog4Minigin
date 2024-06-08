@@ -14,8 +14,6 @@ public:
 	MainMenuComponent& operator=(const MainMenuComponent& other) = delete;
 	MainMenuComponent& operator=(MainMenuComponent&& other)	noexcept = delete;
 
-	//virtual void Init() override;
-	//virtual void Update() override;
 	void ChangeGamemode(int offset);
 	void SelectGamemode();
 private:

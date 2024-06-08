@@ -117,6 +117,9 @@
     <ClCompile Include="TitleComponent.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="HighScoreComponent.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharacterStates.h">
@@ -189,6 +192,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TitleComponent.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="HighScoreComponent.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>

@@ -212,6 +212,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClCompile Include="FPSComponent.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GraphComponent.cpp" />
+    <ClCompile Include="HighScoreComponent.cpp" />
     <ClCompile Include="LevelManagerComponent.cpp" />
     <ClCompile Include="LivesComponent.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -238,6 +239,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="FPSComponent.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GraphComponent.h" />
+    <ClInclude Include="HighScoreComponent.h" />
     <ClInclude Include="LevelManagerComponent.h" />
     <ClInclude Include="LivesComponent.h" />
     <ClInclude Include="MainMenuComponent.h" />

@@ -3,6 +3,7 @@
 #include "CharacterComponent.h"
 #include "MainMenuComponent.h"
 #include "LevelManagerComponent.h"
+#include "HighScoreComponent.h"
 #include "ServiceLocator.h"
 #include <iostream>
 
@@ -17,12 +18,6 @@ MoveCommand::MoveCommand(dae::GameObject* pGameObject, const MovementInfo& movem
 void MoveCommand::Execute()
 {
 	m_pCharacterComponent->Move(m_MovementInfo);
-}
-
-ChangeGamemodeCommand::ChangeGamemodeCommand(dae::GameObject* pGameObject, int gamemodeOffset)
-	: GameObjectCommand(pGameObject)
-	, m_GamemodeOffset{ gamemodeOffset }
-{
 }
 
 void ChangeGamemodeCommand::Execute()
@@ -58,4 +53,14 @@ void NextRoundCommand::Execute()
 void ToggleSoundCommand::Execute()
 {
 	dae::ServiceLocator::GetSoundSystem().ToggleMute();
+}
+
+void ChangeNameCommand::Execute()
+{
+	if (!GetGameObject()->HasComponent<HighScoreComponent>())
+	{
+		assert(false);
+		return;
+	}
+	GetGameObject()->GetComponent<HighScoreComponent>()->ChangeLetter(m_Offset);
 }

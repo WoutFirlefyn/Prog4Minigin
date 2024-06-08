@@ -16,7 +16,11 @@ private:
 class ChangeGamemodeCommand : public dae::GameObjectCommand
 {
 public:
-	ChangeGamemodeCommand(dae::GameObject* pGameObject, int gamemodeOffset);
+	ChangeGamemodeCommand(dae::GameObject* pGameObject, int gamemodeOffset)
+		: GameObjectCommand(pGameObject)
+		, m_GamemodeOffset{ gamemodeOffset }
+	{
+	}
 
 	virtual void Execute() override;
 private:
@@ -43,4 +47,18 @@ class ToggleSoundCommand : public dae::Command
 {
 public:
 	virtual void Execute() override;
+};
+
+class ChangeNameCommand : public dae::GameObjectCommand
+{
+public:
+	ChangeNameCommand(dae::GameObject* pGameObject, const glm::ivec2& offset)
+		: GameObjectCommand(pGameObject)
+		, m_Offset{ offset }
+	{
+	}
+		
+	virtual void Execute() override;
+private:
+	glm::ivec2 m_Offset{};
 };

@@ -122,13 +122,13 @@ void dae::SDLSoundSystem::SDLSoundSystemImpl::ClearSounds()
 
 void dae::SDLSoundSystem::SDLSoundSystemImpl::ProcessSounds()
 {
-	while (true)
+	while (!m_StopProcessing)
 	{
 		std::unique_lock lock(m_Mutex);
 		m_WaitForNewSound.wait(lock, [&]() { return m_Head != m_Tail || m_StopProcessing; });
 
 		if (m_StopProcessing)
-			break;
+			return;
 
 		if (!m_SoundMuted)
 		{

@@ -26,6 +26,7 @@
 #include "QbertCurseComponent.h"
 #include "LevelManagerComponent.h"
 #include "MainMenuComponent.h"
+#include "HighScoreComponent.h"
 #include "TitleComponent.h"
 #include "ServiceLocator.h"
 #include "Sounds.h"
@@ -45,8 +46,8 @@ void Game::SetScene(SceneType scene)
 	case SceneType::Versus:
 		LoadLevel(scene);
 		break;
-	case SceneType::Highscore:
-
+	case SceneType::EndScreen:
+		LoadEndScreen();
 		break;
 	default:
 		return;
@@ -374,14 +375,44 @@ void Game::LoadLevel(SceneType sceneType)
 void Game::LoadEndScreen()
 {
 	auto& soundSystem = dae::ServiceLocator::GetSoundSystem();
-	//auto& input = dae::InputManager::GetInstance();
-	//auto& sceneManager = dae::SceneManager::GetInstance();
+	auto& input = dae::InputManager::GetInstance();
+	auto& sceneManager = dae::SceneManager::GetInstance();
 
-	//glm::ivec2 windowSize = dae::Minigin::m_WindowSize;
+	glm::ivec2 windowSize = dae::Minigin::m_WindowSize;
 
-	//std::string sceneName = "EndScreen";
-	//auto& scene = sceneManager.CreateScene(sceneName);
-	//sceneManager.SetCurrentScene(sceneName);
+	std::string sceneName = "EndScreen";
+	auto& scene = sceneManager.CreateScene(sceneName);
+	sceneManager.SetCurrentScene(sceneName);
 
 	soundSystem.LoadSound("Change Selection.wav", dae::Sounds::ChangeSelection);
+
+	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Minecraft.ttf", 40);
+	glm::vec4 textColor{ 250,190,80,255 };
+
+	auto highscoreName = std::make_unique<dae::GameObject>();
+	highscoreName->AddComponent<dae::GraphicsComponent>();
+	highscoreName->AddComponent<dae::TextComponent>(font);
+	highscoreName->GetComponent<dae::TextComponent>()->SetColor(textColor);
+
+	auto highscoreSelection = std::make_unique<dae::GameObject>();
+	highscoreSelection->SetPosition(windowSize.x / 2.f - 50.f, windowSize.y / 3.f);
+	highscoreSelection->AddComponent<HighScoreComponent>(scene.Add(std::move(highscoreName)));
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0,-1}), SDL_SCANCODE_W, dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), SDL_SCANCODE_S, dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0}), SDL_SCANCODE_A, dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0}), SDL_SCANCODE_D, dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0,-1}), SDL_SCANCODE_UP,	dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), SDL_SCANCODE_DOWN,	dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0}), SDL_SCANCODE_LEFT,	dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0}), SDL_SCANCODE_RIGHT, dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0,-1}), dae::ControllerButton::DPAD_UP,		dae::InputType::Pressed, 0);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), dae::ControllerButton::DPAD_DOWN,	dae::InputType::Pressed, 0);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0}), dae::ControllerButton::DPAD_LEFT,	dae::InputType::Pressed, 0);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0}), dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Pressed, 0);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0,-1}), dae::ControllerButton::DPAD_UP,		dae::InputType::Pressed, 1);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), dae::ControllerButton::DPAD_DOWN,	dae::InputType::Pressed, 1);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0}), dae::ControllerButton::DPAD_LEFT,	dae::InputType::Pressed, 1);
+	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0}), dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Pressed, 1);
+
+	scene.Add(std::move(highscoreSelection));
 }

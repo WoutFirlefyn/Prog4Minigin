@@ -128,7 +128,6 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
     {
     case MovementState::Start:
         characterPairIt->second.isMoving = true;
-        //if (GetTileType(character) != TileType::Disk)
         characterPairIt->second.previousTileIndex = characterPairIt->second.tileIndex;
         characterPairIt->second.tileIndex += movementInfo.indexOffset;
         break;
