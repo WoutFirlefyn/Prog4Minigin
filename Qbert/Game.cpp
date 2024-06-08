@@ -29,6 +29,7 @@
 #include "HighScoreComponent.h"
 #include "TitleComponent.h"
 #include "RoundCounterComponent.h"
+#include "TileIconComponent.h"
 #include "ServiceLocator.h"
 #include "Sounds.h"
 #include "Game.h"
@@ -355,12 +356,31 @@ void Game::LoadLevel(SceneType sceneType)
 	}
 
 	font = resourceManager.LoadFont("Monocraft.ttf", 18);
+
+	// Round / Level counter
 	auto roundCounter = std::make_unique<dae::GameObject>();
 	roundCounter->AddComponent<dae::GraphicsComponent>();
-	roundCounter->AddComponent<dae::TextComponent>(font, "Level:0  Round:0");
+	roundCounter->AddComponent<dae::TextComponent>(font, "Level 0  Round 0");
 	roundCounter->GetComponent<dae::TextComponent>()->SetColor(textColor);
 	roundCounter->AddComponent<RoundCounterComponent>(pLevelManagerComponent);
 	roundCounter->SetPosition((windowSize.x - roundCounter->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x) / 2.f, 10.f);
+
+	// Change to
+	auto changeTo = std::make_unique<dae::GameObject>();
+	changeTo->AddComponent<dae::GraphicsComponent>();
+	changeTo->AddComponent<dae::TextComponent>(font, "Change To");
+	changeTo->GetComponent<dae::TextComponent>()->SetColor(textColor);
+	changeTo->SetPosition(10, 170);
+
+	// Tile icon
+	auto tileIcon = std::make_unique<dae::GameObject>();
+	tileIcon->SetScale(scale);
+	tileIcon->AddComponent<dae::GraphicsComponent>("Color Icons Spritesheet.png");
+	tileIcon->AddComponent<dae::SpritesheetComponent>(6,2);
+	tileIcon->AddComponent<TileIconComponent>(pLevelManagerComponent);
+	tileIcon->SetParent(changeTo.get());
+	glm::ivec2 changeToSize = changeTo->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
+	tileIcon->SetPosition(changeToSize.x + 15.f, (changeToSize.y - tileIcon->GetComponent<dae::GraphicsComponent>()->GetTextureSize().y) / 2.f);
 
 	// Titlescreen
 	auto title = std::make_unique<dae::GameObject>();
@@ -392,6 +412,8 @@ void Game::LoadLevel(SceneType sceneType)
 	scene.Add(std::move(ugg));
 	scene.Add(std::move(wrongway));
 	scene.Add(std::move(roundCounter));
+	scene.Add(std::move(changeTo));
+	scene.Add(std::move(tileIcon));
 	scene.Add(std::move(title));
 }
 

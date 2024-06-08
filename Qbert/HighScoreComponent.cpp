@@ -86,7 +86,7 @@ void HighScoreComponent::SaveHighscore()
     if (jsonArray.size() > 20)
         jsonArray.erase(jsonArray.begin() + 20, jsonArray.end());
 
-    std::ofstream outFile("Highscore.bin", std::ios::binary);
+    std::ofstream outFile(filename, std::ios::binary);
     if (!outFile.is_open())
     {
         std::cerr << "Error opening file for writing\n";

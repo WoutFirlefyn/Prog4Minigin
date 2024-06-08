@@ -123,6 +123,9 @@
     <ClCompile Include="RoundCounterComponent.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="TileIconComponent.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharacterStates.h">
@@ -201,6 +204,9 @@
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="RoundCounterComponent.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="TileIconComponent.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>

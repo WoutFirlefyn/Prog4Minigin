@@ -8,7 +8,7 @@ RoundCounterComponent::RoundCounterComponent(dae::GameObject* pGameObject, Level
 	, m_pLevelManagerComponent{ pLevelManagerComponent }
 	, m_pGameResumedSubject{ pLevelManagerComponent->GameResumed.get() }
 {
-	GetGameObject()->GetComponent<dae::TextComponent>()->SetText(std::format("Level:{}  Round:{}", m_pLevelManagerComponent->GetLevelNr(), m_pLevelManagerComponent->GetRoundNr()));
+	GetGameObject()->GetComponent<dae::TextComponent>()->SetText(std::format("Level {}  Round {}", m_pLevelManagerComponent->GetLevelNr(), m_pLevelManagerComponent->GetRoundNr()));
 }
 
 RoundCounterComponent::~RoundCounterComponent()
@@ -27,7 +27,7 @@ void RoundCounterComponent::Notify(GameState gameState)
 	if (gameState == GameState::QbertDied)
 		return;
 
-	GetGameObject()->GetComponent<dae::TextComponent>()->SetText(std::format("Level:{}  Round:{}", m_pLevelManagerComponent->GetLevelNr(), m_pLevelManagerComponent->GetRoundNr()));
+	GetGameObject()->GetComponent<dae::TextComponent>()->SetText(std::format("Level {}  Round {}", m_pLevelManagerComponent->GetLevelNr(), m_pLevelManagerComponent->GetRoundNr()));
 }
 
 void RoundCounterComponent::SubjectDestroyed(dae::Subject<GameState>* pSubject)
