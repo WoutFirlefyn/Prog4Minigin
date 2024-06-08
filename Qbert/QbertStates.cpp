@@ -43,7 +43,7 @@ void QbertJumpState::Update()
 {
 	if (Jump())
 	{
-		m_NextTileType = GetLevelManagerComponent()->GetTileType(m_pCharacter->GetCharacter(), m_MovementInfo);
+		m_NextTileType = GetLevelManagerComponent()->GetTileType(m_pCharacter->GetCharacter());
 		switch (m_NextTileType)
 		{
 		case TileType::Tile:
@@ -94,8 +94,10 @@ void QbertDeathState::Update()
 
 void QbertDeathState::OnExit()
 {
-	if (m_StartPos != glm::vec3(0))
-		GetGameObject()->SetPosition(m_StartPos);
+	auto [character, characterInfo] = GetLevelManagerComponent()->GetCharacter(m_pCharacter->GetCharacter());
+	GetGameObject()->SetPosition(GetLevelManagerComponent()->GetWorldTilePos(characterInfo.previousTileIndex) + glm::vec3{ 8, -6, 0 } * GetGameObject()->GetLocalScale());
+	//if (m_StartPos != glm::vec3(0))
+	//	GetGameObject()->SetPosition(m_StartPos);
 }
 
 QbertDiskState::QbertDiskState(CharacterComponent* pCharacter)
@@ -108,6 +110,7 @@ QbertDiskState::QbertDiskState(CharacterComponent* pCharacter)
 
 QbertDiskState::~QbertDiskState()
 {
+	GetGameObject()->SetParent(nullptr);
 	if (m_pDiskStateChangedSubject)
 		m_pDiskStateChangedSubject->RemoveObserver(this);
 }

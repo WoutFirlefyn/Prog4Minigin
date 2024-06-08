@@ -128,12 +128,14 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
     {
     case MovementState::Start:
         characterPairIt->second.isMoving = true;
+        //if (GetTileType(character) != TileType::Disk)
         characterPairIt->second.previousTileIndex = characterPairIt->second.tileIndex;
         characterPairIt->second.tileIndex += movementInfo.indexOffset;
         break;
     case MovementState::End:
     {
         characterPairIt->second.isMoving = false;
+        characterPairIt->second.previousTileIndex = characterPairIt->second.tileIndex;
         m_CharacterMovedDirtyFlag = true;
 
         auto nextTilePairIt = m_Tiles.find(characterPairIt->second.tileIndex);
@@ -145,6 +147,9 @@ void LevelManagerComponent::Notify(Character character, MovementInfo movementInf
         if (character == Character::Qbert1 || character == Character::Qbert2)
         {
             characterPairIt->second.tileIndex -= movementInfo.indexOffset;
+            auto otherQbertPairIt = m_Characters.find(character == Character::Qbert1 ? Character::Qbert2 : Character::Qbert1);
+            if (otherQbertPairIt != m_Characters.end())
+                otherQbertPairIt->second.tileIndex = otherQbertPairIt->second.previousTileIndex;
             m_GamePaused = true;
         }
         else
@@ -179,8 +184,8 @@ void LevelManagerComponent::Notify(Character character, dae::GameObject* pCharac
 
     offset *= GetGameObject()->GetLocalScale();
 
-    pCharacterGameObject->SetPosition(GetTilePos(tileIdx) + GetGameObject()->GetLocalPosition() + offset);
-    m_Characters[character].tileIndex = tileIdx;
+    pCharacterGameObject->SetPosition(GetWorldTilePos(tileIdx) + offset);
+    m_Characters[character].tileIndex = m_Characters[character].previousTileIndex = tileIdx;
 }
 
 void LevelManagerComponent::SubjectDestroyed(dae::Subject<Character, dae::GameObject*>* pSubject)
@@ -211,7 +216,8 @@ void LevelManagerComponent::Notify(Disk disk, Character character)
             }));
         break;
     case DiskState::Stop:
-        m_Characters[character].tileIndex = { 0,0 };
+        if (m_Characters[character].tileIndex.x < 0 || m_Characters[character].tileIndex.y < 0)
+            m_Characters[character].tileIndex = { 0,0 };
         break;
     }
 }
@@ -257,7 +263,7 @@ void LevelManagerComponent::SkipRound()
     }
 }
 
-TileType LevelManagerComponent::GetTileType(Character character, MovementInfo) const
+TileType LevelManagerComponent::GetTileType(Character character) const
 {
     auto characterTilePairIt = m_Characters.find(character);
     if (characterTilePairIt == m_Characters.end())
@@ -353,4 +359,9 @@ glm::vec3 LevelManagerComponent::GetTilePos(glm::ivec2 tileIdx) const
         offsetToPos += glm::vec3{ m_DiskSize.x, m_DiskSize.y, 0.f } * 0.5f;
 
     return offsetToPos;
+}
+
+glm::vec3 LevelManagerComponent::GetWorldTilePos(glm::ivec2 tileIdx) const
+{
+    return GetTilePos(tileIdx) + GetGameObject()->GetLocalPosition();
 }

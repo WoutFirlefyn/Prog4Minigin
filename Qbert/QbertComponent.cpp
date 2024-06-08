@@ -31,11 +31,18 @@ void QbertComponent::LateUpdate()
 	{
 		m_ResetCharacter = false;
 		SetState(std::make_unique<QbertResetState>(this), false);
+	} else if (m_OtherQbertDied)
+	{
+		m_OtherQbertDied = false;
+		SetState(std::make_unique<QbertDeathState>(this), false);
 	}
 }
 
 void QbertComponent::Notify(Character character, MovementInfo movementInfo)
 {
+	if ((character == Character::Qbert1 || character == Character::Qbert2) && character != m_Character && movementInfo.state == MovementState::Fall)
+		m_OtherQbertDied = true;
+
 	if (character == m_Character && movementInfo.state == MovementState::Fall)
 	{
 		--m_Lives;

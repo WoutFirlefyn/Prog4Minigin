@@ -26,6 +26,7 @@ public:
 	std::unique_ptr<dae::Subject<>> PlayerDied;
 private:
 	int m_Lives{ 3 };
+	bool m_OtherQbertDied{ false };
 };
 
 
