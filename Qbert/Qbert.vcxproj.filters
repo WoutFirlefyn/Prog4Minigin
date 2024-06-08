@@ -120,6 +120,9 @@
     <ClCompile Include="HighScoreComponent.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="RoundCounterComponent.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharacterStates.h">
@@ -196,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="HighScoreComponent.h">
       <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="RoundCounterComponent.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

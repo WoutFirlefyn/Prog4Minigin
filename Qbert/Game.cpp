@@ -28,6 +28,7 @@
 #include "MainMenuComponent.h"
 #include "HighScoreComponent.h"
 #include "TitleComponent.h"
+#include "RoundCounterComponent.h"
 #include "ServiceLocator.h"
 #include "Sounds.h"
 #include "Game.h"
@@ -353,6 +354,14 @@ void Game::LoadLevel(SceneType sceneType)
 		);
 	}
 
+	font = resourceManager.LoadFont("Monocraft.ttf", 18);
+	auto roundCounter = std::make_unique<dae::GameObject>();
+	roundCounter->AddComponent<dae::GraphicsComponent>();
+	roundCounter->AddComponent<dae::TextComponent>(font, "Level:0  Round:0");
+	roundCounter->GetComponent<dae::TextComponent>()->SetColor(textColor);
+	roundCounter->AddComponent<RoundCounterComponent>(pLevelManagerComponent);
+	roundCounter->SetPosition((windowSize.x - roundCounter->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x) / 2.f, 10.f);
+
 	// Titlescreen
 	auto title = std::make_unique<dae::GameObject>();
 	title->AddComponent<dae::GraphicsComponent>("Level Titles.png");
@@ -367,22 +376,22 @@ void Game::LoadLevel(SceneType sceneType)
 		vQbertCurse[i]->GetComponent<QbertCurseComponent>()->AddObserver(pQbertComponent->PlayerDied.get());
 	}
 
-
 	// Add to scene
 	scene.Add(std::move(levelManager));
 	for (auto& scoreDisplay : vScoreDisplay)
 		scene.Add(std::move(scoreDisplay));
 	for (auto& lives : vLives)
-	scene.Add(std::move(lives));
+		scene.Add(std::move(lives));
 	for (auto& qbertCurse : vQbertCurse)
-	scene.Add(std::move(qbertCurse));
+		scene.Add(std::move(qbertCurse));
 	for (auto& qbert : vQbert)
-	scene.Add(std::move(qbert));
+		scene.Add(std::move(qbert));
 	scene.Add(std::move(coily));
 	scene.Add(std::move(slick));
 	scene.Add(std::move(sam));
 	scene.Add(std::move(ugg));
 	scene.Add(std::move(wrongway));
+	scene.Add(std::move(roundCounter));
 	scene.Add(std::move(title));
 }
 
@@ -536,14 +545,12 @@ std::vector<std::pair<std::string, int>> Game::GetHighscoreData() const
 	}
 	inFile.close();
 
-	// Vector to hold name-score pairs
 	std::vector<std::pair<std::string, int>> vHighscores(20, { "   ", 0 });
 
-	// Populate the vector with name-score pairs from the JSON array
 	int count = 0;
 	for (const auto& element : jsonArray) 
 	{
-		if (count >= 10)
+		if (count >= vHighscores.size())
 			break;
 
 		std::string name = element["name"].get<std::string>();

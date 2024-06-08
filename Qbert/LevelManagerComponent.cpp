@@ -260,7 +260,7 @@ void LevelManagerComponent::SkipRound()
 {
     if (!m_GamePaused)
     {
-        m_TilesCovered = m_LevelLength * (m_LevelLength + 1) / 2;
+        m_TilesCovered = std::numeric_limits<int>().max();
         TileChanged->NotifyObservers(Character::None, true);
     }
 }
@@ -327,7 +327,7 @@ bool LevelManagerComponent::AreAllTilesCovered() const
         return false;
     }
    
-    return it->second->GetComponent<TileComponent>()->GetMaxTileStage() * amountOfTiles == m_TilesCovered;
+    return it->second->GetComponent<TileComponent>()->GetMaxTileStage() * amountOfTiles <= m_TilesCovered;
 }
 
 void LevelManagerComponent::LandOnTile(Character character, TileComponent* pTileComponent)

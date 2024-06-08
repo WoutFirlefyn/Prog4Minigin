@@ -71,6 +71,7 @@ void TileComponent::Notify(GameState gameState)
         m_TileStage = 0;
         break;
     case GameState::NextLevel:
+        m_TileStage = 0;
         m_MaxTileStage = m_pLevelManagerComponent->GetLevelNr() == 2 ? 2 : 1;
         break;
     default:
