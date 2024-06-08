@@ -9,6 +9,7 @@
 #include "ServiceLocator.h"
 #include "Sounds.h"
 #include "GameTime.h"
+#include "Game.h"
 #include <algorithm>
 
 LevelManagerComponent::LevelManagerComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
@@ -89,8 +90,10 @@ void LevelManagerComponent::Update()
         if (m_CurrentRound > 4)
         {
             m_CurrentRound = 1;
-            ++m_CurrentLevel;
-            GameResumed->NotifyObservers(GameState::NextLevel);
+            if (++m_CurrentLevel > 3)
+                Game::GetInstance().SetScene(SceneType::Win);
+            else
+                GameResumed->NotifyObservers(GameState::NextLevel);
             return;
         }
         if (AreAllTilesCovered())

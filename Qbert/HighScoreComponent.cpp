@@ -82,8 +82,8 @@ void HighScoreComponent::SaveHighscore()
             return a["score"].get<int>() > b["score"].get<int>();
         });
 
-    if (jsonArray.size() > 10)
-        jsonArray.erase(jsonArray.begin() + 10, jsonArray.end());
+    if (jsonArray.size() > 20)
+        jsonArray.erase(jsonArray.begin() + 20, jsonArray.end());
 
     std::ofstream outFile(filename);
     if (!outFile.is_open())
@@ -94,4 +94,7 @@ void HighScoreComponent::SaveHighscore()
 
     outFile << jsonArray.dump(4); // 4 is the indentation level for pretty printing
     outFile.close();
+
+    Game::GetInstance().SaveScore(0);
+    Game::GetInstance().SetScene(SceneType::MainMenu);
 }

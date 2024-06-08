@@ -15,7 +15,7 @@ public:
 	MainMenuComponent& operator=(MainMenuComponent&& other)	noexcept = delete;
 
 	void ChangeGamemode(int offset);
-	void SelectGamemode();
+	void SelectGamemode() const;
 private:
 	std::vector<dae::GameObject*> m_vModes;
 	dae::GameObject* m_pArrow{ nullptr };

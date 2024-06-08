@@ -69,7 +69,6 @@ void TileComponent::Notify(GameState gameState)
     {
     case GameState::NextRound:
         m_TileStage = 0;
-        m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 2, m_TileStage);
         break;
     case GameState::NextLevel:
         m_MaxTileStage = m_pLevelManagerComponent->GetLevelNr() == 2 ? 2 : 1;
@@ -77,6 +76,7 @@ void TileComponent::Notify(GameState gameState)
     default:
         break;
     }
+    m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 2, m_TileStage);
     m_RoundOverAnimationEnabled = false;
 }
 

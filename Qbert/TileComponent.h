@@ -33,7 +33,7 @@ public:
 
 	bool ChangeTile(int& tilesCovered, int stageChange);
 
-	int GetMaxTileStage() { return m_MaxTileStage; }
+	int GetMaxTileStage() const { return m_MaxTileStage; }
 private:
 	dae::Subject<Character, bool>* m_pTileChangedSubject{ nullptr };
 	dae::Subject<GameState>* m_pGameResumedSubject{ nullptr };

@@ -96,8 +96,6 @@ void QbertDeathState::OnExit()
 {
 	auto [character, characterInfo] = GetLevelManagerComponent()->GetCharacter(m_pCharacter->GetCharacter());
 	GetGameObject()->SetPosition(GetLevelManagerComponent()->GetWorldTilePos(characterInfo.previousTileIndex) + glm::vec3{ 8, -6, 0 } * GetGameObject()->GetLocalScale());
-	//if (m_StartPos != glm::vec3(0))
-	//	GetGameObject()->SetPosition(m_StartPos);
 }
 
 QbertDiskState::QbertDiskState(CharacterComponent* pCharacter)

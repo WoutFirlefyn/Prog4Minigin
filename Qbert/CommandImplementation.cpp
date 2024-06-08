@@ -5,6 +5,8 @@
 #include "LevelManagerComponent.h"
 #include "HighScoreComponent.h"
 #include "ServiceLocator.h"
+#include "Sounds.h"
+#include "Game.h"
 #include <iostream>
 
 MoveCommand::MoveCommand(dae::GameObject* pGameObject, const MovementInfo& movementInfo)
@@ -65,7 +67,7 @@ void ChangeNameCommand::Execute()
 	GetGameObject()->GetComponent<HighScoreComponent>()->ChangeLetter(m_Offset);
 }
 
-void SaveHighscore::Execute()
+void SaveHighscoreCommand::Execute()
 {
 	if (!GetGameObject()->HasComponent<HighScoreComponent>())
 	{
@@ -73,4 +75,9 @@ void SaveHighscore::Execute()
 		return;
 	}
 	GetGameObject()->GetComponent<HighScoreComponent>()->SaveHighscore();
+}
+
+void ReturnToMenuCommand::Execute()
+{
+	Game::GetInstance().SetScene(SceneType::MainMenu);
 }

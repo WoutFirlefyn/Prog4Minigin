@@ -63,10 +63,16 @@ private:
 	glm::ivec2 m_Offset{};
 };
 
-class SaveHighscore : public dae::GameObjectCommand
+class SaveHighscoreCommand : public dae::GameObjectCommand
 {
 public:
-	SaveHighscore(dae::GameObject* pGameObject) : GameObjectCommand(pGameObject) {}
+	SaveHighscoreCommand(dae::GameObject* pGameObject) : GameObjectCommand(pGameObject) {}
 		
+	virtual void Execute() override;
+};
+
+class ReturnToMenuCommand : public dae::Command
+{
+public:
 	virtual void Execute() override;
 };

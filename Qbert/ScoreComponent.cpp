@@ -4,6 +4,7 @@
 #include "TileComponent.h"
 #include "LevelManagerComponent.h"
 #include "GameObject.h"
+#include "Game.h"
 
 ScoreComponent::ScoreComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent, Character character)
 	: BaseComponent(pGameObject)
@@ -96,6 +97,7 @@ void ScoreComponent::SubjectDestroyed(dae::Subject<GameState>* pSubject)
 
 void ScoreComponent::UpdateScore(int score)
 {
+	Game::GetInstance().SaveScore(Game::GetInstance().GetSavedScore() + score);
 	m_Score += score;
 	if (m_pTextComponent)
 		m_pTextComponent->SetText("Score: " + std::to_string(m_Score));

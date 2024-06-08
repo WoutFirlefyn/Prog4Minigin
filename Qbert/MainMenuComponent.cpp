@@ -28,10 +28,10 @@ MainMenuComponent::MainMenuComponent(dae::GameObject* pGameObject, const std::ve
 
 void MainMenuComponent::ChangeGamemode(int offset)
 {
-    int newModeIndex = (static_cast<int>(m_SelectedScene) + offset) % 3;
+    int newModeIndex = (static_cast<int>(m_SelectedScene) + offset) % static_cast<int>(m_vModes.size());
 
     if (newModeIndex < 0)
-        newModeIndex += 3;
+        newModeIndex = static_cast<int>(m_vModes.size()) - 1;
 
     m_SelectedScene = static_cast<SceneType>(newModeIndex);
     glm::ivec2 arrowSize = m_pArrow->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
@@ -41,7 +41,7 @@ void MainMenuComponent::ChangeGamemode(int offset)
     dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::ChangeSelection, 0.5f);
 }
 
-void MainMenuComponent::SelectGamemode()
+void MainMenuComponent::SelectGamemode() const
 {
     Game::GetInstance().SetScene(m_SelectedScene);
 }

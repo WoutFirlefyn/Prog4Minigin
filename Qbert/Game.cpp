@@ -50,11 +50,12 @@ void Game::SetScene(SceneType scene)
 	case SceneType::Versus:
 		LoadLevel(scene);
 		break;
-	case SceneType::EndScreen:
-		LoadEndScreen();
-		break;
 	case SceneType::Highscore:
 		LoadHighscoreScreen();
+		break;
+	case SceneType::GameOver:
+	case SceneType::Win:
+		LoadEndScreen(scene);
 		break;
 	default:
 		return;
@@ -109,9 +110,15 @@ void Game::LoadMainMenu()
 	menuText->GetComponent<dae::TextComponent>()->SetColor(textColor);
 	vMenuText.push_back(scene.Add(std::move(menuText)));
 
+	menuText = std::make_unique<dae::GameObject>();
+	menuText->AddComponent<dae::GraphicsComponent>();
+	menuText->AddComponent<dae::TextComponent>(font, "Highscores");
+	menuText->GetComponent<dae::TextComponent>()->SetColor(textColor);
+	vMenuText.push_back(scene.Add(std::move(menuText)));
+
 	auto menuModeSelection = std::make_unique<dae::GameObject>();
 	menuModeSelection->AddComponent<MainMenuComponent>(vMenuText, scene.Add(std::move(arrow)));
-	menuModeSelection->SetPosition(windowSize.x / 2.f, windowSize.y / 1.6f);
+	menuModeSelection->SetPosition(windowSize.x / 2.f, windowSize.y / 1.8f);
 	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), -1), SDL_SCANCODE_W, dae::InputType::Pressed);
 	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), 1), SDL_SCANCODE_S, dae::InputType::Pressed);
 	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), -1), dae::ControllerButton::DPAD_UP, dae::InputType::Pressed, 0);
@@ -132,8 +139,6 @@ void Game::LoadLevel(SceneType sceneType)
 	auto& soundSystem = dae::ServiceLocator::GetSoundSystem();
 
 	glm::ivec2 windowSize = dae::Minigin::m_WindowSize;
-
-	Game::ResetScore();
 
 	std::string sceneName = "Level";
 	auto& scene = sceneManager.CreateScene(sceneName);
@@ -159,28 +164,28 @@ void Game::LoadLevel(SceneType sceneType)
 	auto font = resourceManager.LoadFont("Monocraft.ttf", 36);
 	glm::vec4 textColor{ 255,200,90,255 };
 
-	// player1Text
-	auto player1Text = std::make_unique<dae::GameObject>();
-	player1Text->AddComponent<dae::GraphicsComponent>("Player Titles.png");
-	player1Text->AddComponent<dae::SpritesheetComponent>(1,2);
-	player1Text->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, 0);
-	player1Text->SetPosition(10,10);
-	player1Text->SetScale(3,3);
-	scene.Add(std::move(player1Text));
+	// playerText
+	auto playerText = std::make_unique<dae::GameObject>();
+	playerText->AddComponent<dae::GraphicsComponent>("Player Titles.png");
+	playerText->AddComponent<dae::SpritesheetComponent>(1,2);
+	playerText->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, 0);
+	playerText->SetPosition(10,10);
+	playerText->SetScale(3,3);
+	scene.Add(std::move(playerText));
 
 	if (sceneType == SceneType::Coop)
 	{
-		auto player2Text = std::make_unique<dae::GameObject>();
-		player2Text->AddComponent<dae::GraphicsComponent>("Player Titles.png");
-		player2Text->AddComponent<dae::SpritesheetComponent>(1, 2);
-		player2Text->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, 1);
-		player2Text->SetScale(3, 3);
-		player2Text->SetPosition
+		playerText = std::make_unique<dae::GameObject>();
+		playerText->AddComponent<dae::GraphicsComponent>("Player Titles.png");
+		playerText->AddComponent<dae::SpritesheetComponent>(1, 2);
+		playerText->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, 1);
+		playerText->SetScale(3, 3);
+		playerText->SetPosition
 		(
-			dae::Minigin::m_WindowSize.x - player2Text->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x - 10.f
+			dae::Minigin::m_WindowSize.x - playerText->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x - 10.f
 			, 10.f
 		);
-		scene.Add(std::move(player2Text));
+		scene.Add(std::move(playerText));
 	}
 
 	const glm::vec3 scale{ 2.f,2.f,0.f };
@@ -315,7 +320,7 @@ void Game::LoadLevel(SceneType sceneType)
 	auto lives1 = vLives.back().get();
 	lives1->SetScale(scale);
 	lives1->SetPosition(10.f, 80.f);
-	lives1->AddComponent<LivesComponent>();
+	lives1->AddComponent<LivesComponent>(pLevelManagerComponent);
 
 	// Score 1
 	vScoreDisplay.push_back(std::make_unique<dae::GameObject>());
@@ -333,7 +338,7 @@ void Game::LoadLevel(SceneType sceneType)
 		auto lives2 = vLives.back().get();
 		lives2->SetScale(scale);
 		lives2->SetPosition(windowSize.x - 38.f, 80.f);
-		lives2->AddComponent<LivesComponent>();
+		lives2->AddComponent<LivesComponent>(pLevelManagerComponent);
 
 		// Score 2
 		vScoreDisplay.push_back(std::make_unique<dae::GameObject>());
@@ -381,7 +386,7 @@ void Game::LoadLevel(SceneType sceneType)
 	scene.Add(std::move(title));
 }
 
-void Game::LoadEndScreen()
+void Game::LoadEndScreen(SceneType sceneType)
 {
 	auto& soundSystem = dae::ServiceLocator::GetSoundSystem();
 	auto& input = dae::InputManager::GetInstance();
@@ -401,7 +406,7 @@ void Game::LoadEndScreen()
 	auto endTitle = std::make_unique<dae::GameObject>();
 	endTitle->AddComponent<dae::GraphicsComponent>("GameEnd Title.png");
 	endTitle->AddComponent<dae::SpritesheetComponent>(1, 2);
-	endTitle->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, 0); //game over or you win
+	endTitle->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, (sceneType == SceneType::Win ? 0 : 1));
 	endTitle->SetPosition((windowSize.x - endTitle->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x) / 2.f, 50.f);
 	scene.Add(std::move(endTitle));
 
@@ -436,17 +441,16 @@ void Game::LoadEndScreen()
 	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), dae::ControllerButton::DPAD_DOWN,	dae::InputType::Pressed, 1);
 	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0}), dae::ControllerButton::DPAD_LEFT,	dae::InputType::Pressed, 1);
 	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0}), dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Pressed, 1);
-	input.BindCommand(std::make_unique<SaveHighscore>(highscoreSelection.get()), SDL_SCANCODE_RETURN, dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<SaveHighscore>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Pressed, 0);
-	input.BindCommand(std::make_unique<SaveHighscore>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Pressed, 1);
+	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), SDL_SCANCODE_RETURN, dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Pressed, 0);
+	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Pressed, 1);
 
 	scene.Add(std::move(highscoreSelection));
 }
 
 void Game::LoadHighscoreScreen()
 {
-	//auto& soundSystem = dae::ServiceLocator::GetSoundSystem();
-	//auto& input = dae::InputManager::GetInstance();
+	auto& input = dae::InputManager::GetInstance();
 	auto& sceneManager = dae::SceneManager::GetInstance();
 
 	glm::ivec2 windowSize = dae::Minigin::m_WindowSize;
@@ -455,8 +459,22 @@ void Game::LoadHighscoreScreen()
 	auto& scene = sceneManager.CreateScene(sceneName);
 	sceneManager.SetCurrentScene(sceneName);
 
-	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Monocraft.ttf", 24);
-	glm::vec4 textColor{ 250,190,80,255 };
+	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Monocraft.ttf", 48);
+	glm::vec4 textColor{ 255, 54, 11,255 };
+
+	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), SDL_SCANCODE_RETURN, dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), dae::ControllerButton::A, dae::InputType::Pressed, 0);
+	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), dae::ControllerButton::A, dae::InputType::Pressed, 1);
+
+	auto title = std::make_unique<dae::GameObject>();
+	title->AddComponent<dae::GraphicsComponent>();
+	title->AddComponent<dae::TextComponent>(font, "Highscores");
+	title->GetComponent<dae::TextComponent>()->SetColor(textColor);
+	title->SetPosition((windowSize.x - title->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x) / 2.f, 20.f);
+	scene.Add(std::move(title));
+
+	font = dae::ServiceLocator::GetResourceManager().LoadFont("Monocraft.ttf", 24);
+	textColor = glm::vec4{ 250,190,80,255 };
 
 	auto vHighscoreData = GetHighscoreData();
 
@@ -470,9 +488,25 @@ void Game::LoadHighscoreScreen()
 		highscore->AddComponent<dae::GraphicsComponent>();
 		highscore->AddComponent<dae::TextComponent>(font, highscoreText);
 		highscore->GetComponent<dae::TextComponent>()->SetColor(textColor);
-		highscore->SetPosition(80.f, (i + 1) * 30.f);
+		glm::vec3 pos{ 0.f , (i % 10) * 30.f + 110.f, 0.f };
+		if (i < 10)
+			pos.x = 80.f;
+		else
+			pos.x = windowSize.x - 280.f;
+
+		highscore->SetPosition(pos);
 		scene.Add(std::move(highscore));
 	}
+
+	font = dae::ServiceLocator::GetResourceManager().LoadFont("Monocraft.ttf", 16);
+
+	auto returnToMenu = std::make_unique<dae::GameObject>();
+	returnToMenu->AddComponent<dae::GraphicsComponent>();
+	returnToMenu->AddComponent<dae::TextComponent>(font, "Press enter (A for controller) to return to menu");
+	returnToMenu->GetComponent<dae::TextComponent>()->SetColor(textColor);
+	glm::ivec2 textSize = returnToMenu->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
+	returnToMenu->SetPosition((windowSize.x - textSize.x) / 2.f, windowSize.y - textSize.y - 20.f);
+	scene.Add(std::move(returnToMenu));
 }
 
 std::vector<std::pair<std::string, int>> Game::GetHighscoreData() const
@@ -503,7 +537,7 @@ std::vector<std::pair<std::string, int>> Game::GetHighscoreData() const
 	inFile.close();
 
 	// Vector to hold name-score pairs
-	std::vector<std::pair<std::string, int>> vHighscores(10, { "   ", 0 });
+	std::vector<std::pair<std::string, int>> vHighscores(20, { "   ", 0 });
 
 	// Populate the vector with name-score pairs from the JSON array
 	int count = 0;
