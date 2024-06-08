@@ -64,3 +64,13 @@ void ChangeNameCommand::Execute()
 	}
 	GetGameObject()->GetComponent<HighScoreComponent>()->ChangeLetter(m_Offset);
 }
+
+void SaveHighscore::Execute()
+{
+	if (!GetGameObject()->HasComponent<HighScoreComponent>())
+	{
+		assert(false);
+		return;
+	}
+	GetGameObject()->GetComponent<HighScoreComponent>()->SaveHighscore();
+}

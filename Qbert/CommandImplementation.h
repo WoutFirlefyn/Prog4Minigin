@@ -62,3 +62,11 @@ public:
 private:
 	glm::ivec2 m_Offset{};
 };
+
+class SaveHighscore : public dae::GameObjectCommand
+{
+public:
+	SaveHighscore(dae::GameObject* pGameObject) : GameObjectCommand(pGameObject) {}
+		
+	virtual void Execute() override;
+};

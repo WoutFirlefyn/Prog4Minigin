@@ -31,6 +31,10 @@
 #include "ServiceLocator.h"
 #include "Sounds.h"
 #include "Game.h"
+#include <json.hpp>
+#include <fstream>
+
+using json = nlohmann::json;
 
 void Game::SetScene(SceneType scene)
 {
@@ -48,6 +52,9 @@ void Game::SetScene(SceneType scene)
 		break;
 	case SceneType::EndScreen:
 		LoadEndScreen();
+		break;
+	case SceneType::Highscore:
+		LoadHighscoreScreen();
 		break;
 	default:
 		return;
@@ -79,7 +86,7 @@ void Game::LoadMainMenu()
 	auto arrow = std::make_unique<dae::GameObject>();
 	arrow->AddComponent<dae::GraphicsComponent>("Selection Arrow.png");
 
-	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Minecraft.ttf", 28);
+	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Monocraft.ttf", 28);
 	glm::vec4 textColor{ 250,190,80,255 };
 
 	std::vector<dae::GameObject*> vMenuText{};
@@ -126,6 +133,8 @@ void Game::LoadLevel(SceneType sceneType)
 
 	glm::ivec2 windowSize = dae::Minigin::m_WindowSize;
 
+	Game::ResetScore();
+
 	std::string sceneName = "Level";
 	auto& scene = sceneManager.CreateScene(sceneName);
 	sceneManager.SetCurrentScene(sceneName);
@@ -147,7 +156,7 @@ void Game::LoadLevel(SceneType sceneType)
 
 	input.BindCommand(std::make_unique<ToggleSoundCommand>(), SDL_SCANCODE_M, dae::InputType::Pressed);
 
-	auto font = resourceManager.LoadFont("Minecraft.ttf", 36);
+	auto font = resourceManager.LoadFont("Monocraft.ttf", 36);
 	glm::vec4 textColor{ 255,200,90,255 };
 
 	// player1Text
@@ -296,7 +305,7 @@ void Game::LoadLevel(SceneType sceneType)
 	wrongway->AddComponent<dae::SpritesheetComponent>(4, 2);
 	wrongway->SetScale(scale);
 
-	font = resourceManager.LoadFont("Minecraft.ttf", 20);
+	font = resourceManager.LoadFont("Monocraft.ttf", 20);
 
 
 	std::vector<std::unique_ptr<dae::GameObject>> vLives;
@@ -386,16 +395,30 @@ void Game::LoadEndScreen()
 
 	soundSystem.LoadSound("Change Selection.wav", dae::Sounds::ChangeSelection);
 
-	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Minecraft.ttf", 40);
+	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Monocraft.ttf", 40);
 	glm::vec4 textColor{ 250,190,80,255 };
+
+	auto endTitle = std::make_unique<dae::GameObject>();
+	endTitle->AddComponent<dae::GraphicsComponent>("GameEnd Title.png");
+	endTitle->AddComponent<dae::SpritesheetComponent>(1, 2);
+	endTitle->GetComponent<dae::SpritesheetComponent>()->MoveSourceRect(0, 0); //game over or you win
+	endTitle->SetPosition((windowSize.x - endTitle->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x) / 2.f, 50.f);
+	scene.Add(std::move(endTitle));
+
+	auto score = std::make_unique<dae::GameObject>();
+	score->AddComponent<dae::GraphicsComponent>();
+	score->AddComponent<dae::TextComponent>(font, "Score: " + std::to_string(Game::GetInstance().GetSavedScore()));
+	score->GetComponent<dae::TextComponent>()->SetColor(textColor);
+	score->SetPosition((windowSize.x - score->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x) / 2.f, windowSize.y / 2.f + 50.f);
+	scene.Add(std::move(score));
 
 	auto highscoreName = std::make_unique<dae::GameObject>();
 	highscoreName->AddComponent<dae::GraphicsComponent>();
-	highscoreName->AddComponent<dae::TextComponent>(font);
+	highscoreName->AddComponent<dae::TextComponent>(font, "AAA");
 	highscoreName->GetComponent<dae::TextComponent>()->SetColor(textColor);
+	highscoreName->SetPosition((windowSize.x - highscoreName->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x) / 2.f, windowSize.y / 2.f + 100.f);
 
 	auto highscoreSelection = std::make_unique<dae::GameObject>();
-	highscoreSelection->SetPosition(windowSize.x / 2.f - 50.f, windowSize.y / 3.f);
 	highscoreSelection->AddComponent<HighScoreComponent>(scene.Add(std::move(highscoreName)));
 	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0,-1}), SDL_SCANCODE_W, dae::InputType::Pressed);
 	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), SDL_SCANCODE_S, dae::InputType::Pressed);
@@ -413,6 +436,86 @@ void Game::LoadEndScreen()
 	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), dae::ControllerButton::DPAD_DOWN,	dae::InputType::Pressed, 1);
 	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0}), dae::ControllerButton::DPAD_LEFT,	dae::InputType::Pressed, 1);
 	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0}), dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Pressed, 1);
+	input.BindCommand(std::make_unique<SaveHighscore>(highscoreSelection.get()), SDL_SCANCODE_RETURN, dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<SaveHighscore>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Pressed, 0);
+	input.BindCommand(std::make_unique<SaveHighscore>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Pressed, 1);
 
 	scene.Add(std::move(highscoreSelection));
+}
+
+void Game::LoadHighscoreScreen()
+{
+	//auto& soundSystem = dae::ServiceLocator::GetSoundSystem();
+	//auto& input = dae::InputManager::GetInstance();
+	auto& sceneManager = dae::SceneManager::GetInstance();
+
+	glm::ivec2 windowSize = dae::Minigin::m_WindowSize;
+
+	std::string sceneName = "HighScores";
+	auto& scene = sceneManager.CreateScene(sceneName);
+	sceneManager.SetCurrentScene(sceneName);
+
+	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Monocraft.ttf", 24);
+	glm::vec4 textColor{ 250,190,80,255 };
+
+	auto vHighscoreData = GetHighscoreData();
+
+	for (int i{}; i < vHighscoreData.size(); ++i)
+	{
+		const auto& [name, score] = vHighscoreData[i];
+
+		std::string highscoreText = std::format("{}{}) {} {}", (i + 1 < 10) ? " " : "", i + 1, name, score);
+		
+		auto highscore = std::make_unique<dae::GameObject>();
+		highscore->AddComponent<dae::GraphicsComponent>();
+		highscore->AddComponent<dae::TextComponent>(font, highscoreText);
+		highscore->GetComponent<dae::TextComponent>()->SetColor(textColor);
+		highscore->SetPosition(80.f, (i + 1) * 30.f);
+		scene.Add(std::move(highscore));
+	}
+}
+
+std::vector<std::pair<std::string, int>> Game::GetHighscoreData() const
+{
+	const std::string filename = "Highscores.json";
+
+	json jsonArray = json::array();
+
+	std::ifstream inFile(filename);
+	if (!inFile.is_open())
+	{
+		std::cerr << "Failed to open " << filename << "\n";
+		return {};
+	}
+
+	try
+	{
+		inFile >> jsonArray;
+	}
+	catch (const json::parse_error& e)
+	{
+		if (e.id != 101) // if json is empty, don't return
+		{
+			std::cerr << "Parse error: " << e.what() << std::endl;
+			return {};
+		}
+	}
+	inFile.close();
+
+	// Vector to hold name-score pairs
+	std::vector<std::pair<std::string, int>> vHighscores(10, { "   ", 0 });
+
+	// Populate the vector with name-score pairs from the JSON array
+	int count = 0;
+	for (const auto& element : jsonArray) 
+	{
+		if (count >= 10)
+			break;
+
+		std::string name = element["name"].get<std::string>();
+		int score = element["score"].get<int>();
+		vHighscores[count++] = { name, score };
+	}
+
+	return vHighscores;
 }
