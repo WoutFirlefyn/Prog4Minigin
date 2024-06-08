@@ -126,9 +126,9 @@ void Game::LoadMainMenu()
 	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), 1), dae::ControllerButton::DPAD_DOWN, dae::InputType::Pressed, 0);
 	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), -1), dae::ControllerButton::DPAD_UP, dae::InputType::Pressed, 1);
 	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), 1), dae::ControllerButton::DPAD_DOWN, dae::InputType::Pressed, 1);
-	input.BindCommand(std::make_unique<SelectGamemodeCommand>(menuModeSelection.get()), SDL_SCANCODE_RETURN, dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<SelectGamemodeCommand>(menuModeSelection.get()), dae::ControllerButton::A, dae::InputType::Pressed, 0);
-	input.BindCommand(std::make_unique<SelectGamemodeCommand>(menuModeSelection.get()), dae::ControllerButton::A, dae::InputType::Pressed, 1);
+	input.BindCommand(std::make_unique<SelectGamemodeCommand>(menuModeSelection.get()), SDL_SCANCODE_RETURN, dae::InputType::Released);
+	input.BindCommand(std::make_unique<SelectGamemodeCommand>(menuModeSelection.get()), dae::ControllerButton::A, dae::InputType::Released, 0);
+	input.BindCommand(std::make_unique<SelectGamemodeCommand>(menuModeSelection.get()), dae::ControllerButton::A, dae::InputType::Released, 1);
 	scene.Add(std::move(menuModeSelection));
 }
 
@@ -160,7 +160,7 @@ void Game::LoadLevel(SceneType sceneType)
 	soundSystem.LoadSound("SlickSam Caught.wav", dae::Sounds::SlickSamCaught);
 	soundSystem.LoadSound("Swearing.wav", dae::Sounds::Swearing);
 
-	input.BindCommand(std::make_unique<ToggleSoundCommand>(), SDL_SCANCODE_M, dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<ToggleSoundCommand>(), SDL_SCANCODE_M, dae::InputType::Released);
 
 	auto font = resourceManager.LoadFont("Monocraft.ttf", 36);
 	glm::vec4 textColor{ 255,200,90,255 };
@@ -197,7 +197,7 @@ void Game::LoadLevel(SceneType sceneType)
 	levelManager->SetScale(scale);
 	levelManager->AddComponent<LevelManagerComponent>();
 	auto pLevelManagerComponent = levelManager->GetComponent<LevelManagerComponent>(); 
-	input.BindCommand(std::make_unique<NextRoundCommand>(levelManager.get()), SDL_SCANCODE_F1, dae::InputType::Pressed);
+	input.BindCommand(std::make_unique<NextRoundCommand>(levelManager.get()), SDL_SCANCODE_F1, dae::InputType::Released);
 
 	MovementInfo::AddMovementInfo(MovementDirection::Up, glm::vec3(16, -24, 0) * scale, glm::ivec2{ 0,-1 });
 	MovementInfo::AddMovementInfo(MovementDirection::Left, glm::vec3(-16, -24, 0) * scale, glm::ivec2{ -1, 0 });
@@ -450,9 +450,9 @@ void Game::LoadEndScreen(SceneType sceneType)
 	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), dae::ControllerButton::DPAD_DOWN,	dae::InputType::Pressed, 1);
 	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0}), dae::ControllerButton::DPAD_LEFT,	dae::InputType::Pressed, 1);
 	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0}), dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Pressed, 1);
-	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), SDL_SCANCODE_RETURN, dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Pressed, 0);
-	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Pressed, 1);
+	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), SDL_SCANCODE_RETURN, dae::InputType::Released);
+	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Released, 0);
+	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Released, 1);
 
 	scene.Add(std::move(highscoreSelection));
 }
@@ -471,9 +471,9 @@ void Game::LoadHighscoreScreen()
 	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Monocraft.ttf", 48);
 	glm::vec4 textColor{ 255, 54, 11,255 };
 
-	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), SDL_SCANCODE_RETURN, dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), dae::ControllerButton::A, dae::InputType::Pressed, 0);
-	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), dae::ControllerButton::A, dae::InputType::Pressed, 1);
+	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), SDL_SCANCODE_RETURN, dae::InputType::Released);
+	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), dae::ControllerButton::A, dae::InputType::Released, 0);
+	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), dae::ControllerButton::A, dae::InputType::Released, 1);
 
 	auto title = std::make_unique<dae::GameObject>();
 	title->AddComponent<dae::GraphicsComponent>();
@@ -520,28 +520,29 @@ void Game::LoadHighscoreScreen()
 
 std::vector<std::pair<std::string, int>> Game::GetHighscoreData() const
 {
-	const std::string filename = "Highscores.json";
+	const std::string filename = "Highscore.bin";
 
 	json jsonArray = json::array();
 
-	std::ifstream inFile(filename);
+	std::ifstream inFile(filename, std::ios::binary);
 	if (!inFile.is_open())
 	{
 		std::cerr << "Failed to open " << filename << "\n";
 		return {};
 	}
 
+	std::vector<char> buffer((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+	inFile.close();
+
 	try
 	{
-		inFile >> jsonArray;
+		if (!buffer.empty())
+			jsonArray = json::from_cbor(buffer);
 	}
 	catch (const json::parse_error& e)
 	{
-		if (e.id != 101) // if json is empty, don't return
-		{
-			std::cerr << "Parse error: " << e.what() << std::endl;
-			return {};
-		}
+		std::cerr << "Parse error: " << e.what() << std::endl;
+		return {};
 	}
 	inFile.close();
 

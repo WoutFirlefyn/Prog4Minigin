@@ -2,10 +2,7 @@
 #include "GameObject.h"
 #include <algorithm>
 
-//unsigned int Scene::m_idCounter = 0;
-
 dae::Scene::Scene() = default;
-
 dae::Scene::~Scene() = default;
 
 dae::GameObject* dae::Scene::Add(std::unique_ptr<GameObject>&& object)

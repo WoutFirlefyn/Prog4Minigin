@@ -19,19 +19,13 @@ bool dae::InputManager::ProcessInput()
 	{
 		if (e.type == SDL_QUIT) 
 			return false;
-		if (e.type == SDL_KEYDOWN) 
+		if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
 		{
 			for (const auto& inputAction : m_vKeyboardInputAction)
 			{
-				if (inputAction.InputType == InputType::Pressed && pKeyboardState[inputAction.Button])
+				if (e.type == SDL_KEYDOWN && inputAction.InputType == InputType::Pressed && pKeyboardState[inputAction.Button])
 					inputAction.pCommand->Execute();
-			}
-		}
-		if (e.type == SDL_KEYUP)
-		{
-			for (const auto& inputAction : m_vKeyboardInputAction)
-			{
-				if (inputAction.InputType == InputType::Released && pKeyboardState[inputAction.Button])
+				if (e.type == SDL_KEYUP && inputAction.InputType == InputType::Released && static_cast<unsigned int>(e.key.keysym.scancode) == inputAction.Button)
 					inputAction.pCommand->Execute();
 			}
 		}
@@ -75,6 +69,7 @@ void dae::InputManager::ClearInputActions()
 	m_vKeyboardInputAction.clear();
 	for (auto& pController : m_vControllers)
 		pController->ClearInputActions();
+	m_vControllers.clear();
 }
 
 void dae::InputManager::AddController(int amount)

@@ -8,6 +8,10 @@
         "score": 6875
     },
     {
+        "name": "MAD",
+        "score": 5125
+    },
+    {
         "name": "GOD",
         "score": 3800
     },
@@ -28,8 +32,16 @@
         "score": 2150
     },
     {
+        "name": "HEY",
+        "score": 2050
+    },
+    {
         "name": "ZZZ",
         "score": 1250
+    },
+    {
+        "name": "CAT",
+        "score": 1125
     },
     {
         "name": "DAD",

@@ -81,13 +81,14 @@ namespace dae
 			// If component is not found, check for derived components of T
 			std::mutex resultMutex{};
 			T* result = nullptr;
-			std::for_each(std::execution::par_unseq, m_Components.begin(), m_Components.end(),
+			std::for_each(std::execution::par, m_Components.begin(), m_Components.end(),
 				[&](const auto& pair)
 				{
 					if (T* tempResult = dynamic_cast<T*>(pair.second.get()))
 					{
 						std::lock_guard lockguard{ resultMutex };
-						result = tempResult;
+						if (!result)
+							result = tempResult;
 						return;
 					}
 				}
@@ -112,6 +113,7 @@ namespace dae
 
 		GameObject* m_pParent{};
 		std::vector<GameObject*> m_vChildren{};
+		// Credit to Jelle Adyns for how to store components in a map
 		std::unordered_map<std::type_index, std::unique_ptr<BaseComponent>> m_Components{};
 
 		Transform m_WorldTransform{};

@@ -46,28 +46,29 @@ void HighScoreComponent::ChangeLetter(const glm::ivec2& offset)
 void HighScoreComponent::SaveHighscore()
 {
     dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::ChangeSelection);
-    const std::string filename = "Highscores.json";
+    const std::string filename = "Highscore.bin";
 
     json jsonArray = json::array();
 
-    std::ifstream inFile(filename);
+    std::ifstream inFile(filename, std::ios::binary);
     if (!inFile.is_open())
     {
         std::cerr << "Failed to open " << filename << "\n";
         return;
     }
 
-    try 
+    std::vector<char> inBuffer((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+    inFile.close();
+
+    try
     {
-        inFile >> jsonArray;
+        if (!inBuffer.empty())
+            jsonArray = json::from_cbor(inBuffer);
     }
-    catch (const json::parse_error& e) 
+    catch (const json::parse_error& e)
     {
-        if (e.id != 101) // if json is empty, don't return
-        {
-            std::cerr << "Parse error: " << e.what() << std::endl;
-            return;
-        }
+        std::cerr << "Parse error: " << e.what() << std::endl;
+        return;
     }
     inFile.close();
 
@@ -85,14 +86,15 @@ void HighScoreComponent::SaveHighscore()
     if (jsonArray.size() > 20)
         jsonArray.erase(jsonArray.begin() + 20, jsonArray.end());
 
-    std::ofstream outFile(filename);
+    std::ofstream outFile("Highscore.bin", std::ios::binary);
     if (!outFile.is_open())
     {
         std::cerr << "Error opening file for writing\n";
         return;
     }
 
-    outFile << jsonArray.dump(4); // 4 is the indentation level for pretty printing
+    std::vector<uint8_t> outBuffer = json::to_cbor(jsonArray);
+    outFile.write(reinterpret_cast<const char*>(outBuffer.data()), outBuffer.size());
     outFile.close();
 
     Game::GetInstance().SaveScore(0);
