@@ -67,7 +67,6 @@ void dae::InputManager::ClearInputActions()
 	m_vKeyboardInputAction.clear();
 	for (auto& pController : m_vControllers)
 		pController->ClearInputActions();
-	m_vControllers.clear();
 }
 
 void dae::InputManager::AddController(int amount)
