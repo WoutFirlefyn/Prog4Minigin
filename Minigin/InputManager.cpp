@@ -33,10 +33,8 @@ bool dae::InputManager::ProcessInput()
 	}
 
 	for (const auto& inputAction : m_vKeyboardInputAction)
-	{
 		if (inputAction.InputType == InputType::Down && pKeyboardState[inputAction.Button])
 			inputAction.pCommand->Execute();
-	}
 
 	for (auto& controller : m_vControllers)
 		controller->ProcessInput();

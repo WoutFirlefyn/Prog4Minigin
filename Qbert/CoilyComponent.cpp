@@ -17,8 +17,10 @@ CoilyComponent::CoilyComponent(dae::GameObject* pGameObject, LevelManagerCompone
 
 CoilyComponent::~CoilyComponent()
 {
-	MoveStateChanged->RemoveObserver(this);
-	CharacterSpawned->RemoveObserver(this);
+	if (MoveStateChanged)
+		MoveStateChanged->RemoveObserver(this);
+	if (CharacterSpawned)
+		CharacterSpawned->RemoveObserver(this);
 }
 
 void CoilyComponent::Init()

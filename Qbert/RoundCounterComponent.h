@@ -16,7 +16,6 @@ public:
 	RoundCounterComponent& operator=(RoundCounterComponent&& other)	noexcept = delete;
 
 	virtual void Init() override;
-	//virtual void Update() override;
 
 	virtual void Notify(GameState gameState) override;
 	virtual void SubjectDestroyed(dae::Subject<GameState>* pSubject) override;

@@ -15,7 +15,7 @@ public:
 	void ChangeLetter(const glm::ivec2& offset);
 	void SaveHighscore();
 private:
-	dae::GameObject* m_pNameObject;
+	dae::GameObject* m_pNameObject{ nullptr };
 	std::string m_Name = { "AAA" };
 	size_t m_SelectedLetter{ 0 };
 };

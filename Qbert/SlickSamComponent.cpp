@@ -20,7 +20,7 @@ SlickSamComponent::SlickSamComponent(dae::GameObject* pGameObject, Character cha
 
 SlickSamComponent::~SlickSamComponent()
 {
-	if (MoveStateChanged.get())
+	if (MoveStateChanged)
 		MoveStateChanged->RemoveObserver(this);
 }
 

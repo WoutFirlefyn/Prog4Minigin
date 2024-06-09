@@ -18,7 +18,10 @@ public:
 	virtual void Init() override;
 	virtual void LateUpdate() override;
 
+	// Move State Changed
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
+
+	// Character Spawned
 	virtual void Notify(Character character, dae::GameObject* pCharacterGameObject) override;
 
 	bool IsEgg() const { return m_IsEgg; }

@@ -10,7 +10,7 @@ namespace dae
 		Pressed,
 		Released,
 		Down,
-		Joystick
+		ThumbStick
 	};
 	struct InputAction
 	{

@@ -20,7 +20,7 @@ UggWrongwayComponent::UggWrongwayComponent(dae::GameObject* pGameObject, Charact
 
 UggWrongwayComponent::~UggWrongwayComponent()
 {
-	if (MoveStateChanged.get())
+	if (MoveStateChanged)
 		MoveStateChanged->RemoveObserver(this);
 }
 

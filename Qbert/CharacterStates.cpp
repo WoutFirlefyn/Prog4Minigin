@@ -28,7 +28,6 @@ JumpState::JumpState(CharacterComponent* pCharacter, MovementInfo movementInfo)
 
 void JumpState::OnEnter()
 {
-	//m_NextTileType = ;
 	m_StartPos = GetGameObject()->GetLocalPosition(); 
 	m_pCharacter->MoveStateChanged->NotifyObservers(m_pCharacter->GetCharacter(), m_MovementInfo);
 }

@@ -19,6 +19,5 @@ public:
 	virtual void LateUpdate() override;
 
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
-	//virtual void Notify(bool roundFinished) override;
 };
 

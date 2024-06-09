@@ -9,7 +9,6 @@ namespace dae
 	class SpritesheetComponent;
 }
 enum class Character;
-enum class MovementDirection;
 enum class GameState;
 class LevelManagerComponent;
 class TileComponent final : public dae::BaseComponent, public dae::Observer<Character, bool>, public dae::Observer<GameState>

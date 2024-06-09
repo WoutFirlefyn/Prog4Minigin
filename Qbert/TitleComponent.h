@@ -2,7 +2,6 @@
 #include <BaseComponent.h>
 #include <Observer.h>
 class LevelManagerComponent;
-enum class Character;
 enum class GameState;
 class TitleComponent final : public dae::BaseComponent, public dae::Observer<GameState>
 {

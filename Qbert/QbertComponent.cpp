@@ -14,7 +14,8 @@ QbertComponent::QbertComponent(dae::GameObject* pGameObject, LevelManagerCompone
 
 QbertComponent::~QbertComponent()
 {
-	MoveStateChanged->RemoveObserver(this);
+	if (MoveStateChanged)
+		MoveStateChanged->RemoveObserver(this);
 }
 
 void QbertComponent::Init()

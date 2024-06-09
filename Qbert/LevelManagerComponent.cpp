@@ -211,12 +211,17 @@ void LevelManagerComponent::Notify(Disk disk, Character character)
     switch (disk.state)
     {
     case DiskState::Start:
+    {
         m_vInactiveDisks.push_back(disk.pGameObject);
-        m_Tiles.erase(std::find_if(m_Tiles.begin(), m_Tiles.end(), [&disk](const auto& pair)
+
+        auto it = std::find_if(m_Tiles.begin(), m_Tiles.end(), [&disk](const auto& pair)
             {
                 return pair.second == disk.pGameObject;
-            }));
+            });
+        if (it != m_Tiles.end())
+            m_Tiles.erase(it);
         break;
+    }
     case DiskState::Stop:
         if (m_Characters[character].tileIndex.x < 0 || m_Characters[character].tileIndex.y < 0)
             m_Characters[character].tileIndex = { 0,0 };

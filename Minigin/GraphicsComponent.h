@@ -7,7 +7,6 @@
 namespace dae
 {
 	class Texture2D;
-
 	class GraphicsComponent final : public BaseComponent
 	{
 	public:

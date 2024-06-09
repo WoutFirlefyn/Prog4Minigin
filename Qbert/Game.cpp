@@ -254,10 +254,6 @@ void Game::LoadLevel(SceneType sceneType)
 	input.BindCommand(moveLeftCommand,	dae::ControllerButton::DPAD_LEFT,	dae::InputType::Down, controllerId);
 	input.BindCommand(moveDownCommand,	dae::ControllerButton::DPAD_DOWN,	dae::InputType::Down, controllerId);
 	input.BindCommand(moveRightCommand,	dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Down, controllerId);
-	//if (sceneType == SceneType::Coop)
-	//	qbert1->GetComponent<QbertComponent>()->SetSpawnPositions({ { 0,6 } });
-	//else
-	//	qbert1->GetComponent<QbertComponent>()->SetSpawnPositions({ { 0,0 } });
 
 	// Qbert curse
 	vQbertCurse.push_back(std::make_unique<dae::GameObject>());
@@ -289,7 +285,6 @@ void Game::LoadLevel(SceneType sceneType)
 		input.BindCommand(moveLeftCommand,	dae::ControllerButton::DPAD_LEFT,	dae::InputType::Down, controllerId);
 		input.BindCommand(moveDownCommand,	dae::ControllerButton::DPAD_DOWN,	dae::InputType::Down, controllerId);
 		input.BindCommand(moveRightCommand,	dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Down, controllerId);
-		//qbert2->GetComponent<QbertComponent>()->SetSpawnPositions({ { 6,0 } });
 
 		// Qbert2 curse
 		vQbertCurse.push_back(std::make_unique<dae::GameObject>());

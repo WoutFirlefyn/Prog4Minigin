@@ -26,8 +26,7 @@ namespace dae
 	enum class InputType;
 	class Controller final
 	{
-	public:    
-
+	public:
 		Controller(uint8_t controllerIdx);
 		~Controller();
 

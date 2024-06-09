@@ -71,7 +71,7 @@ void dae::Controller::ControllerImpl::ProcessInput()
 			if (IsPressedThisFrame(inputAction.Button))
 				inputAction.pCommand->Execute();
 			break;
-		case InputType::Joystick:
+		case InputType::ThumbStick:
 			if (IsThumbsNotInDeadZone(inputAction.Button))
 				inputAction.pCommand->Execute();
 			break;
