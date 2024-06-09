@@ -14,8 +14,8 @@ namespace dae
 		InputManager();
 		~InputManager();
 		bool ProcessInput();
-		void BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType);
-		void BindCommand(std::unique_ptr<Command>&& pCommand, ControllerButton button, InputType triggerType, uint8_t controllerIdx = 0);
+		void BindCommand(const std::shared_ptr<Command>& pCommand, unsigned int button, InputType triggerType);
+		void BindCommand(const std::shared_ptr<Command>& pCommand, ControllerButton button, InputType triggerType, uint8_t controllerIdx = 0);
 		void ClearInputActions();
 	private:
 		void AddController(int amount = 1);

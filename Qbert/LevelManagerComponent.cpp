@@ -232,7 +232,7 @@ void LevelManagerComponent::SubjectDestroyed(dae::Subject<Disk, Character>* pSub
 
 void LevelManagerComponent::Notify(GameState gameState)
 {
-    if (gameState != GameState::NextRound)
+    if (gameState == GameState::QbertDied)
         return;
 
     m_TilesCovered = 0;

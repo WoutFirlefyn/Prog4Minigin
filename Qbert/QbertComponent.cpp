@@ -10,7 +10,6 @@ QbertComponent::QbertComponent(dae::GameObject* pGameObject, LevelManagerCompone
 	: CharacterComponent(pGameObject, pLevelManagerComponent)
 {
 	m_Character = character;
-	PlayerDied = std::make_unique<dae::Subject<>>();
 }
 
 QbertComponent::~QbertComponent()
@@ -42,10 +41,4 @@ void QbertComponent::Notify(Character character, MovementInfo movementInfo)
 {
 	if ((character == Character::Qbert1 || character == Character::Qbert2) && character != m_Character && movementInfo.state == MovementState::Fall)
 		m_OtherQbertDied = true;
-
-	if (character == m_Character && movementInfo.state == MovementState::Fall)
-	{
-		--m_Lives;
-		PlayerDied->NotifyObservers();
-	}
 }

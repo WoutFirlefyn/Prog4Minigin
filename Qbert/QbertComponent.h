@@ -21,11 +21,7 @@ public:
 	// MoveStateChanged
 	virtual void Notify(Character character, MovementInfo movementInfo) override;
 
-	int GetLives() const { return m_Lives; }
-
-	std::unique_ptr<dae::Subject<>> PlayerDied;
 private:
-	int m_Lives{ 3 };
 	bool m_OtherQbertDied{ false };
 };
 

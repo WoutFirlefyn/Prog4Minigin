@@ -1,13 +1,16 @@
 #include "LivesComponent.h"
 #include "GraphicsComponent.h"
 #include "LevelManagerComponent.h"
+#include "QbertComponent.h"
 #include "GameObject.h"
 #include "Scene.h"
 #include "Game.h"
 
-LivesComponent::LivesComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent)
+LivesComponent::LivesComponent(dae::GameObject* pGameObject, LevelManagerComponent* pLevelManagerComponent, CharacterComponent* pCharacterComponent)
 	: BaseComponent(pGameObject)
 	, m_pGameResumedSubject{ pLevelManagerComponent->GameResumed.get() }
+	, m_pMoveStateChanged{ CharacterComponent::MoveStateChanged.get() }
+	, m_Character{ pCharacterComponent->GetCharacter() }
 {
 	glm::ivec2 heartSize{ 0 };
 	auto& scene = dae::SceneManager::GetInstance().GetCurrentScene();
@@ -26,31 +29,31 @@ LivesComponent::LivesComponent(dae::GameObject* pGameObject, LevelManagerCompone
 
 LivesComponent::~LivesComponent()
 {
-	if (m_pPlayerDiedSubject)
-		m_pPlayerDiedSubject->RemoveObserver(this);
+	if (m_pMoveStateChanged)
+		m_pMoveStateChanged->RemoveObserver(this);
+	if (m_pGameResumedSubject)
+		m_pGameResumedSubject->RemoveObserver(this);
 }
 
 void LivesComponent::Init()
 {
-	m_pPlayerDiedSubject->AddObserver(this);	
+	m_pMoveStateChanged->AddObserver(this);
 	m_pGameResumedSubject->AddObserver(this);
 }
 
-void LivesComponent::AddObserver(dae::Subject<>* pPlayerDiedSubject)
+void LivesComponent::Notify(Character character, MovementInfo movementInfo)
 {
-	m_pPlayerDiedSubject = pPlayerDiedSubject;
-}
+	if (character != m_Character || movementInfo.state != MovementState::Fall)
+		return;
 
-void LivesComponent::Notify()
-{
 	if (m_Lives-- > 0)
 		m_vHearts[m_Lives]->GetComponent<dae::GraphicsComponent>()->ToggleRendering(false);
 }
 
-void LivesComponent::SubjectDestroyed(dae::Subject<>* pSubject)
+void LivesComponent::SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSubject)
 {
-	if (pSubject == m_pPlayerDiedSubject)
-		m_pPlayerDiedSubject = nullptr;
+	if (pSubject == m_pMoveStateChanged)
+		m_pMoveStateChanged = nullptr;
 }
 
 void LivesComponent::Notify(GameState gameState)

@@ -65,20 +65,13 @@ void TileComponent::SubjectDestroyed(dae::Subject<Character, bool>* pSubject)
 
 void TileComponent::Notify(GameState gameState)
 {
-    switch (gameState)
-    {
-    case GameState::NextRound:
-        m_TileStage = 0;
-        break;
-    case GameState::NextLevel:
-        m_TileStage = 0;
-        m_MaxTileStage = m_pLevelManagerComponent->GetLevelNr() == 2 ? 2 : 1;
-        break;
-    default:
-        break;
-    }
-    m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 2, m_TileStage);
     m_RoundOverAnimationEnabled = false;
+    if (gameState == GameState::QbertDied)
+        return;
+
+    m_TileStage = 0;
+    m_MaxTileStage = m_pLevelManagerComponent->GetLevelNr() == 2 ? 2 : 1;
+    m_pSpritesheetComponent->MoveSourceRect(m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 2, m_TileStage);
 }
 
 void TileComponent::SubjectDestroyed(dae::Subject<GameState>* pSubject)

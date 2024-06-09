@@ -24,7 +24,7 @@ public:
 	ControllerImpl& operator=(ControllerImpl&& other) noexcept = delete;
 
 	void ProcessInput();
-	void BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType);
+	void BindCommand(const std::shared_ptr<Command>& pCommand, unsigned int button, InputType triggerType);
 	void ClearInputActions();
 
 	bool IsPressedThisFrame(unsigned int button) const;
@@ -79,9 +79,9 @@ void dae::Controller::ControllerImpl::ProcessInput()
 	}
 }
 
-void dae::Controller::ControllerImpl::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType)
+void dae::Controller::ControllerImpl::BindCommand(const std::shared_ptr<Command>& pCommand, unsigned int button, InputType triggerType)
 {
-	m_vControllerInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType));
+	m_vControllerInputAction.push_back(dae::InputAction(pCommand, button, triggerType));
 }
 
 void dae::Controller::ControllerImpl::ClearInputActions()
@@ -129,9 +129,9 @@ void dae::Controller::ProcessInput()
 	m_pControllerImpl->ProcessInput();
 }
 
-void dae::Controller::BindCommand(std::unique_ptr<Command>&& pCommand, ControllerButton button, InputType triggerType)
+void dae::Controller::BindCommand(const std::shared_ptr<Command>& pCommand, ControllerButton button, InputType triggerType)
 {
-	m_pControllerImpl->BindCommand(std::move(pCommand), static_cast<unsigned int>(button), triggerType);
+	m_pControllerImpl->BindCommand(pCommand, static_cast<unsigned int>(button), triggerType);
 }
 
 void dae::Controller::ClearInputActions()

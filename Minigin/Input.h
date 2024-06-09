@@ -14,14 +14,14 @@ namespace dae
 	};
 	struct InputAction
 	{
-		InputAction(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType inputType)
-			: pCommand{ std::move(pCommand) }
+		InputAction(const std::shared_ptr<Command>& pCommand, unsigned int button, InputType inputType)
+			: pCommand{ pCommand }
 			, Button{ button }
 			, InputType{ inputType }
 		{
 		}
 
-		std::unique_ptr<Command> pCommand;
+		std::shared_ptr<Command> pCommand;
 		unsigned int Button;
 		InputType InputType;
 	};

@@ -44,13 +44,13 @@ bool dae::InputManager::ProcessInput()
 	return true;
 }
 
-void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, unsigned int button, InputType triggerType)
+void dae::InputManager::BindCommand(const std::shared_ptr<Command>& pCommand, unsigned int button, InputType triggerType)
 {
 	assert(pCommand);
-	m_vKeyboardInputAction.push_back(dae::InputAction(std::move(pCommand), button, triggerType));
+	m_vKeyboardInputAction.push_back(dae::InputAction(pCommand, button, triggerType));
 }
 
-void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, ControllerButton button, InputType triggerType, uint8_t controllerIdx)
+void dae::InputManager::BindCommand(const std::shared_ptr<Command>& pCommand, ControllerButton button, InputType triggerType, uint8_t controllerIdx)
 {
 	assert(pCommand);
 
@@ -58,7 +58,7 @@ void dae::InputManager::BindCommand(std::unique_ptr<Command>&& pCommand, Control
 	{
 		if (controllerIdx >= m_vControllers.size())
 			AddController(static_cast<int>(controllerIdx) - static_cast<int>(m_vControllers.size()) + 1);
-		m_vControllers[controllerIdx]->BindCommand(std::move(pCommand), button, triggerType);
+		m_vControllers[controllerIdx]->BindCommand(pCommand, button, triggerType);
 	}
 	else
 		assert(false && "Trying to bind a command to a controller that doesn't exist");

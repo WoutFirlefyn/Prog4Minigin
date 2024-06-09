@@ -37,7 +37,7 @@ namespace dae
 		Controller& operator=(Controller&& other) noexcept = delete;
 
 		void ProcessInput();
-		void BindCommand(std::unique_ptr<Command>&& pCommand, ControllerButton button, InputType triggerType);
+		void BindCommand(const std::shared_ptr<Command>& pCommand, ControllerButton button, InputType triggerType);
 		void ClearInputActions();
 
 		bool IsPressedThisFrame(unsigned int button) const;

@@ -1,23 +1,27 @@
 #include "QbertCurseComponent.h"
+#include "QbertComponent.h"
 #include "GraphicsComponent.h"
 #include "GameTime.h"
 #include "GameObject.h"
 #include "ServiceLocator.h"
 #include "Sounds.h"
 
-QbertCurseComponent::QbertCurseComponent(dae::GameObject* pGameObject) : BaseComponent(pGameObject)
+QbertCurseComponent::QbertCurseComponent(dae::GameObject* pGameObject, CharacterComponent* pCharacterComponent)
+	: BaseComponent(pGameObject)
+	, m_pMoveStateChangedSubject{ CharacterComponent::MoveStateChanged.get() }
+	, m_Character{ pCharacterComponent->GetCharacter() }
 {
 }
 
 QbertCurseComponent::~QbertCurseComponent()
 {
-	if (m_pPlayerDied)
-		m_pPlayerDied->RemoveObserver(this);
+	if (m_pMoveStateChangedSubject)
+		m_pMoveStateChangedSubject->RemoveObserver(this);
 }
 
 void QbertCurseComponent::Init()
 {
-	m_pPlayerDied->AddObserver(this);
+	m_pMoveStateChangedSubject->AddObserver(this);
 
 	GetGameObject()->SetPosition(m_PosOffset * GetGameObject()->GetWorldScale());
 }
@@ -32,25 +36,18 @@ void QbertCurseComponent::Update()
 	}
 }
 
-void QbertCurseComponent::AddObserver(dae::Subject<>* pPlayerDiedSubject)
+void QbertCurseComponent::Notify(Character character, MovementInfo movementInfo)
 {
-	m_pPlayerDied = pPlayerDiedSubject;
-}
+	if (character != m_Character || movementInfo.state != MovementState::Fall)
+		return;
 
-void QbertCurseComponent::Notify()
-{
-	QbertDied();
-}
-
-void QbertCurseComponent::SubjectDestroyed(dae::Subject<>* pSubject)
-{
-	if (pSubject == m_pPlayerDied)
-		m_pPlayerDied = nullptr;
-}
-
-void QbertCurseComponent::QbertDied()
-{
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
 	dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::Swearing, 0.2f);
 	m_AccumSec = 0.f;
+}
+
+void QbertCurseComponent::SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSubject)
+{
+	if (pSubject == m_pMoveStateChangedSubject)
+		m_pMoveStateChangedSubject = nullptr;
 }

@@ -3,14 +3,13 @@
 #include "Observer.h"
 #include <glm/glm.hpp>
 
-enum class MovementState;
-enum class MovementDirection;
+struct MovementInfo;
 enum class Character;
-class QbertComponent;
-class QbertCurseComponent final : public dae::BaseComponent, public dae::Observer<>
+class CharacterComponent;
+class QbertCurseComponent final : public dae::BaseComponent, public dae::Observer<Character, MovementInfo>
 {
 public:
-	QbertCurseComponent(dae::GameObject* pGameObject);
+	QbertCurseComponent(dae::GameObject* pGameObject, CharacterComponent* pCharacterComponent);
 	virtual ~QbertCurseComponent() override;
 
 	QbertCurseComponent(const QbertCurseComponent& other) = delete;
@@ -21,14 +20,10 @@ public:
 	virtual void Init() override;
 	virtual void Update() override;
 
-	void AddObserver(dae::Subject<>* pPlayerDiedSubject);
-
-	virtual void Notify() override;
-	virtual void SubjectDestroyed(dae::Subject<>* pSubject) override;
+	virtual void Notify(Character character, MovementInfo movementInfo) override;
+	virtual void SubjectDestroyed(dae::Subject<Character, MovementInfo>* pSubject) override;
 private:
-	void QbertDied();
-
-	dae::Subject<>* m_pPlayerDied{ nullptr };
+	dae::Subject<Character, MovementInfo>* m_pMoveStateChangedSubject{ nullptr };
 	Character m_Character{};
 	float m_AccumSec{ 0.f };
 	float m_CurseDuration{ 2.5f };

@@ -20,10 +20,10 @@ void HighScoreComponent::ChangeLetter(const glm::ivec2& offset)
 {
 	if (offset.x != 0)
 	{
-		m_SelectedLetter = (m_SelectedLetter + offset.x) % m_Name.size();
+		if (m_SelectedLetter == 0 && offset.x < 0)
+			m_SelectedLetter = m_Name.size();
 
-		if (m_SelectedLetter < 0)
-			m_SelectedLetter = m_Name.size() - 1;
+		m_SelectedLetter = (m_SelectedLetter + offset.x) % m_Name.size();
 	}
 	if (offset.y != 0)
 	{
@@ -46,7 +46,7 @@ void HighScoreComponent::ChangeLetter(const glm::ivec2& offset)
 void HighScoreComponent::SaveHighscore()
 {
     dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::ChangeSelection);
-    const std::string filename = "Highscore.bin";
+    const std::string filename = "../Data/Highscore.bin";
 
     json jsonArray = json::array();
 

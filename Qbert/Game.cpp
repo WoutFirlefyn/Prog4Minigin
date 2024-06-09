@@ -121,15 +121,19 @@ void Game::LoadMainMenu()
 	auto menuModeSelection = std::make_unique<dae::GameObject>();
 	menuModeSelection->AddComponent<MainMenuComponent>(vMenuText, scene.Add(std::move(arrow)));
 	menuModeSelection->SetPosition(windowSize.x / 2.f, windowSize.y / 1.8f);
-	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), -1), SDL_SCANCODE_W, dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), 1), SDL_SCANCODE_S, dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), -1), dae::ControllerButton::DPAD_UP, dae::InputType::Pressed, 0);
-	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), 1), dae::ControllerButton::DPAD_DOWN, dae::InputType::Pressed, 0);
-	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), -1), dae::ControllerButton::DPAD_UP, dae::InputType::Pressed, 1);
-	input.BindCommand(std::make_unique<ChangeGamemodeCommand>(menuModeSelection.get(), 1), dae::ControllerButton::DPAD_DOWN, dae::InputType::Pressed, 1);
-	input.BindCommand(std::make_unique<SelectGamemodeCommand>(menuModeSelection.get()), SDL_SCANCODE_RETURN, dae::InputType::Released);
-	input.BindCommand(std::make_unique<SelectGamemodeCommand>(menuModeSelection.get()), dae::ControllerButton::A, dae::InputType::Released, 0);
-	input.BindCommand(std::make_unique<SelectGamemodeCommand>(menuModeSelection.get()), dae::ControllerButton::A, dae::InputType::Released, 1);
+
+	auto prevModeCommand = std::make_shared<ChangeGamemodeCommand>(menuModeSelection.get(), -1);
+	auto nextModeCommand = std::make_shared<ChangeGamemodeCommand>(menuModeSelection.get(),  1);
+	auto selectModeCommand = std::make_shared<SelectGamemodeCommand>(menuModeSelection.get());
+	input.BindCommand(prevModeCommand, SDL_SCANCODE_W, dae::InputType::Pressed);
+	input.BindCommand(nextModeCommand, SDL_SCANCODE_S, dae::InputType::Pressed);
+	input.BindCommand(prevModeCommand, dae::ControllerButton::DPAD_UP, dae::InputType::Pressed, 0);
+	input.BindCommand(nextModeCommand, dae::ControllerButton::DPAD_DOWN, dae::InputType::Pressed, 0);
+	input.BindCommand(prevModeCommand, dae::ControllerButton::DPAD_UP, dae::InputType::Pressed, 1);
+	input.BindCommand(nextModeCommand, dae::ControllerButton::DPAD_DOWN, dae::InputType::Pressed, 1);
+	input.BindCommand(selectModeCommand, SDL_SCANCODE_RETURN, dae::InputType::Released);
+	input.BindCommand(selectModeCommand, dae::ControllerButton::A, dae::InputType::Released, 0);
+	input.BindCommand(selectModeCommand, dae::ControllerButton::A, dae::InputType::Released, 1);
 	scene.Add(std::move(menuModeSelection));
 }
 
@@ -218,14 +222,19 @@ void Game::LoadLevel(SceneType sceneType)
 	qbert1->AddComponent<dae::SpritesheetComponent>(4, 1);
 	qbert1->SetScale(scale);
 	uint8_t controllerId = (sceneType == SceneType::Solo) ? 0 : 1;
-	input.BindCommand(std::make_unique<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Up)),		SDL_SCANCODE_W, dae::InputType::Down);
-	input.BindCommand(std::make_unique<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Left)),	SDL_SCANCODE_A, dae::InputType::Down);
-	input.BindCommand(std::make_unique<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Down)),	SDL_SCANCODE_S, dae::InputType::Down);
-	input.BindCommand(std::make_unique<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Right)),	SDL_SCANCODE_D, dae::InputType::Down);
-	input.BindCommand(std::make_unique<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Up)),		dae::ControllerButton::DPAD_UP,		dae::InputType::Down, controllerId);
-	input.BindCommand(std::make_unique<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Left)),	dae::ControllerButton::DPAD_LEFT,	dae::InputType::Down, controllerId);
-	input.BindCommand(std::make_unique<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Down)),	dae::ControllerButton::DPAD_DOWN,	dae::InputType::Down, controllerId);
-	input.BindCommand(std::make_unique<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Right)),	dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Down, controllerId);
+
+	auto moveUpCommand	  = std::make_shared<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Up));
+	auto moveLeftCommand  = std::make_shared<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Left));
+	auto moveDownCommand  = std::make_shared<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Down));
+	auto moveRightCommand = std::make_shared<MoveCommand>(qbert1, MovementInfo::GetMovementInfo(MovementDirection::Right));
+	input.BindCommand(moveUpCommand,	SDL_SCANCODE_W, dae::InputType::Down);
+	input.BindCommand(moveLeftCommand,	SDL_SCANCODE_A, dae::InputType::Down);
+	input.BindCommand(moveDownCommand,	SDL_SCANCODE_S, dae::InputType::Down);
+	input.BindCommand(moveRightCommand,	SDL_SCANCODE_D, dae::InputType::Down);
+	input.BindCommand(moveUpCommand,	dae::ControllerButton::DPAD_UP, dae::InputType::Down, controllerId);
+	input.BindCommand(moveLeftCommand,	dae::ControllerButton::DPAD_LEFT, dae::InputType::Down, controllerId);
+	input.BindCommand(moveDownCommand,	dae::ControllerButton::DPAD_DOWN, dae::InputType::Down, controllerId);
+	input.BindCommand(moveRightCommand,	dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Down, controllerId);
 	if (sceneType == SceneType::Coop)
 		qbert1->GetComponent<QbertComponent>()->SetSpawnPositions({ { 0,6 } });
 	else
@@ -235,7 +244,7 @@ void Game::LoadLevel(SceneType sceneType)
 	vQbertCurse.push_back(std::make_unique<dae::GameObject>());
 	auto qbertCurse1 = vQbertCurse.back().get();
 	qbertCurse1->AddComponent<dae::GraphicsComponent>("Qbert Curses.png", false);
-	qbertCurse1->AddComponent<QbertCurseComponent>();
+	qbertCurse1->AddComponent<QbertCurseComponent>(qbert1->GetComponent<QbertComponent>());
 	qbertCurse1->SetParent(qbert1);
 
 	if (sceneType == SceneType::Coop)
@@ -247,22 +256,26 @@ void Game::LoadLevel(SceneType sceneType)
 		qbert2->AddComponent<QbertComponent>(pLevelManagerComponent, Character::Qbert2);
 		qbert2->AddComponent<dae::SpritesheetComponent>(4, 1);
 		qbert2->SetScale(scale);
-		controllerId = (sceneType == SceneType::Solo) ? 1 : 0;
-		input.BindCommand(std::make_unique<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Up)),		SDL_SCANCODE_UP,	dae::InputType::Down);
-		input.BindCommand(std::make_unique<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Left)),	SDL_SCANCODE_LEFT,	dae::InputType::Down);
-		input.BindCommand(std::make_unique<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Down)),	SDL_SCANCODE_DOWN,	dae::InputType::Down);
-		input.BindCommand(std::make_unique<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Right)),	SDL_SCANCODE_RIGHT, dae::InputType::Down);
-		input.BindCommand(std::make_unique<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Up)),		dae::ControllerButton::DPAD_UP,		dae::InputType::Down, controllerId);
-		input.BindCommand(std::make_unique<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Left)),	dae::ControllerButton::DPAD_LEFT,	dae::InputType::Down, controllerId);
-		input.BindCommand(std::make_unique<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Down)),	dae::ControllerButton::DPAD_DOWN,	dae::InputType::Down, controllerId);
-		input.BindCommand(std::make_unique<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Right)),	dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Down, controllerId);
+		controllerId = (sceneType == SceneType::Solo) ? 1 : 0;	
+		moveUpCommand	 = std::make_shared<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Up));
+		moveLeftCommand	 = std::make_shared<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Left));
+		moveDownCommand	 = std::make_shared<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Down));
+		moveRightCommand = std::make_shared<MoveCommand>(qbert2, MovementInfo::GetMovementInfo(MovementDirection::Right));
+		input.BindCommand(moveUpCommand,	SDL_SCANCODE_UP,	dae::InputType::Down);
+		input.BindCommand(moveLeftCommand,	SDL_SCANCODE_LEFT,	dae::InputType::Down);
+		input.BindCommand(moveDownCommand,	SDL_SCANCODE_DOWN,	dae::InputType::Down);
+		input.BindCommand(moveRightCommand,	SDL_SCANCODE_RIGHT, dae::InputType::Down);
+		input.BindCommand(moveUpCommand,	dae::ControllerButton::DPAD_UP,		dae::InputType::Down, controllerId);
+		input.BindCommand(moveLeftCommand,	dae::ControllerButton::DPAD_LEFT,	dae::InputType::Down, controllerId);
+		input.BindCommand(moveDownCommand,	dae::ControllerButton::DPAD_DOWN,	dae::InputType::Down, controllerId);
+		input.BindCommand(moveRightCommand,	dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Down, controllerId);
 		qbert2->GetComponent<QbertComponent>()->SetSpawnPositions({ { 6,0 } });
 
 		// Qbert2 curse
 		vQbertCurse.push_back(std::make_unique<dae::GameObject>());
 		auto& qbert2Curse = vQbertCurse.back();
 		qbert2Curse->AddComponent<dae::GraphicsComponent>("Qbert Curses.png", false);
-		qbert2Curse->AddComponent<QbertCurseComponent>();
+		qbert2Curse->AddComponent<QbertCurseComponent>(qbert2->GetComponent<QbertComponent>());
 		qbert2Curse->SetParent(qbert2);
 	}
 
@@ -274,14 +287,18 @@ void Game::LoadLevel(SceneType sceneType)
 	coily->SetScale(scale);
 	if (sceneType == SceneType::Versus)
 	{
-		input.BindCommand(std::make_unique<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Up)), SDL_SCANCODE_UP, dae::InputType::Down);
-		input.BindCommand(std::make_unique<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Left)), SDL_SCANCODE_LEFT, dae::InputType::Down);
-		input.BindCommand(std::make_unique<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Down)), SDL_SCANCODE_DOWN, dae::InputType::Down);
-		input.BindCommand(std::make_unique<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Right)), SDL_SCANCODE_RIGHT, dae::InputType::Down);
-		input.BindCommand(std::make_unique<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Up)), dae::ControllerButton::DPAD_UP, dae::InputType::Down, 0);
-		input.BindCommand(std::make_unique<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Left)), dae::ControllerButton::DPAD_LEFT, dae::InputType::Down, 0);
-		input.BindCommand(std::make_unique<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Down)), dae::ControllerButton::DPAD_DOWN, dae::InputType::Down, 0);
-		input.BindCommand(std::make_unique<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Right)), dae::ControllerButton::DPAD_RIGHT, dae::InputType::Down, 0);
+		moveUpCommand    = std::make_shared<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Up));
+		moveLeftCommand	 = std::make_shared<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Left));
+		moveDownCommand	 = std::make_shared<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Down));
+		moveRightCommand = std::make_shared<MoveCommand>(coily.get(), MovementInfo::GetMovementInfo(MovementDirection::Right));
+		input.BindCommand(moveUpCommand,	SDL_SCANCODE_UP,	dae::InputType::Down);
+		input.BindCommand(moveLeftCommand,	SDL_SCANCODE_LEFT,	dae::InputType::Down);
+		input.BindCommand(moveDownCommand,	SDL_SCANCODE_DOWN,	dae::InputType::Down);
+		input.BindCommand(moveRightCommand,	SDL_SCANCODE_RIGHT, dae::InputType::Down);
+		input.BindCommand(moveUpCommand,	dae::ControllerButton::DPAD_UP,		dae::InputType::Down, 0);
+		input.BindCommand(moveLeftCommand,	dae::ControllerButton::DPAD_LEFT,	dae::InputType::Down, 0);
+		input.BindCommand(moveDownCommand,	dae::ControllerButton::DPAD_DOWN,	dae::InputType::Down, 0);
+		input.BindCommand(moveRightCommand,	dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Down, 0);
 	}
 
 	// Slick
@@ -314,7 +331,6 @@ void Game::LoadLevel(SceneType sceneType)
 
 	font = resourceManager.LoadFont("Monocraft.ttf", 20);
 
-
 	std::vector<std::unique_ptr<dae::GameObject>> vLives;
 	std::vector<std::unique_ptr<dae::GameObject>> vScoreDisplay;
 	// Lives 1
@@ -322,7 +338,7 @@ void Game::LoadLevel(SceneType sceneType)
 	auto lives1 = vLives.back().get();
 	lives1->SetScale(scale);
 	lives1->SetPosition(10.f, 80.f);
-	lives1->AddComponent<LivesComponent>(pLevelManagerComponent);
+	lives1->AddComponent<LivesComponent>(pLevelManagerComponent, vQbert.front()->GetComponent<QbertComponent>());
 
 	// Score 1
 	vScoreDisplay.push_back(std::make_unique<dae::GameObject>());
@@ -340,7 +356,7 @@ void Game::LoadLevel(SceneType sceneType)
 		auto lives2 = vLives.back().get();
 		lives2->SetScale(scale);
 		lives2->SetPosition(windowSize.x - 38.f, 80.f);
-		lives2->AddComponent<LivesComponent>(pLevelManagerComponent);
+		lives2->AddComponent<LivesComponent>(pLevelManagerComponent, vQbert.back()->GetComponent<QbertComponent>());
 
 		// Score 2
 		vScoreDisplay.push_back(std::make_unique<dae::GameObject>());
@@ -387,14 +403,6 @@ void Game::LoadLevel(SceneType sceneType)
 	title->AddComponent<dae::GraphicsComponent>("Level Titles.png");
 	title->AddComponent<dae::SpritesheetComponent>(1, 3);
 	title->AddComponent<TitleComponent>(levelManager->GetComponent<LevelManagerComponent>());
-
-	// Observers
-	for (size_t i{}; i < vQbert.size(); ++i)
-	{
-		auto pQbertComponent = vQbert[i]->GetComponent<QbertComponent>();
-		vLives[i]->GetComponent<LivesComponent>()->AddObserver(pQbertComponent->PlayerDied.get());
-		vQbertCurse[i]->GetComponent<QbertCurseComponent>()->AddObserver(pQbertComponent->PlayerDied.get());
-	}
 
 	// Add to scene
 	scene.Add(std::move(levelManager));
@@ -456,25 +464,32 @@ void Game::LoadEndScreen(SceneType sceneType)
 
 	auto highscoreSelection = std::make_unique<dae::GameObject>();
 	highscoreSelection->AddComponent<HighScoreComponent>(scene.Add(std::move(highscoreName)));
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0,-1}), SDL_SCANCODE_W, dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), SDL_SCANCODE_S, dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0}), SDL_SCANCODE_A, dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0}), SDL_SCANCODE_D, dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0,-1}), SDL_SCANCODE_UP,	dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), SDL_SCANCODE_DOWN,	dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0}), SDL_SCANCODE_LEFT,	dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0}), SDL_SCANCODE_RIGHT, dae::InputType::Pressed);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0,-1}), dae::ControllerButton::DPAD_UP,		dae::InputType::Pressed, 0);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), dae::ControllerButton::DPAD_DOWN,	dae::InputType::Pressed, 0);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0}), dae::ControllerButton::DPAD_LEFT,	dae::InputType::Pressed, 0);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0}), dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Pressed, 0);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0,-1}), dae::ControllerButton::DPAD_UP,		dae::InputType::Pressed, 1);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1}), dae::ControllerButton::DPAD_DOWN,	dae::InputType::Pressed, 1);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0}), dae::ControllerButton::DPAD_LEFT,	dae::InputType::Pressed, 1);
-	input.BindCommand(std::make_unique<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0}), dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Pressed, 1);
-	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), SDL_SCANCODE_RETURN, dae::InputType::Released);
-	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Released, 0);
-	input.BindCommand(std::make_unique<SaveHighscoreCommand>(highscoreSelection.get()), dae::ControllerButton::A, dae::InputType::Released, 1);
+
+	auto nextCharCommand   = std::make_shared<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0, 1 });
+	auto prevCharCommand   = std::make_shared<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 0,-1 });
+	auto nextLetterCommand = std::make_shared<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{ 1, 0 });
+	auto prevLetterCommand = std::make_shared<ChangeNameCommand>(highscoreSelection.get(), glm::ivec2{-1, 0 });
+	auto saveHighscoreCommand = std::make_shared<SaveHighscoreCommand>(highscoreSelection.get());
+
+	input.BindCommand(prevCharCommand,   SDL_SCANCODE_W, dae::InputType::Pressed);
+	input.BindCommand(nextCharCommand,   SDL_SCANCODE_S, dae::InputType::Pressed);
+	input.BindCommand(prevLetterCommand, SDL_SCANCODE_A, dae::InputType::Pressed);
+	input.BindCommand(nextLetterCommand, SDL_SCANCODE_D, dae::InputType::Pressed);
+	input.BindCommand(prevCharCommand,   SDL_SCANCODE_UP,	 dae::InputType::Pressed);
+	input.BindCommand(nextCharCommand,   SDL_SCANCODE_DOWN,	 dae::InputType::Pressed);
+	input.BindCommand(prevLetterCommand, SDL_SCANCODE_LEFT,	 dae::InputType::Pressed);
+	input.BindCommand(nextLetterCommand, SDL_SCANCODE_RIGHT, dae::InputType::Pressed);
+	input.BindCommand(prevCharCommand,   dae::ControllerButton::DPAD_UP,	dae::InputType::Pressed, 0);
+	input.BindCommand(nextCharCommand,   dae::ControllerButton::DPAD_DOWN,	dae::InputType::Pressed, 0);
+	input.BindCommand(prevLetterCommand, dae::ControllerButton::DPAD_LEFT,	dae::InputType::Pressed, 0);
+	input.BindCommand(nextLetterCommand, dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Pressed, 0);
+	input.BindCommand(prevCharCommand,   dae::ControllerButton::DPAD_UP,	dae::InputType::Pressed, 1);
+	input.BindCommand(nextCharCommand,   dae::ControllerButton::DPAD_DOWN,	dae::InputType::Pressed, 1);
+	input.BindCommand(prevLetterCommand, dae::ControllerButton::DPAD_LEFT,	dae::InputType::Pressed, 1);
+	input.BindCommand(nextLetterCommand, dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Pressed, 1);
+	input.BindCommand(saveHighscoreCommand, SDL_SCANCODE_RETURN,	  dae::InputType::Released);
+	input.BindCommand(saveHighscoreCommand, dae::ControllerButton::A, dae::InputType::Released, 0);
+	input.BindCommand(saveHighscoreCommand, dae::ControllerButton::A, dae::InputType::Released, 1);
 
 	scene.Add(std::move(highscoreSelection));
 }
@@ -492,10 +507,11 @@ void Game::LoadHighscoreScreen()
 
 	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Monocraft.ttf", 48);
 	glm::vec4 textColor{ 255, 54, 11,255 };
-
-	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), SDL_SCANCODE_RETURN, dae::InputType::Released);
-	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), dae::ControllerButton::A, dae::InputType::Released, 0);
-	input.BindCommand(std::make_unique<ReturnToMenuCommand>(), dae::ControllerButton::A, dae::InputType::Released, 1);
+	
+	auto returnToMenuCommand = std::make_shared<ReturnToMenuCommand>();
+	input.BindCommand(returnToMenuCommand, SDL_SCANCODE_RETURN, dae::InputType::Released);
+	input.BindCommand(returnToMenuCommand, dae::ControllerButton::A, dae::InputType::Released, 0);
+	input.BindCommand(returnToMenuCommand, dae::ControllerButton::A, dae::InputType::Released, 1);
 
 	auto title = std::make_unique<dae::GameObject>();
 	title->AddComponent<dae::GraphicsComponent>();
@@ -509,7 +525,7 @@ void Game::LoadHighscoreScreen()
 
 	auto vHighscoreData = GetHighscoreData();
 
-	for (int i{}; i < vHighscoreData.size(); ++i)
+	for (int i{}; i < static_cast<int>(vHighscoreData.size()); ++i)
 	{
 		const auto& [name, score] = vHighscoreData[i];
 
@@ -542,7 +558,7 @@ void Game::LoadHighscoreScreen()
 
 std::vector<std::pair<std::string, int>> Game::GetHighscoreData() const
 {
-	const std::string filename = "Highscore.bin";
+	const std::string filename = "../Data/Highscore.bin";
 
 	json jsonArray = json::array();
 
@@ -570,7 +586,7 @@ std::vector<std::pair<std::string, int>> Game::GetHighscoreData() const
 
 	std::vector<std::pair<std::string, int>> vHighscores(20, { "   ", 0 });
 
-	int count = 0;
+	size_t count = 0;
 	for (const auto& element : jsonArray) 
 	{
 		if (count >= vHighscores.size())
