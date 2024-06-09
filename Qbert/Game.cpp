@@ -80,6 +80,8 @@ void Game::LoadMainMenu()
 
 	soundSystem.LoadSound("Change Selection.wav", dae::Sounds::ChangeSelection);
 
+	input.BindCommand(std::make_unique<ToggleSoundCommand>(), SDL_SCANCODE_M, dae::InputType::Released);
+
 	auto title = std::make_unique<dae::GameObject>();
 	title->AddComponent<dae::GraphicsComponent>("Game Title.png");
 	glm::ivec2 titleSize = title->GetComponent<dae::GraphicsComponent>()->GetTextureSize();
@@ -459,6 +461,8 @@ void Game::LoadEndScreen(SceneType sceneType)
 
 	soundSystem.LoadSound("Change Selection.wav", dae::Sounds::ChangeSelection);
 
+	input.BindCommand(std::make_unique<ToggleSoundCommand>(), SDL_SCANCODE_M, dae::InputType::Released);
+
 	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Monocraft.ttf", 40);
 	glm::vec4 textColor{ 250,190,80,255 };
 
@@ -524,6 +528,8 @@ void Game::LoadHighscoreScreen()
 	std::string sceneName = "HighScores";
 	auto& scene = sceneManager.CreateScene(sceneName);
 	sceneManager.SetCurrentScene(sceneName);
+
+	input.BindCommand(std::make_unique<ToggleSoundCommand>(), SDL_SCANCODE_M, dae::InputType::Released);
 
 	auto font = dae::ServiceLocator::GetResourceManager().LoadFont("Monocraft.ttf", 48);
 	glm::vec4 textColor{ 255, 54, 11,255 };
