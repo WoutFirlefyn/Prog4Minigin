@@ -1,0 +1,92 @@
+[
+  {
+    "minSpawnDelay": 0,
+    "maxSpawnDelay": 0,
+    "spawnPositions": [
+      {
+        "x": 0,
+        "y": 6
+      }
+    ]
+  },
+  {
+    "minSpawnDelay": 0,
+    "maxSpawnDelay": 0,
+    "spawnPositions": [
+      {
+        "x": 6,
+        "y": 0
+      }
+    ]
+  },
+  {
+    "minSpawnDelay": 0,
+    "maxSpawnDelay": 2,
+    "spawnPositions": [
+      {
+        "x": 1,
+        "y": 0
+      },
+      {
+        "x": 0,
+        "y": 1
+      }
+    ]
+  },
+  {
+    "minSpawnDelay": 6,
+    "maxSpawnDelay": 14,
+    "spawnPositions": [
+      {
+        "x": 7,
+        "y": 0
+      },
+      {
+        "x": 0,
+        "y": 7
+      }
+    ]
+  },
+  {
+    "minSpawnDelay": 6,
+    "maxSpawnDelay": 14,
+    "spawnPositions": [
+      {
+        "x": 7,
+        "y": 0
+      },
+      {
+        "x": 0,
+        "y": 7
+      }
+    ]
+  },
+  {
+    "minSpawnDelay": 8,
+    "maxSpawnDelay": 20,
+    "spawnPositions": [
+      {
+        "x": 1,
+        "y": 0
+      },
+      {
+        "x": 0,
+        "y": 1
+      }
+    ]
+  },
+  {
+    "minSpawnDelay": 8,
+    "maxSpawnDelay": 20,
+    "spawnPositions": [
+      {
+        "x": 1,
+        "y": 0
+      },
+      {
+        "x": 0,
+        "y": 1
+      }
+    ]
+  }
+]

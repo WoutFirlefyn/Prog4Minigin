@@ -3,10 +3,7 @@
 #include "ServiceLocator.h"
 #include "Sounds.h"
 #include "Game.h"
-#include <json.hpp>
-#include <fstream>
-
-using json = nlohmann::json;
+#include "Utils.h"
 
 HighScoreComponent::HighScoreComponent(dae::GameObject* pGameObject, dae::GameObject* pNameObject)
 	: BaseComponent(pGameObject)
@@ -48,37 +45,15 @@ void HighScoreComponent::SaveHighscore()
     dae::ServiceLocator::GetSoundSystem().Play(dae::Sounds::ChangeSelection);
     const std::string filename = "../Data/Highscore.bin";
 
-    json jsonArray = json::array();
+    nlohmann::json jsonArray = utils::ReadJson(filename);
 
-    std::ifstream inFile(filename, std::ios::binary);
-    if (!inFile.is_open())
-    {
-        std::cerr << "Failed to open " << filename << "\n";
-        return;
-    }
-
-    std::vector<char> inBuffer((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-    inFile.close();
-
-    try
-    {
-        if (!inBuffer.empty())
-            jsonArray = json::from_cbor(inBuffer);
-    }
-    catch (const json::parse_error& e)
-    {
-        std::cerr << "Parse error: " << e.what() << std::endl;
-        return;
-    }
-    inFile.close();
-
-    json jsonData;
+    nlohmann::json jsonData;
     jsonData["name"] = m_Name;
     jsonData["score"] = Game::GetInstance().GetSavedScore();
 
     jsonArray.push_back(jsonData);
 
-    std::sort(jsonArray.begin(), jsonArray.end(), [](const json& a, const json& b) 
+    std::sort(jsonArray.begin(), jsonArray.end(), [](const nlohmann::json& a, const nlohmann::json& b)
         {
             return a["score"].get<int>() > b["score"].get<int>();
         });
@@ -86,16 +61,7 @@ void HighScoreComponent::SaveHighscore()
     if (jsonArray.size() > 20)
         jsonArray.erase(jsonArray.begin() + 20, jsonArray.end());
 
-    std::ofstream outFile(filename, std::ios::binary);
-    if (!outFile.is_open())
-    {
-        std::cerr << "Error opening file for writing\n";
-        return;
-    }
-
-    std::vector<uint8_t> outBuffer = json::to_cbor(jsonArray);
-    outFile.write(reinterpret_cast<const char*>(outBuffer.data()), outBuffer.size());
-    outFile.close();
+	utils::WriteJson(filename, jsonArray);
 
     Game::GetInstance().SaveScore(0);
     Game::GetInstance().SetScene(SceneType::MainMenu);

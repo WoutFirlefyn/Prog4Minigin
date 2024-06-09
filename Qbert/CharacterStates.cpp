@@ -73,10 +73,15 @@ void SpawnState::OnEnter()
 {
 	m_pCharacter->CharacterSpawned->NotifyObservers(m_pCharacter->GetCharacter(), GetGameObject());
 	GetGameObject()->GetComponent<dae::GraphicsComponent>()->ToggleRendering(true);
+	m_SpawnDelay = m_pCharacter->GetSpawnDelay();
 }
 
 bool SpawnState::Spawn()
 {
+	m_AccumSec += dae::GameTime::GetInstance().GetDeltaTime();
+	if (m_AccumSec < m_SpawnDelay)
+		return false;
+
 	m_FallLerpValue += dae::GameTime::GetInstance().GetDeltaTime() / m_FallDuration;
 	m_FallLerpValue = std::min(m_FallLerpValue, 1.f);
 	GetGameObject()->SetPosition(m_StartPos - (m_StartPos - m_TargetPos) * m_FallLerpValue);

@@ -35,6 +35,8 @@ protected:
 	float m_HeightOffset{ 400.f };
 	float m_FallDuration{ 2.f };
 	float m_FallLerpValue{ 0.f };
+	float m_SpawnDelay{ 0.f };
+	float m_AccumSec{ 0.f };
 };
 
 class IdleState : public CharacterState, dae::Observer<Character, Character>

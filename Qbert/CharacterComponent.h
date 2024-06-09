@@ -67,6 +67,13 @@ private:
 	inline static std::unordered_map<MovementDirection, MovementInfo> m_MovementInfos{};
 };
 
+struct SpawnData 
+{
+	float minDelay{};
+	float maxDelay{};
+	std::vector<glm::ivec2> vSpawnPositions{};
+};
+
 enum class TileType;
 class CharacterState;
 class LevelManagerComponent;
@@ -91,15 +98,16 @@ public:
 
 	Character GetCharacter() const { return m_Character; }
 
-	virtual glm::ivec2 GetSpawnPosition() const { return m_vSpawnPositions[rand() % m_vSpawnPositions.size()]; }
-	void SetSpawnPositions(std::vector<glm::ivec2> vPositions) { m_vSpawnPositions = vPositions; }
+	void SetSpawnData(const SpawnData& spawnData) { m_SpawnData = spawnData; }
+	virtual glm::ivec2 GetSpawnPosition() const { return m_SpawnData.vSpawnPositions[rand() % m_SpawnData.vSpawnPositions.size()]; }
+	float GetSpawnDelay() const;
 
 	static std::unique_ptr<dae::Subject<Character, MovementInfo>> MoveStateChanged;
 	static std::unique_ptr<dae::Subject<Character, dae::GameObject*>> CharacterSpawned;
 protected:
 	Character m_Character{ Character::None };
-	std::vector<glm::ivec2> m_vSpawnPositions{};
 	bool m_ResetCharacter{ false };
+	SpawnData m_SpawnData{};
 
 	friend class CharacterState;
 	void SetState(std::unique_ptr<CharacterState>&& pNewState, bool callOnExit = true);

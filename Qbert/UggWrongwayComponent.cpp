@@ -27,8 +27,6 @@ UggWrongwayComponent::~UggWrongwayComponent()
 void UggWrongwayComponent::Init()
 {
 	m_SpawnedLeft = rand() % 2;
-	m_vSpawnPositions.push_back({ 7,0 });
-	m_vSpawnPositions.push_back({ 0,7 });
 
 	MoveStateChanged->AddObserver(this);
 	SetState(std::make_unique<UggWrongwayResetState>(this));
@@ -67,5 +65,5 @@ void UggWrongwayComponent::Notify(Character character, MovementInfo movementInfo
 
 glm::ivec2 UggWrongwayComponent::GetSpawnPosition() const
 {
-	return m_vSpawnPositions[m_SpawnedLeft];
+	return m_SpawnData.vSpawnPositions[m_SpawnedLeft];
 }

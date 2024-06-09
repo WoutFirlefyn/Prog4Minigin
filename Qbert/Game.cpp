@@ -33,7 +33,7 @@
 #include "ServiceLocator.h"
 #include "Sounds.h"
 #include "Game.h"
-#include <json.hpp>
+#include "Utils.h"
 #include <fstream>
 
 using json = nlohmann::json;
@@ -146,9 +146,27 @@ void Game::LoadLevel(SceneType sceneType)
 
 	glm::ivec2 windowSize = dae::Minigin::m_WindowSize;
 
-	std::string sceneName = "Level";
+	std::string sceneName{};
+
+	switch (sceneType)
+	{
+	case SceneType::Solo:
+		sceneName = "Solo";
+		break;
+	case SceneType::Coop:
+		sceneName = "Coop";
+		break;
+	case SceneType::Versus:
+		sceneName = "Versus";
+		break;
+	default:
+		return;
+	}
+
 	auto& scene = sceneManager.CreateScene(sceneName);
 	sceneManager.SetCurrentScene(sceneName);
+
+	auto vSpawnData = GetSpawnData();
 
 	soundSystem.LoadSound("Clear Disks.wav", dae::Sounds::ClearDisks);
 	soundSystem.LoadSound("Coily Egg Jump.wav", dae::Sounds::CoilyEggJump);
@@ -188,8 +206,8 @@ void Game::LoadLevel(SceneType sceneType)
 		playerText->SetScale(3, 3);
 		playerText->SetPosition
 		(
-			dae::Minigin::m_WindowSize.x - playerText->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x - 10.f
-			, 10.f
+			dae::Minigin::m_WindowSize.x - playerText->GetComponent<dae::GraphicsComponent>()->GetTextureSize().x - 10.f, 
+			10.f
 		);
 		scene.Add(std::move(playerText));
 	}
@@ -219,6 +237,7 @@ void Game::LoadLevel(SceneType sceneType)
 	auto qbert1 = vQbert.back().get();
 	qbert1->AddComponent<dae::GraphicsComponent>("Qbert P1 Spritesheet.png");
 	qbert1->AddComponent<QbertComponent>(pLevelManagerComponent);
+	qbert1->GetComponent<QbertComponent>()->SetSpawnData(vSpawnData[static_cast<int>(Character::Qbert1)]);
 	qbert1->AddComponent<dae::SpritesheetComponent>(4, 1);
 	qbert1->SetScale(scale);
 	uint8_t controllerId = (sceneType == SceneType::Solo) ? 0 : 1;
@@ -231,14 +250,14 @@ void Game::LoadLevel(SceneType sceneType)
 	input.BindCommand(moveLeftCommand,	SDL_SCANCODE_A, dae::InputType::Down);
 	input.BindCommand(moveDownCommand,	SDL_SCANCODE_S, dae::InputType::Down);
 	input.BindCommand(moveRightCommand,	SDL_SCANCODE_D, dae::InputType::Down);
-	input.BindCommand(moveUpCommand,	dae::ControllerButton::DPAD_UP, dae::InputType::Down, controllerId);
-	input.BindCommand(moveLeftCommand,	dae::ControllerButton::DPAD_LEFT, dae::InputType::Down, controllerId);
-	input.BindCommand(moveDownCommand,	dae::ControllerButton::DPAD_DOWN, dae::InputType::Down, controllerId);
+	input.BindCommand(moveUpCommand,	dae::ControllerButton::DPAD_UP,		dae::InputType::Down, controllerId);
+	input.BindCommand(moveLeftCommand,	dae::ControllerButton::DPAD_LEFT,	dae::InputType::Down, controllerId);
+	input.BindCommand(moveDownCommand,	dae::ControllerButton::DPAD_DOWN,	dae::InputType::Down, controllerId);
 	input.BindCommand(moveRightCommand,	dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Down, controllerId);
-	if (sceneType == SceneType::Coop)
-		qbert1->GetComponent<QbertComponent>()->SetSpawnPositions({ { 0,6 } });
-	else
-		qbert1->GetComponent<QbertComponent>()->SetSpawnPositions({ { 0,0 } });
+	//if (sceneType == SceneType::Coop)
+	//	qbert1->GetComponent<QbertComponent>()->SetSpawnPositions({ { 0,6 } });
+	//else
+	//	qbert1->GetComponent<QbertComponent>()->SetSpawnPositions({ { 0,0 } });
 
 	// Qbert curse
 	vQbertCurse.push_back(std::make_unique<dae::GameObject>());
@@ -254,6 +273,7 @@ void Game::LoadLevel(SceneType sceneType)
 		auto qbert2 = vQbert.back().get();
 		qbert2->AddComponent<dae::GraphicsComponent>("Qbert P2 Spritesheet.png");
 		qbert2->AddComponent<QbertComponent>(pLevelManagerComponent, Character::Qbert2);
+		qbert2->GetComponent<QbertComponent>()->SetSpawnData(vSpawnData[static_cast<int>(Character::Qbert2)]);
 		qbert2->AddComponent<dae::SpritesheetComponent>(4, 1);
 		qbert2->SetScale(scale);
 		controllerId = (sceneType == SceneType::Solo) ? 1 : 0;	
@@ -269,7 +289,7 @@ void Game::LoadLevel(SceneType sceneType)
 		input.BindCommand(moveLeftCommand,	dae::ControllerButton::DPAD_LEFT,	dae::InputType::Down, controllerId);
 		input.BindCommand(moveDownCommand,	dae::ControllerButton::DPAD_DOWN,	dae::InputType::Down, controllerId);
 		input.BindCommand(moveRightCommand,	dae::ControllerButton::DPAD_RIGHT,	dae::InputType::Down, controllerId);
-		qbert2->GetComponent<QbertComponent>()->SetSpawnPositions({ { 6,0 } });
+		//qbert2->GetComponent<QbertComponent>()->SetSpawnPositions({ { 6,0 } });
 
 		// Qbert2 curse
 		vQbertCurse.push_back(std::make_unique<dae::GameObject>());
@@ -283,6 +303,7 @@ void Game::LoadLevel(SceneType sceneType)
 	auto coily = std::make_unique<dae::GameObject>();
 	coily->AddComponent<dae::GraphicsComponent>("Coily Spritesheet.png");
 	coily->AddComponent<CoilyComponent>(pLevelManagerComponent);
+	coily->GetComponent<CoilyComponent>()->SetSpawnData(vSpawnData[static_cast<int>(Character::Coily)]);
 	coily->AddComponent<dae::SpritesheetComponent>(5, 2);
 	coily->SetScale(scale);
 	if (sceneType == SceneType::Versus)
@@ -305,6 +326,7 @@ void Game::LoadLevel(SceneType sceneType)
 	auto slick = std::make_unique<dae::GameObject>();
 	slick->AddComponent<dae::GraphicsComponent>("Slick Sam Spritesheet.png");
 	slick->AddComponent<SlickSamComponent>(Character::Slick, pLevelManagerComponent);
+	slick->GetComponent<SlickSamComponent>()->SetSpawnData(vSpawnData[static_cast<int>(Character::Slick)]);
 	slick->AddComponent<dae::SpritesheetComponent>(2, 2);
 	slick->SetScale(scale);
 
@@ -312,6 +334,7 @@ void Game::LoadLevel(SceneType sceneType)
 	auto sam = std::make_unique<dae::GameObject>();
 	sam->AddComponent<dae::GraphicsComponent>("Slick Sam Spritesheet.png");
 	sam->AddComponent<SlickSamComponent>(Character::Sam, pLevelManagerComponent);
+	sam->GetComponent<SlickSamComponent>()->SetSpawnData(vSpawnData[static_cast<int>(Character::Sam)]);
 	sam->AddComponent<dae::SpritesheetComponent>(2, 2);
 	sam->SetScale(scale);
 
@@ -319,6 +342,7 @@ void Game::LoadLevel(SceneType sceneType)
 	auto ugg = std::make_unique<dae::GameObject>();
 	ugg->AddComponent<dae::GraphicsComponent>("Ugg Wrongway Spritesheet.png");
 	ugg->AddComponent<UggWrongwayComponent>(Character::Ugg, pLevelManagerComponent);
+	ugg->GetComponent<UggWrongwayComponent>()->SetSpawnData(vSpawnData[static_cast<int>(Character::Ugg)]);
 	ugg->AddComponent<dae::SpritesheetComponent>(4, 2);
 	ugg->SetScale(scale);
 
@@ -326,6 +350,7 @@ void Game::LoadLevel(SceneType sceneType)
 	auto wrongway = std::make_unique<dae::GameObject>();
 	wrongway->AddComponent<dae::GraphicsComponent>("Ugg Wrongway Spritesheet.png");
 	wrongway->AddComponent<UggWrongwayComponent>(Character::Wrongway, pLevelManagerComponent);
+	wrongway->GetComponent<UggWrongwayComponent>()->SetSpawnData(vSpawnData[static_cast<int>(Character::Wrongway)]);
 	wrongway->AddComponent<dae::SpritesheetComponent>(4, 2);
 	wrongway->SetScale(scale);
 
@@ -558,31 +583,7 @@ void Game::LoadHighscoreScreen()
 
 std::vector<std::pair<std::string, int>> Game::GetHighscoreData() const
 {
-	const std::string filename = "../Data/Highscore.bin";
-
-	json jsonArray = json::array();
-
-	std::ifstream inFile(filename, std::ios::binary);
-	if (!inFile.is_open())
-	{
-		std::cerr << "Failed to open " << filename << "\n";
-		return {};
-	}
-
-	std::vector<char> buffer((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-	inFile.close();
-
-	try
-	{
-		if (!buffer.empty())
-			jsonArray = json::from_cbor(buffer);
-	}
-	catch (const json::parse_error& e)
-	{
-		std::cerr << "Parse error: " << e.what() << std::endl;
-		return {};
-	}
-	inFile.close();
+	json jsonArray = utils::ReadJson("../Data/Highscore.bin");
 
 	std::vector<std::pair<std::string, int>> vHighscores(20, { "   ", 0 });
 
@@ -599,3 +600,33 @@ std::vector<std::pair<std::string, int>> Game::GetHighscoreData() const
 
 	return vHighscores;
 }
+
+namespace glm 
+{
+	void from_json(const json& j, glm::ivec2& vec)
+	{
+		j.at("x").get_to(vec.x);
+		j.at("y").get_to(vec.y);
+	}
+}
+
+std::vector<SpawnData> Game::GetSpawnData() const
+{
+	std::string sceneName = dae::SceneManager::GetInstance().GetCurrentSceneName();
+
+	json jsonArray = utils::ReadJson("../Data/" + sceneName + ".bin");
+
+	std::vector<SpawnData> vSpawnData;
+	for (const auto& item : jsonArray)
+	{
+		SpawnData data;
+		data.minDelay = item["minSpawnDelay"];
+		data.maxDelay = item["maxSpawnDelay"];
+		data.vSpawnPositions = item["spawnPositions"].get<std::vector<glm::ivec2>>();
+		vSpawnData.push_back(data);
+	}
+
+	return vSpawnData;
+}
+
+

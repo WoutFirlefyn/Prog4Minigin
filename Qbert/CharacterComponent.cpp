@@ -3,6 +3,7 @@
 #include "LevelManagerComponent.h"
 #include "CharacterStates.h"
 #include "GameObject.h"
+#include <json.hpp>
 
 std::unique_ptr<dae::Subject<Character, MovementInfo>> CharacterComponent::MoveStateChanged{ std::make_unique<dae::Subject<Character, MovementInfo>>() };
 std::unique_ptr<dae::Subject<Character, dae::GameObject*>> CharacterComponent::CharacterSpawned{ std::make_unique<dae::Subject<Character, dae::GameObject*>>() };
@@ -41,7 +42,12 @@ void CharacterComponent::SubjectDestroyed(dae::Subject<Character, bool>* pSubjec
 void CharacterComponent::Move(MovementInfo movementInfo)
 {
 	m_pState->HandleInput(movementInfo);
-} 
+}
+
+float CharacterComponent::GetSpawnDelay() const
+{
+	return (m_SpawnData.minDelay + static_cast<float>(std::rand()) / (static_cast<float>(RAND_MAX / (m_SpawnData.maxDelay - m_SpawnData.minDelay)))) / (m_pLevelManagerComponent->GetRoundNr() + m_pLevelManagerComponent->GetLevelNr() - 1);
+}
 
 void CharacterComponent::SetState(std::unique_ptr<CharacterState>&& pNewState, bool callOnExit)
 {

@@ -12,6 +12,8 @@ enum class SceneType
 	Win = 6
 };
 
+struct SpawnData;
+
 class Game final : public dae::Singleton<Game>
 {
 public:
@@ -35,6 +37,7 @@ private:
 	void LoadEndScreen(SceneType sceneType);
 	void LoadHighscoreScreen();
 	std::vector<std::pair<std::string, int>> GetHighscoreData() const;
+	std::vector<SpawnData> GetSpawnData() const;
 
 	SceneType m_CurrentSceneType{};
 

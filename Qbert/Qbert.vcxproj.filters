@@ -209,5 +209,8 @@
     <ClInclude Include="TileIconComponent.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files\Other</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
